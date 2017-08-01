@@ -1,0 +1,31 @@
+extends layout
+block content
+	form(action="/event/create", method="post")
+		fieldset(name="orderFields")
+			table
+				tbody#fieldTable
+					tr
+						td
+							label(for="Ereignisname") Ereignisname
+						td
+							input#Ereignisname(value="", name="Ereignisname", type="text")
+					tr
+						td
+							label(for="Ereignisort") Ereignisort
+						td
+							input#Ereignisort(value="", name="Ereignisort", type="text")
+					tr
+						td
+							label(for="Von") Von
+						td
+							input#Von(value="", name="Von", type="datetime-local")
+					tr
+						td
+							label(for="Bis") Bis
+						td
+							input#Bis(value="", name="Bis", type="datetime-local")
+
+				tfoot
+					tr
+						td(colspan="2")
+							input#submitButton(type="submit", value="Ereignis erstellen")
