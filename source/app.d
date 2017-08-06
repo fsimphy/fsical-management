@@ -5,6 +5,7 @@ shared static this()
 {
     auto router = new URLRouter;
     router.registerWebInterface(new CalendarWebapp);
+    router.get("*", serveStaticFiles("public"));
 
     auto settings = new HTTPServerSettings;
     settings.port = 8080;

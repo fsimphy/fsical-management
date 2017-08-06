@@ -3,6 +3,7 @@ html
 	head
 		meta(charset='utf-8')
 		title Calendar Webapp
+		link(rel='stylesheet', type='text/css', href='/calendarwebapp.css')
 	body
 		block navigation
 			include navigation

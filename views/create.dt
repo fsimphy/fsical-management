@@ -1,7 +1,10 @@
 extends layout
 block content
-	form(action="/event/create", method="post")
-		fieldset(name="orderFields")
+	- void showerror(string field = null)
+		- if (_error.msg && _error.field == field)
+			td.error= _error.msg
+	form(action="/create", method="post")
+		fieldset(name="eventFields")
 			table
 				tbody#fieldTable
 					tr
@@ -9,21 +12,25 @@ block content
 							label(for="name") Ereignisname
 						td
 							input#name(value="", name="name", type="text")
+						- showerror("name");
 					tr
 						td
 							label(for="description") Beschreibung
 						td
 							textarea#description(value="", name="description", cols="40", rows="5")
+						- showerror("description");
 					tr
 						td
 							label(for="begin") Von
 						td
 							input#begin(value="", name="begin", type="date")
+						- showerror("begin");
 					tr
 						td
 							label(for="end") Bis
 						td
 							input#end(value="", name="end", type="date")
+						- showerror("end");
 					tr
 						td
 							label(for="type") Typ
@@ -34,13 +41,17 @@ block content
 								option(value="FSI_Event") FSI Ereignis
 								option(value="General_University_Event") Allgemeines Universitäts Ereignis
 								option(value="Any") Sonstiges
+						- showerror("type");
 					tr
 						td
 							label(for="shout") Shout
 						td
 							input#shout(name="shout", type="checkbox")
+						- showerror("shout");
 
 				tfoot
 					tr
 						td(colspan="2")
 							input#submitButton(type="submit", value="Ereignis erstellen")
+	- if (_error.msg && _error.field == "")
+		p.error= _error.msg

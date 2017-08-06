@@ -3,4 +3,6 @@ nav
 		li
 			a(href='/') Home
 		li
-			a(href='/create') Create Event
+			a(href='/create') Ereignis erstellen 
+		li
+			a(href='/logout') Ausloggen

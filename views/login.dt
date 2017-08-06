@@ -19,3 +19,5 @@ block content
 					tr
 						td(colspan="2")
 							input#submitButton(type="submit", value="Anmelden")
+	- if (_error)
+		p.error= _error
