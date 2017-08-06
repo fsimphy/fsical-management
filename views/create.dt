@@ -6,24 +6,39 @@ block content
 				tbody#fieldTable
 					tr
 						td
-							label(for="Ereignisname") Ereignisname
+							label(for="name") Ereignisname
 						td
-							input#Ereignisname(value="", name="Ereignisname", type="text")
+							input#name(value="", name="name", type="text")
 					tr
 						td
-							label(for="Ereignisort") Ereignisort
+							label(for="description") Beschreibung
 						td
-							input#Ereignisort(value="", name="Ereignisort", type="text")
+							textarea#description(value="", name="description", cols="40", rows="5")
 					tr
 						td
-							label(for="Von") Von
+							label(for="begin") Von
 						td
-							input#Von(value="", name="Von", type="datetime-local")
+							input#begin(value="", name="begin", type="date")
 					tr
 						td
-							label(for="Bis") Bis
+							label(for="end") Bis
 						td
-							input#Bis(value="", name="Bis", type="datetime-local")
+							input#end(value="", name="end", type="date")
+					tr
+						td
+							label(for="type") Typ
+						td
+							select#type(name="type")
+								option(value="Holiday") Feiertag
+								option(value="Birthday") Geburtstag
+								option(value="FSI_Event") FSI Ereignis
+								option(value="General_University_Event") Allgemeines Universitäts Ereignis
+								option(value="Any") Sonstiges
+					tr
+						td
+							label(for="shout") Shout
+						td
+							input#shout(name="shout", type="checkbox")
 
 				tfoot
 					tr

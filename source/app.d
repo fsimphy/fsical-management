@@ -1,4 +1,5 @@
 import std.datetime.date;
+import std.typecons : Nullable;
 
 import vibe.vibe;
 
@@ -7,47 +8,69 @@ class CalendarWebapp
 private:
     immutable fileName = Path("events.json");
 
-    struct Event
+    enum EventType
     {
-        string name, place;
-        DateTime begin, end;
+        Holiday,
+        Birthday,
+        FSI_Event,
+        General_University_Event,
+        Any
     }
 
-    Event[] getEventsFromFile(in Path fileName)
+    struct Entry
     {
-        Event[] events;
-        auto eventsString = readFileUTF8(fileName);
+        @name("date") Date begin;
+        @name("end_date") Nullable!Date end;
+        Event event;
+    }
+
+    struct Event
+    {
+        @(vibe.data.serialization.name("eid")) string id;
+        string name;
+        @(vibe.data.serialization.name("desc")) string[] description;
+        @(vibe.data.serialization.name("etype")) EventType type;
+        bool shout;
+    }
+
+    Entry[] getEventsFromFile(in Path fileName)
+    {
+        Entry[] entries;
         try
         {
-            deserializeJson(events, eventsString.parseJsonString);
+            auto entriesString = readFileUTF8(fileName);
+
+            try
+            {
+                deserializeJson(entries, entriesString.parseJsonString);
+            }
+            catch (std.json.JSONException)
+            {
+            }
         }
-        catch (std.json.JSONException)
-        {
-        }
-        return events;
+        catch(Exception)
+        {}
+        return entries;
     }
 
 public:
 
     @method(HTTPMethod.POST) @path("/event/create")
-    void createEvent(string Ereignisname, string Ereignisort, string Von, string Bis)
+    void createEvent(Date begin, Nullable!Date end, string description,
+            string name, EventType type, bool shout)
     {
-        Event event;
+        import std.array : split, replace;
 
-        event.name = Ereignisname;
-        event.place = Ereignisort;
+        if (!end.isNull)
+            enforce(end - begin >= 1.days);
 
-        event.begin = DateTime.fromISOExtString(Von ~ ":00");
-        event.end = DateTime.fromISOExtString(Bis ~ ":00");
-        enforce(event.end - event.begin > 0.seconds);
+        auto entry = Entry(begin, end, Event("", name,
+                description.replace("\r", "").split('\n'), type, shout));
 
-        auto events = getEventsFromFile(fileName);
-
-        events ~= event;
-
-        writeFileUTF8(fileName, events.serializeToJsonString());
-
-        render!("listevents.dt", events);
+        auto entries = getEventsFromFile(fileName);
+        entries ~= entry;
+        writeFileUTF8(fileName, serializeToPrettyJson(entries));
+        render!("showevents.dt", entries);
     }
 
     @method(HTTPMethod.GET) @path("create")
@@ -58,8 +81,8 @@ public:
 
     void index()
     {
-        auto events = getEventsFromFile(fileName);
-        render!("listevents.dt", events);
+        auto entries = getEventsFromFile(fileName);
+        render!("showevents.dt", entries);
     }
 
 }
