@@ -1,5 +1,10 @@
 import calendarwebapp;
-import vibe.vibe;
+
+import vibe.core.log : logInfo;
+import vibe.http.fileserver : serveStaticFiles;
+import vibe.http.router : URLRouter;
+import vibe.http.server : HTTPServerSettings, listenHTTP, MemorySessionStore;
+import vibe.web.web : registerWebInterface;
 
 shared static this()
 {

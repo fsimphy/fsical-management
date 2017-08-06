@@ -4,9 +4,9 @@ import std.datetime.date;
 import std.typecons : Nullable;
 
 import vibe.core.file: existsFile, readFileUTF8, writeFileUTF8;
-import vibe.core.path;
+import vibe.core.path : Path;
 import vibe.data.json : deserializeJson, parseJsonString, serializeToPrettyJson;
-import vibe.data.serialization;
+import vibe.data.serialization : serializationName = name;
 
 enum EventType
 {
@@ -19,17 +19,17 @@ enum EventType
 
 struct Entry
 {
-    @name("date") Date begin;
-    @name("end_date") Nullable!Date end;
+    @serializationName("date") Date begin;
+    @serializationName("end_date") Nullable!Date end;
     Event event;
 }
 
 struct Event
 {
-    @(vibe.data.serialization.name("eid")) string id;
+    @serializationName("eid") string id;
     string name;
-    @(vibe.data.serialization.name("desc")) string[] description;
-    @(vibe.data.serialization.name("etype")) EventType type;
+    @serializationName("desc") string[] description;
+    @serializationName("etype") EventType type;
     bool shout;
 }
 
