@@ -2,7 +2,7 @@ module calendarwebapp;
 
 import event;
 
-import std.datetime.date;
+import std.datetime.date : Date;
 import std.typecons : Nullable;
 
 import vibe.vibe;
@@ -57,8 +57,8 @@ public:
         render!("create.dt", _error);
     }
 
-    @anyAuth @errorDisplay!getCreate void postCreate(Date begin, Nullable!Date end,
-            string description, string name, EventType type, bool shout)
+    @anyAuth @errorDisplay!getCreate void postCreate(Date begin,
+            Nullable!Date end, string description, string name, EventType type, bool shout)
     {
         import std.array : split, replace;
 
@@ -70,7 +70,7 @@ public:
                 description.replace("\r", "").split('\n'), type, shout));
 
         auto entries = getEntriesFromFile(fileName) ~ entry;
-        fileName.writeFileUTF8(entries.serializeToPrettyJson);
+        entries.writeEntriesToFile(fileName);
         render!("showevents.dt", entries);
     }
 
@@ -81,19 +81,7 @@ public:
     }
 
 private:
-
     immutable fileName = Path("events.json");
 
     SessionVar!(AuthInfo, "auth") auth;
-
-    Entry[] getEntriesFromFile(in Path fileName)
-    {
-        Entry[] entries;
-        if (fileName.existsFile)
-        {
-            deserializeJson(entries, fileName.readFileUTF8.parseJsonString);
-        }
-        return entries;
-    }
-
 }
