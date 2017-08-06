@@ -7,79 +7,58 @@ import std.typecons : Nullable;
 
 import vibe.vibe;
 
-class CalendarWebapp
+import vibe.web.auth;
+
+struct AuthInfo
 {
-private:
-    enum auth = before!ensureAuth("userName");
+    string userName;
+}
 
-    immutable fileName = Path("events.json");
-
-    struct UserData
+@requiresAuth class CalendarWebapp
+{
+    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse res)
     {
-        bool loggedIn;
-        string name;
-        string uuid;
-    }
-
-    SessionVar!(UserData, "user") user;
-
-    Entry[] getEntriesFromFile(in Path fileName)
-    {
-        Entry[] entries;
-        if (fileName.existsFile)
+        if (!req.session || !req.session.isKeySet("auth"))
         {
-            deserializeJson(entries, fileName.readFileUTF8.parseJsonString);
-        }
-        return entries;
-    }
-
-    string ensureAuth(HTTPServerRequest req, HTTPServerResponse res)
-    {
-        if (!user.loggedIn)
             redirect("/login");
-        return user.name;
+            throw new HTTPStatusException(HTTPStatus.forbidden, "Du musst dich erst einloggen");
+        }
+        return req.session.get!AuthInfo("auth");
     }
-
-    mixin PrivateAccessProxy;
 
 public:
-    @auth void index(string userName)
+    @anyAuth @errorDisplay!getLogin void index()
     {
         auto entries = getEntriesFromFile(fileName);
         render!("showevents.dt", entries);
     }
 
-    void getLogin(string _error = null)
+    @noAuth void getLogin(string _error = null)
     {
         render!("login.dt", _error);
     }
 
-    @errorDisplay!getLogin void postLogin(string username, string password)
+    @noAuth @errorDisplay!getLogin void postLogin(string username, string password)
     {
-        import std.uuid : randomUUID;
-
         enforce(username == "foo" && password == "bar", "Benutzername oder Passwort ungültig");
-        UserData d;
-        d.loggedIn = true;
-        d.name = username;
-        d.uuid = randomUUID.toString;
-        user = d;
+        immutable AuthInfo authInfo = {username};
+        auth = authInfo;
         redirect("/");
     }
 
-    void getLogout()
+    @anyAuth void getLogout()
     {
         terminateSession();
         redirect("/");
     }
 
-    @auth void getCreate(string userName, ValidationErrorData _error = ValidationErrorData.init)
+    @anyAuth void getCreate(ValidationErrorData _error = ValidationErrorData.init)
     {
         render!("create.dt", _error);
     }
 
-    @auth @errorDisplay!getCreate void postCreate(Date begin, Nullable!Date end,
-            string description, string name, EventType type, bool shout, string userName)
+    @anyAuth @errorDisplay!getCreate void postCreate(Date begin, Nullable!Date end,
+            string description, string name, EventType type, bool shout)
     {
         import std.array : split, replace;
 
@@ -99,6 +78,22 @@ public:
     {
         string msg;
         string field;
+    }
+
+private:
+
+    immutable fileName = Path("events.json");
+
+    SessionVar!(AuthInfo, "auth") auth;
+
+    Entry[] getEntriesFromFile(in Path fileName)
+    {
+        Entry[] entries;
+        if (fileName.existsFile)
+        {
+            deserializeJson(entries, fileName.readFileUTF8.parseJsonString);
+        }
+        return entries;
     }
 
 }
