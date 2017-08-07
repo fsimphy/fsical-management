@@ -7,12 +7,9 @@ import std.datetime.date : Date;
 import std.range.interfaces : InputRange, inputRangeObject;
 import std.typecons : Nullable;
 
-import vibe.core.file : existsFile, readFileUTF8, writeFileUTF8;
-import vibe.core.path : Path;
 import vibe.data.bson : Bson, BsonObjectID, deserializeBson, serializeToBson;
 import vibe.data.serialization : serializationName = name;
 import vibe.db.mongo.client : MongoClient;
-import vibe.db.mongo.collection : MongoCollection;
 
 interface EventStore
 {
