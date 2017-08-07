@@ -24,4 +24,7 @@ block content
 			tr
 				td shout
 				td #{event.shout}
+		form(action="/remove", method="post")
+			input#id(value="#{event.id}", name="id", type="hidden")
+			input#submitButton(type="submit", value="Entfernen")
 		hr

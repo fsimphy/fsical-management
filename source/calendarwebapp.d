@@ -12,6 +12,7 @@ import std.datetime.date : Date;
 import std.exception : enforce;
 import std.typecons : Nullable;
 
+import vibe.data.bson : BsonObjectID;
 import vibe.http.common : HTTPStatusException;
 import vibe.http.server : HTTPServerRequest, HTTPServerResponse;
 import vibe.http.status : HTTPStatus;
@@ -66,7 +67,6 @@ public:
             Nullable!Date end, string description, string name, EventType type, bool shout)
     {
         import std.array : replace, split;
-        import vibe.data.bson : BsonObjectID;
 
         if (!end.isNull)
             enforce(end - begin >= 1.days,
@@ -76,6 +76,12 @@ public:
 
         eventStore.addEvent(event);
 
+        redirect("/");
+    }
+
+    @anyAuth void postRemove(BsonObjectID id)
+    {
+        eventStore.removeEvent(id);
         redirect("/");
     }
 

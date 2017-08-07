@@ -16,16 +16,17 @@ import vibe.db.mongo.collection : MongoCollection;
 
 interface EventStore
 {
-    Event getEvent(string id);
+    Event getEvent(BsonObjectID id);
     InputRange!Event getAllEvents();
     void addEvent(Event);
     InputRange!Event getEventsBeginningBetween(Date begin, Date end);
+    void removeEvent(BsonObjectID id);
 }
 
 class MongoDBEventStore : EventStore
 {
 public:
-    Event getEvent(string id)
+    Event getEvent(BsonObjectID id)
     {
         return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
             .findOne(["_id" : id]).deserializeBson!Event;
@@ -52,6 +53,11 @@ public:
             .find(["$and" : [["date" : ["$gte" : begin.serializeToBson]], ["date"
                     : ["$lte" : end.serializeToBson]]]]).map!(deserializeBson!Event)
             .inputRangeObject;
+    }
+
+    void removeEvent(BsonObjectID id)
+    {
+        mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName).remove(["_id" : id]);
     }
 
 private:
