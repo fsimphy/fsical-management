@@ -9,11 +9,18 @@ import std.exception : enforce;
 import std.typecons : Nullable;
 
 import vibe.core.path : Path;
+
+import vibe.data.bson : Bson;
+
+import vibe.db.mongo.database : MongoDatabase;
+import vibe.db.mongo.mongo : connectMongoDB;
+
 import vibe.http.common : HTTPStatusException;
 import vibe.http.server : HTTPServerRequest, HTTPServerResponse;
 import vibe.http.status : HTTPStatus;
 import vibe.web.auth;
-import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar, terminateSession;
+import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
+    terminateSession;
 
 struct AuthInfo
 {
@@ -46,7 +53,7 @@ public:
 
     @noAuth @errorDisplay!getLogin void postLogin(string username, string password)
     {
-        enforce(username == "foo" && password == "bar", "Benutzername oder Passwort ungültig");
+        enforce(checkUser(username, password), "Benutzername oder Passwort ungültig");
         immutable AuthInfo authInfo = {username};
         auth = authInfo;
         redirect("/");
@@ -86,8 +93,23 @@ public:
         string field;
     }
 
+    this()
+    {
+        database = connectMongoDB("localhost").getDatabase("CalendarWebapp");
+    }
+
 private:
     immutable fileName = Path("events.json");
 
     SessionVar!(AuthInfo, "auth") auth;
+
+    MongoDatabase database;
+
+    bool checkUser(string username, string password)
+    {
+        auto users = database["users"];
+        auto result = users.findOne(["_id" : username, "password" : password]);
+        return result != Bson(null);
+    }
+
 }
