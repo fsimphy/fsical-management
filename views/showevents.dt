@@ -1,27 +1,27 @@
 extends layout.dt
 block content
 	h1 Events
-	- foreach (entry; entries)
+	- foreach (event; events)
 		table
 			tr
 				td begin
-				td #{entry.begin}
+				td #{event.begin}
 			tr
 				td end
-				td #{entry.end}
+				td #{event.end}
 			tr
-				td eid
-				td #{entry.event.id}
+				td _id
+				td #{event.id}
 			tr
 				td name
-				td #{entry.event.name}
+				td #{event.name}
 			tr
 				td desc
-				td #{entry.event.description}
+				td #{event.description}
 			tr
 				td etype
-				td #{entry.event.type}
+				td #{event.type}
 			tr
 				td shout
-				td #{entry.event.shout}
+				td #{event.shout}
 		hr

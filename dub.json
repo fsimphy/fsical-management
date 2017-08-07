@@ -4,9 +4,10 @@
 		"Johannes Loher"
 	],
 	"dependencies": {
-		"vibe-d": "~>0.7.30"
+		"vibe-d": "~>0.7.30",
+		"poodinis": "~>8.0.0"
 	},
-	"description": "A simple webapplication  to edit and view calendar entries",
+	"description": "A simple webapplication to edit and view calendar entries",
 	"copyright": "Copyright © 2017, Johannes Loher",
 	"license": "MIT",
 	"versions": [

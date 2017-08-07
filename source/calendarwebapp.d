@@ -1,19 +1,16 @@
 module calendarwebapp;
 
+import authenticator : Authenticator, AuthInfo;
+
 import core.time : days;
 
 import event;
 
+import poodinis;
+
 import std.datetime.date : Date;
 import std.exception : enforce;
 import std.typecons : Nullable;
-
-import vibe.core.path : Path;
-
-import vibe.data.bson : Bson;
-
-import vibe.db.mongo.database : MongoDatabase;
-import vibe.db.mongo.mongo : connectMongoDB;
 
 import vibe.http.common : HTTPStatusException;
 import vibe.http.server : HTTPServerRequest, HTTPServerResponse;
@@ -21,11 +18,6 @@ import vibe.http.status : HTTPStatus;
 import vibe.web.auth;
 import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
     terminateSession;
-
-struct AuthInfo
-{
-    string userName;
-}
 
 @requiresAuth class CalendarWebapp
 {
@@ -40,10 +32,10 @@ struct AuthInfo
     }
 
 public:
-    @anyAuth @errorDisplay!getLogin void index()
+    @anyAuth void index()
     {
-        auto entries = getEntriesFromFile(fileName);
-        render!("showevents.dt", entries);
+        auto events = eventStore.getAllEvents();
+        render!("showevents.dt", events);
     }
 
     @noAuth void getLogin(string _error = null)
@@ -53,7 +45,7 @@ public:
 
     @noAuth @errorDisplay!getLogin void postLogin(string username, string password)
     {
-        enforce(checkUser(username, password), "Benutzername oder Passwort ungültig");
+        enforce(authenticator.checkUser(username, password), "Benutzername oder Passwort ungültig");
         immutable AuthInfo authInfo = {username};
         auth = authInfo;
         redirect("/");
@@ -73,43 +65,29 @@ public:
     @anyAuth @errorDisplay!getCreate void postCreate(Date begin,
             Nullable!Date end, string description, string name, EventType type, bool shout)
     {
-        import std.array : split, replace;
+        import std.array : replace, split;
+        import vibe.data.bson : BsonObjectID;
 
         if (!end.isNull)
             enforce(end - begin >= 1.days,
                     "Mehrtägige Ereignisse müssen mindestens einen Tag dauern");
+        auto event = Event(BsonObjectID.generate, begin, end, name,
+                description.replace("\r", "").split('\n'), type, shout);
 
-        auto entry = Entry(begin, end, Event("", name,
-                description.replace("\r", "").split('\n'), type, shout));
+        eventStore.addEvent(event);
 
-        auto entries = getEntriesFromFile(fileName) ~ entry;
-        entries.writeEntriesToFile(fileName);
-        render!("showevents.dt", entries);
+        redirect("/");
     }
 
+private:
     struct ValidationErrorData
     {
         string msg;
         string field;
     }
 
-    this()
-    {
-        database = connectMongoDB("localhost").getDatabase("CalendarWebapp");
-    }
-
-private:
-    immutable fileName = Path("events.json");
-
     SessionVar!(AuthInfo, "auth") auth;
 
-    MongoDatabase database;
-
-    bool checkUser(string username, string password)
-    {
-        auto users = database["users"];
-        auto result = users.findOne(["_id" : username, "password" : password]);
-        return result != Bson(null);
-    }
-
+    @Autowire EventStore eventStore;
+    @Autowire Authenticator authenticator;
 }

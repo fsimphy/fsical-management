@@ -1,12 +1,68 @@
 module event;
 
-import std.datetime.date;
+import poodinis;
+
+import std.algorithm : map;
+import std.datetime.date : Date;
+import std.range.interfaces : InputRange, inputRangeObject;
 import std.typecons : Nullable;
 
-import vibe.core.file: existsFile, readFileUTF8, writeFileUTF8;
+import vibe.core.file : existsFile, readFileUTF8, writeFileUTF8;
 import vibe.core.path : Path;
-import vibe.data.json : deserializeJson, parseJsonString, serializeToPrettyJson;
+import vibe.data.bson : Bson, BsonObjectID, deserializeBson, serializeToBson;
 import vibe.data.serialization : serializationName = name;
+import vibe.db.mongo.client : MongoClient;
+import vibe.db.mongo.collection : MongoCollection;
+
+interface EventStore
+{
+    Event getEvent(string id);
+    InputRange!Event getAllEvents();
+    void addEvent(Event);
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end);
+}
+
+class MongoDBEventStore : EventStore
+{
+public:
+    Event getEvent(string id)
+    {
+        return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
+            .findOne(["_id" : id]).deserializeBson!Event;
+    }
+
+    InputRange!Event getAllEvents()
+    {
+        return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
+            .find().map!(deserializeBson!Event).inputRangeObject;
+    }
+
+    void addEvent(Event event)
+    {
+        if (!event.id.valid)
+            event.id = BsonObjectID.generate;
+
+        mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
+            .insert(event.serializeToBson);
+    }
+
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end)
+    {
+        return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
+            .find(["$and" : [["date" : ["$gte" : begin.serializeToBson]], ["date"
+                    : ["$lte" : end.serializeToBson]]]]).map!(deserializeBson!Event)
+            .inputRangeObject;
+    }
+
+private:
+    @Autowire MongoClient mongoClient;
+
+    @Value("Database name")
+    string databaseName;
+
+    @Value("Entries collection name")
+    string entriesCollectionName;
+}
 
 enum EventType
 {
@@ -17,33 +73,13 @@ enum EventType
     Any
 }
 
-struct Entry
-{
-    @serializationName("date") Date begin;
-    @serializationName("end_date") Nullable!Date end;
-    Event event;
-}
-
 struct Event
 {
-    @serializationName("eid") string id;
+    @serializationName("_id") BsonObjectID id;
+    @serializationName("date") Date begin;
+    @serializationName("end_date") Nullable!Date end;
     string name;
     @serializationName("desc") string[] description;
     @serializationName("etype") EventType type;
     bool shout;
-}
-
-Entry[] getEntriesFromFile(in Path fileName)
-{
-    Entry[] entries;
-    if (fileName.existsFile)
-    {
-        deserializeJson(entries, fileName.readFileUTF8.parseJsonString);
-    }
-    return entries;
-}
-
-void writeEntriesToFile(in Entry[] entries, in Path fileName)
-{
-    fileName.writeFileUTF8(entries.serializeToPrettyJson);
 }
