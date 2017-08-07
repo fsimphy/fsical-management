@@ -22,7 +22,7 @@ import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
 
 @requiresAuth class CalendarWebapp
 {
-    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse res)
+    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse res) @trusted
     {
         if (!req.session || !req.session.isKeySet("auth"))
         {
