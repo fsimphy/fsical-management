@@ -13,29 +13,29 @@ import vibe.db.mongo.client : MongoClient;
 
 interface EventStore
 {
-    Event getEvent(BsonObjectID id);
-    InputRange!Event getAllEvents();
-    void addEvent(Event);
-    InputRange!Event getEventsBeginningBetween(Date begin, Date end);
-    void removeEvent(BsonObjectID id);
+    Event getEvent(BsonObjectID id) @safe;
+    InputRange!Event getAllEvents() @safe;
+    void addEvent(Event) @safe;
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe;
+    void removeEvent(BsonObjectID id) @safe;
 }
 
 class MongoDBEventStore : EventStore
 {
 public:
-    Event getEvent(BsonObjectID id)
+    Event getEvent(BsonObjectID id) @safe
     {
         return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
             .findOne(["_id" : id]).deserializeBson!Event;
     }
 
-    InputRange!Event getAllEvents()
+    InputRange!Event getAllEvents() @safe
     {
         return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
             .find().map!(deserializeBson!Event).inputRangeObject;
     }
 
-    void addEvent(Event event)
+    void addEvent(Event event) @safe
     {
         if (!event.id.valid)
             event.id = BsonObjectID.generate;
@@ -44,7 +44,7 @@ public:
             .insert(event.serializeToBson);
     }
 
-    InputRange!Event getEventsBeginningBetween(Date begin, Date end)
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe
     {
         return mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName)
             .find(["$and" : [["date" : ["$gte" : begin.serializeToBson]], ["date"
@@ -52,7 +52,7 @@ public:
             .inputRangeObject;
     }
 
-    void removeEvent(BsonObjectID id)
+    void removeEvent(BsonObjectID id) @safe
     {
         mongoClient.getCollection(databaseName ~ "." ~ entriesCollectionName).remove(["_id" : id]);
     }

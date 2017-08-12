@@ -8,7 +8,7 @@ private:
     string[string] config;
 
 public:
-    this()
+    this() const @safe pure nothrow
     {
         // dfmt off
         config = ["Database name" :           "CalendarWebapp",
@@ -17,7 +17,7 @@ public:
         // dfmt on
     }
 
-    string get(string key)
+    string get(string key) const @safe pure nothrow
     {
         return config[key];
     }

@@ -7,7 +7,7 @@ import vibe.db.mongo.client : MongoClient;
 
 interface Authenticator
 {
-    bool checkUser(string username, string password);
+    bool checkUser(string username, string password) @safe;
 }
 
 class MongoDBAuthenticator : Authenticator
@@ -22,7 +22,7 @@ private:
     string usersCollectionName;
 
 public:
-    bool checkUser(string username, string password)
+    bool checkUser(string username, string password) @safe
     {
         auto users = mongoClient.getCollection(databaseName ~ "." ~ usersCollectionName);
         auto result = users.findOne(["username" : username, "password" : password]);

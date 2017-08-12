@@ -26,7 +26,7 @@ import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
     {
         if (!req.session || !req.session.isKeySet("auth"))
         {
-            () @trusted{ redirect("/login"); }();
+            redirect("/login");
             return AuthInfo.init;
         }
         return req.session.get!AuthInfo("auth");
@@ -44,7 +44,7 @@ public:
         render!("login.dt", _error);
     }
 
-    @noAuth @errorDisplay!getLogin void postLogin(string username, string password)
+    @noAuth @errorDisplay!getLogin void postLogin(string username, string password) @safe
     {
         enforce(authenticator.checkUser(username, password), "Benutzername oder Passwort ungültig");
         immutable AuthInfo authInfo = {username};
@@ -52,7 +52,7 @@ public:
         redirect("/");
     }
 
-    @anyAuth void getLogout()
+    @anyAuth void getLogout() @safe
     {
         terminateSession();
         redirect("/");
@@ -64,7 +64,7 @@ public:
     }
 
     @anyAuth @errorDisplay!getCreate void postCreate(Date begin,
-            Nullable!Date end, string description, string name, EventType type, bool shout)
+            Nullable!Date end, string description, string name, EventType type, bool shout) @safe
     {
         import std.array : replace, split;
 
@@ -79,7 +79,7 @@ public:
         redirect("/");
     }
 
-    @anyAuth void postRemove(BsonObjectID id)
+    @anyAuth void postRemove(BsonObjectID id) @safe
     {
         eventStore.removeEvent(id);
         redirect("/");
