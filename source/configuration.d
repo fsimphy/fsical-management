@@ -1,6 +1,29 @@
 module configuration;
 
-import poodinis : ValueInjector;
+import authenticator : Authenticator, MongoDBAuthenticator;
+import calendarwebapp : CalendarWebapp;
+import event : EventStore, MongoDBEventStore;
+
+import poodinis;
+
+import vibe.db.mongo.client : MongoClient;
+import vibe.db.mongo.collection : MongoCollection;
+import vibe.db.mongo.mongo : connectMongoDB;
+
+class Context : ApplicationContext
+{
+public:
+    override void registerDependencies(shared(DependencyContainer) container)
+    {
+        auto mongoClient = connectMongoDB("localhost");
+        container.register!MongoClient.existingInstance(mongoClient);
+        container.register!(EventStore, MongoDBEventStore);
+        container.register!(Authenticator, MongoDBAuthenticator);
+        container.register!CalendarWebapp;
+        container.register!(ValueInjector!string, StringInjector);
+        container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
+    }
+}
 
 class StringInjector : ValueInjector!string
 {
@@ -13,12 +36,26 @@ public:
         // dfmt off
         config = ["Database name" :           "CalendarWebapp",
                   "Users collection name":    "users",
-                  "Entries collection name" : "entries"];
+                  "Events collection name" :  "events"];
         // dfmt on
     }
 
-    string get(string key) const @safe pure nothrow
+    override string get(string key) const @safe pure nothrow
     {
         return config[key];
+    }
+}
+
+class MongoCollectionInjector : ValueInjector!MongoCollection
+{
+private:
+    @Autowire MongoClient mongoClient;
+    @Value("Database name")
+    string databaseName;
+
+public:
+    override MongoCollection get(string key) @safe
+    {
+        return mongoClient.getCollection(databaseName ~ "." ~ key);
     }
 }

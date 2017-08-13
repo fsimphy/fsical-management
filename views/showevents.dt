@@ -17,7 +17,7 @@ block content
 				td #{event.name}
 			tr
 				td desc
-				td #{event.description}
+				td.pre #{event.description}
 			tr
 				td etype
 				td #{event.type}

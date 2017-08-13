@@ -21,15 +21,15 @@ block content
 						- showerror("description");
 					tr
 						td
-							label(for="begin") Von
+							label(for="multiday") Mehrtägig
+						td
+							input#multiday(name="multiday", type="checkbox")
+					tr
+						td
+							label#beginLabel(for="begin") Datum
 						td
 							input#begin(value="", name="begin", type="date")
 						- showerror("begin");
-					tr
-						td
-							label(for="end") Bis
-						td
-							input#end(value="", name="end", type="date")
 						- showerror("end");
 					tr
 						td
@@ -55,3 +55,19 @@ block content
 							input#submitButton(type="submit", value="Ereignis erstellen")
 	- if (_error.msg && _error.field == "")
 		p.error= _error.msg
+	script(type="text/javascript").
+		document.getElementById('multiday').onclick = function() {
+			var table = document.getElementById("fieldTable");
+			var beginLabel = document.getElementById("beginLabel");
+			if ( this.checked ) {
+			var row = table.insertRow(4);
+			var cell1 = row.insertCell(0);
+			var cell2 = row.insertCell(1);
+			cell1.innerHTML = "<label for='end'>Bis</label>";
+			cell2.innerHTML = "<input id='end' value='' name='end' type='date'>";
+			beginLabel.innerHTML = "Von";
+			} else {
+				table.deleteRow(4);
+				beginLabel.innerHTML = "Datum";
+			}
+		};

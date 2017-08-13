@@ -3,7 +3,7 @@ module authenticator;
 import poodinis;
 
 import vibe.data.bson : Bson;
-import vibe.db.mongo.client : MongoClient;
+import vibe.db.mongo.collection : MongoCollection;
 
 interface Authenticator
 {
@@ -13,18 +13,12 @@ interface Authenticator
 class MongoDBAuthenticator : Authenticator
 {
 private:
-    @Autowire MongoClient mongoClient;
-
-    @Value("Database name")
-    string databaseName;
-
-    @Value("Users collection name")
-    string usersCollectionName;
+    @Value("users")
+    MongoCollection users;
 
 public:
     bool checkUser(string username, string password) @safe
     {
-        auto users = mongoClient.getCollection(databaseName ~ "." ~ usersCollectionName);
         auto result = users.findOne(["username" : username, "password" : password]);
         return result != Bson(null);
     }

@@ -72,7 +72,7 @@ public:
             enforce(end - begin >= 1.days,
                     "Mehrtägige Ereignisse müssen mindestens einen Tag dauern");
         auto event = Event(BsonObjectID.generate, begin, end, name,
-                description.replace("\r", "").split('\n'), type, shout);
+                description.replace("\r", ""), type, shout);
 
         eventStore.addEvent(event);
 

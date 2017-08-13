@@ -1,15 +1,12 @@
 module app;
 
-import authenticator : Authenticator, MongoDBAuthenticator;
 import calendarwebapp : CalendarWebapp;
-import configuration : StringInjector;
-import event : EventStore, MongoDBEventStore;
+import configuration : Context;
 
 import poodinis;
 
 import vibe.core.log : logInfo;
-import vibe.db.mongo.client : MongoClient;
-import vibe.db.mongo.mongo : connectMongoDB;
+
 import vibe.http.fileserver : serveStaticFiles;
 import vibe.http.router : URLRouter;
 import vibe.http.server : HTTPServerSettings, listenHTTP, MemorySessionStore;
@@ -17,16 +14,11 @@ import vibe.web.web : registerWebInterface;
 
 shared static this()
 {
-    auto dependencies = new shared DependencyContainer();
-    auto db = connectMongoDB("localhost");
-    dependencies.register!MongoClient.existingInstance(db);
-    dependencies.register!(EventStore, MongoDBEventStore);
-    dependencies.register!(Authenticator, MongoDBAuthenticator);
-    dependencies.register!CalendarWebapp;
-    dependencies.register!(ValueInjector!string, StringInjector);
+    auto container = new shared DependencyContainer();
+    container.registerContext!Context;
 
     auto router = new URLRouter;
-    router.registerWebInterface(dependencies.resolve!CalendarWebapp);
+    router.registerWebInterface(container.resolve!CalendarWebapp);
     router.get("*", serveStaticFiles("public"));
 
     auto settings = new HTTPServerSettings;
