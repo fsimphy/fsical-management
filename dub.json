@@ -4,14 +4,33 @@
 		"Johannes Loher"
 	],
 	"dependencies": {
-		"vibe-d": "0.8.1-rc.2",
-		"poodinis": "~>8.0.1"
+		"vibe-d": "0.8.1",
+		"poodinis": "8.0.1"
 	},
 	"description": "A simple webapplication to edit and view calendar entries",
 	"copyright": "Copyright © 2017, Johannes Loher",
 	"license": "MIT",
+	"targetType": "executable",
+    "targetPath": "generated",
+    "configurations": [
+		{
+			"name": "executable",
+			"versions": [
+				"VibeDefaultMain"
+			]
+		},
+        {
+            "name": "unittest",
+            "targetType": "executable",
+            "preBuildCommands": ["dub run unit-threaded -c gen_ut_main -- -f generated/ut.d test"],
+			"mainSourceFile": "generated/ut.d",
+			"sourcePaths": ["test"],
+            "dependencies": {
+                "unit-threaded": "0.7.30"
+            }
+        }
+    ],
 	"versions": [
-		"VibeDefaultMain",
 		"VibeUseOpenSSL11"
 	]
 }
