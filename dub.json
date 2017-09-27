@@ -4,8 +4,8 @@
 		"Johannes Loher"
 	],
 	"dependencies": {
-		"vibe-d": "0.8.1",
-		"poodinis": "8.0.1"
+		"vibe-d": "~>0.8.1",
+		"poodinis": "~>8.0.1"
 	},
 	"description": "A simple webapplication to edit and view calendar entries",
 	"copyright": "Copyright © 2017, Johannes Loher",
@@ -26,8 +26,8 @@
 			"mainSourceFile": "generated/ut.d",
 			"sourcePaths": ["test"],
             "dependencies": {
-                "unit-threaded": "0.7.30"
-            }
+                "unit-threaded": "~>0.7.31"
+			}
         }
     ],
 	"versions": [
