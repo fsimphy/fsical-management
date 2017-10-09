@@ -1,9 +1,9 @@
-module event;
+module calendarwebapp.event;
 
 import poodinis;
 
 import std.algorithm : map;
-import std.datetime.date : Date;
+import std.datetime : Date;
 import std.range.interfaces : InputRange, inputRangeObject;
 import std.typecons : Nullable;
 
@@ -20,7 +20,7 @@ interface EventStore
     void removeEvent(BsonObjectID id) @safe;
 }
 
-class MongoDBEventStore : EventStore
+class MongoDBEventStore(Collection = MongoCollection) : EventStore
 {
 public:
     Event getEvent(BsonObjectID id) @safe
@@ -55,7 +55,7 @@ public:
 
 private:
     @Value("events")
-    MongoCollection events;
+    Collection events;
 }
 
 enum EventType

@@ -1,4 +1,4 @@
-module authenticator;
+module calendarwebapp.authenticator;
 
 import poodinis;
 
@@ -10,11 +10,11 @@ interface Authenticator
     bool checkUser(string username, string password) @safe;
 }
 
-class MongoDBAuthenticator : Authenticator
+class MongoDBAuthenticator(Collection = MongoCollection) : Authenticator
 {
 private:
     @Value("users")
-    MongoCollection users;
+    Collection users;
 
 public:
     bool checkUser(string username, string password) @safe

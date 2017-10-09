@@ -1,7 +1,7 @@
-module app;
+module calendarwebapp.app;
 
-import calendarwebapp : CalendarWebapp;
-import configuration : Context;
+import calendarwebapp.calendarwebapp : CalendarWebapp;
+import calendarwebapp.configuration : Context;
 
 import poodinis;
 

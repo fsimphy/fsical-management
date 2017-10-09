@@ -1,8 +1,8 @@
-module configuration;
+module calendarwebapp.configuration;
 
-import authenticator : Authenticator, MongoDBAuthenticator;
-import calendarwebapp : CalendarWebapp;
-import event : EventStore, MongoDBEventStore;
+import calendarwebapp.authenticator : Authenticator, MongoDBAuthenticator;
+import calendarwebapp.calendarwebapp : CalendarWebapp;
+import calendarwebapp.event : EventStore, MongoDBEventStore;
 
 import poodinis;
 
@@ -17,8 +17,8 @@ public:
     {
         auto mongoClient = connectMongoDB("localhost");
         container.register!MongoClient.existingInstance(mongoClient);
-        container.register!(EventStore, MongoDBEventStore);
-        container.register!(Authenticator, MongoDBAuthenticator);
+        container.register!(EventStore, MongoDBEventStore!());
+        container.register!(Authenticator, MongoDBAuthenticator!());
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
         container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
