@@ -1,14 +1,13 @@
-module calendarwebapp;
+module calendarwebapp.calendarwebapp;
 
-import authenticator : Authenticator, AuthInfo;
+import calendarwebapp.authenticator : Authenticator, AuthInfo;
+import calendarwebapp.event;
 
 import core.time : days;
 
-import event;
-
 import poodinis;
 
-import std.datetime.date : Date;
+import std.datetime : Date;
 import std.exception : enforce;
 import std.typecons : Nullable;
 
@@ -22,7 +21,7 @@ import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
 
 @requiresAuth class CalendarWebapp
 {
-    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse res) @safe
+    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse) @safe
     {
         if (!req.session || !req.session.isKeySet("auth"))
         {
