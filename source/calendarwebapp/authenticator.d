@@ -2,7 +2,6 @@ module calendarwebapp.authenticator;
 
 import poodinis;
 
-import vibe.data.bson : Bson;
 import vibe.db.mongo.collection : MongoCollection;
 
 interface Authenticator
@@ -19,8 +18,15 @@ private:
 public:
     bool checkUser(string username, string password) @safe
     {
-        auto result = users.findOne(["username" : username, "password" : password]);
-        return result != Bson(null);
+        import botan.passhash.bcrypt : checkBcrypt;
+        import vibe.data.bson : Bson;
+
+        auto result = users.findOne(["username" : username]);
+        /* checkBcrypt should be called using vibe.core.concurrency.async to
+           avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
+           blocking this */
+        return (result != Bson(null)) && (() @trusted => checkBcrypt(password,
+                result["password"].get!string))();
     }
 }
 
