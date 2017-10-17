@@ -29,6 +29,7 @@
 			"targetType": "executable",
 			"preBuildCommands": ["dub run unit-threaded -c gen_ut_main -- -f generated/ut.d test"],
 			"mainSourceFile": "generated/ut.d",
+			"excludedSourceFiles": ["source/calendarwebapp/app.d"],
 			"sourcePaths": ["test"],
 			"dependencies": {
 				"unit-threaded": "~>0.7.31"
