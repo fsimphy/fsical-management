@@ -19,10 +19,7 @@
 	"targetPath": "generated",
 	"configurations": [
 		{
-			"name": "executable",
-			"versions": [
-				"VibeDefaultMain"
-			]
+			"name": "executable"
 		},
 		{
 			"name": "unittest",
