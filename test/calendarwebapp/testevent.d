@@ -38,7 +38,7 @@ public:
     }
 }
 
-@("getEventMongoDBEventStore.getEvent failure")
+@("MongoDBEventStore.getEvent failure")
 @system unittest
 {
     auto collection = mock!Collection;
