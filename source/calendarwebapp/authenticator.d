@@ -54,12 +54,12 @@ struct AuthInfo
     string passwordHash;
     Role role;
 
-    bool isUser()
+    bool isUser() const pure @safe nothrow
     {
         return role == Role.User;
     }
 
-    bool isAdmin()
+    bool isAdmin() const pure @safe nothrow
     {
         return role == Role.Admin;
     }

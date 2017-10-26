@@ -31,7 +31,7 @@ public:
     }
 }
 
-@("Test MongoDBAuthenticator")
+@("MongoDBAuthenticator.checkUser")
 @system unittest
 {
     auto collection = mock!Collection;
@@ -51,4 +51,36 @@ public:
     authenticator.checkUser("", "").isNull.shouldBeTrue;
     authenticator.checkUser("foo", "bar").isNull.shouldBeFalse;
     authenticator.checkUser("foo", "baz").isNull.shouldBeTrue;
+}
+
+@("AuthInfo.isUser success")
+@safe unittest
+{
+    AuthInfo auth;
+    auth.role = Role.User;
+    auth.isUser.shouldBeTrue;
+}
+
+@("AuthInfo.isUser failure")
+@safe unittest
+{
+    AuthInfo auth;
+    auth.role = Role.Admin;
+    auth.isUser.shouldBeFalse;
+}
+
+@("AuthInfo.isAdmin success")
+@safe unittest
+{
+    AuthInfo auth;
+    auth.role = Role.Admin;
+    auth.isAdmin.shouldBeTrue;
+}
+
+@("AuthInfo.isAdmin failure")
+@safe unittest
+{
+    AuthInfo auth;
+    auth.role = Role.User;
+    auth.isAdmin.shouldBeFalse;
 }
