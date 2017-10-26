@@ -45,9 +45,9 @@ public:
 
     @noAuth @errorDisplay!getLogin void postLogin(string username, string password) @safe
     {
-        enforce(authenticator.checkUser(username, password), "Benutzername oder Passwort ungültig");
-        immutable AuthInfo authInfo = {username};
-        auth = authInfo;
+        auto authInfo = authenticator.checkUser(username, password);
+        enforce(!authInfo.isNull, "Benutzername oder Passwort ungültig");
+        auth = authInfo.get;
         redirect("/");
     }
 

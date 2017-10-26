@@ -41,13 +41,14 @@ public:
     container.register!(Authenticator, MongoDBAuthenticator!(Collection))(
             RegistrationOption.doNotAddConcreteTypeRegistration);
 
-    auto userBson = Bson(["_id" : Bson(BsonObjectID.fromString("5988ef4ae6c19089a1a53b79")), "username" : Bson("foo"),
-            "password" : Bson("$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO")]);
+    auto userBson = Bson(["_id" : Bson(BsonObjectID.fromString("5988ef4ae6c19089a1a53b79")),
+            "username" : Bson("foo"), "passwordHash"
+            : Bson("$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO"), "role" : Bson(1)]);
 
     collection.returnValue!"findOne"(Bson(null), userBson, userBson);
 
     auto authenticator = container.resolve!(Authenticator);
-    authenticator.checkUser("", "").shouldBeFalse;
-    authenticator.checkUser("foo", "bar").shouldBeTrue;
-    authenticator.checkUser("foo", "baz").shouldBeFalse;
+    authenticator.checkUser("", "").isNull.shouldBeTrue;
+    authenticator.checkUser("foo", "bar").isNull.shouldBeFalse;
+    authenticator.checkUser("foo", "baz").isNull.shouldBeTrue;
 }
