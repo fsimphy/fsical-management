@@ -7,3 +7,4 @@ __test__*__
 calendar-webapp*
 events.json
 dub.selections.json
+generated/*
