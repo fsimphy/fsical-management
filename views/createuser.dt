@@ -29,4 +29,4 @@ block content
 				tfoot
 					tr
 						td(colspan="2")
-							input#submitButton(type="submit", value="Ereignis erstellen")
+							input#submitButton(type="submit", value="Benutzer erstellen")

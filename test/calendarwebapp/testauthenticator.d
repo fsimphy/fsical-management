@@ -46,7 +46,7 @@ public:
 
     auto userBson = Bson(["_id" : Bson(BsonObjectID.fromString("5988ef4ae6c19089a1a53b79")),
             "username" : Bson("foo"), "passwordHash"
-            : Bson("$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO"), "role" : Bson(1)]);
+            : Bson("$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO"), "privilege" : Bson(1)]);
 
     collection.returnValue!"findOne"(Bson(null), userBson, userBson);
 
@@ -60,7 +60,7 @@ public:
 @safe unittest
 {
     AuthInfo auth;
-    auth.role = Role.User;
+    auth.privilege = Privilege.User;
     auth.isUser.shouldBeTrue;
 }
 
@@ -68,7 +68,7 @@ public:
 @safe unittest
 {
     AuthInfo auth;
-    auth.role = Role.Admin;
+    auth.privilege = Privilege.None;
     auth.isUser.shouldBeFalse;
 }
 
@@ -76,7 +76,7 @@ public:
 @safe unittest
 {
     AuthInfo auth;
-    auth.role = Role.Admin;
+    auth.privilege = Privilege.Admin;
     auth.isAdmin.shouldBeTrue;
 }
 
@@ -84,6 +84,22 @@ public:
 @safe unittest
 {
     AuthInfo auth;
-    auth.role = Role.User;
+    auth.privilege = Privilege.None;
     auth.isAdmin.shouldBeFalse;
+}
+
+@("AuthInfo.isNone success")
+@safe unittest
+{
+    AuthInfo auth;
+    auth.privilege = Privilege.None;
+    auth.isNone.shouldBeTrue;
+}
+
+@("AuthInfo.isNone failure")
+@safe unittest
+{
+    AuthInfo auth;
+    auth.privilege = Privilege.User;
+    auth.isNone.shouldBeFalse;
 }

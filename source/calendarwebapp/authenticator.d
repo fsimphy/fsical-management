@@ -64,8 +64,9 @@ public:
     }
 }
 
-enum Role
+enum Privilege
 {
+    None,
     User,
     Admin
 }
@@ -77,7 +78,7 @@ struct AuthInfo
     @name("_id") BsonObjectID id;
     string username;
     string passwordHash;
-    Role role;
+    Privilege privilege;
 
     mixin(generateAuthMethods);
 
@@ -89,12 +90,12 @@ private:
         import std.traits : EnumMembers;
 
         string ret;
-        foreach (member; EnumMembers!Role)
+        foreach (member; EnumMembers!Privilege)
         {
             ret ~= q{
                 bool is%s() const pure @safe nothrow
                 {
-                    return role == Role.%s;
+                    return privilege == Privilege.%s;
                 }
             }.format(member.to!string, member.to!string);
         }

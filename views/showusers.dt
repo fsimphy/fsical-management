@@ -10,8 +10,8 @@ block content
 				td username
 				td #{user.username}
 			tr
-				td role
-				td #{user.role}
+				td privilege
+				td #{user.privilege}
 		form(action="/removeuser", method="post")
 			input#id(value="#{user.id}", name="id", type="hidden")
 			input#submitButton(type="submit", value="Entfernen")

@@ -1,12 +1,14 @@
-nav
-	ul
-		li
-			a(href='/') Home
-		li
-			a(href='/createevent') Ereignis erstellen
-		li
-			a(href='/users') Benutzerliste
-		li
-			a(href='/createuser') Benutzer erstellen
-		li
-			a(href='/logout') Ausloggen
+- if(!authInfo.isNone())
+	nav
+		ul
+			li
+				a(href='/') Home
+			li
+				a(href='/createevent') Ereignis erstellen
+			- if(authInfo.isAdmin())
+				li
+					a(href='/users') Benutzerliste
+				li
+					a(href='/createuser') Benutzer erstellen
+			li
+				a(href='/logout') Ausloggen
