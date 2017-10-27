@@ -54,13 +54,26 @@ struct AuthInfo
     string passwordHash;
     Role role;
 
-    bool isUser() const pure @safe nothrow
+    mixin(generateAuthMethods);
+
+private:
+    static string generateAuthMethods() pure @safe
     {
-        return role == Role.User;
+        import std.conv : to;
+        import std.format : format;
+        import std.traits : EnumMembers;
+
+        string ret;
+        foreach (member; EnumMembers!Role)
+        {
+            ret ~= q{
+                bool is%s() const pure @safe nothrow
+                {
+                    return role == Role.%s;
+                }
+            }.format(member.to!string, member.to!string);
+        }
+        return ret;
     }
 
-    bool isAdmin() const pure @safe nothrow
-    {
-        return role == Role.Admin;
-    }
 }
