@@ -1,5 +1,7 @@
 module calendarwebapp.authenticator;
 
+import calendarwebapp.passhash : PasswordHasher;
+
 import poodinis;
 
 import std.range : InputRange;
@@ -21,6 +23,7 @@ class MongoDBAuthenticator(Collection = MongoCollection) : Authenticator
 private:
     @Value("users")
     Collection users;
+    @Autowire PasswordHasher passwordHasher;
 
 public:
     Nullable!AuthInfo checkUser(string username, string password) @safe
@@ -28,13 +31,13 @@ public:
         import botan.passhash.bcrypt : checkBcrypt;
 
         auto result = users.findOne(["username" : username]);
-        /* checkBcrypt should be called using vibe.core.concurrency.async to
+        /* checkHash should be called using vibe.core.concurrency.async to
            avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
            blocking this */
         if (result != Bson(null))
         {
             auto authInfo = result.deserializeBson!AuthInfo;
-            if ((()@trusted => checkBcrypt(password, authInfo.passwordHash))())
+            if (passwordHasher.checkHash(password, authInfo.passwordHash))
             {
                 return authInfo.nullable;
             }

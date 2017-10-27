@@ -6,6 +6,7 @@ import botan.rng.rng : RandomNumberGenerator;
 import calendarwebapp.authenticator : Authenticator, MongoDBAuthenticator;
 import calendarwebapp.calendarwebapp : CalendarWebapp;
 import calendarwebapp.event : EventStore, MongoDBEventStore;
+import calendarwebapp.passhash : BcryptPasswordHasher, PasswordHasher;
 
 import poodinis;
 
@@ -22,6 +23,7 @@ public:
         container.register!MongoClient.existingInstance(mongoClient);
         container.register!(EventStore, MongoDBEventStore!());
         container.register!(Authenticator, MongoDBAuthenticator!());
+        container.register!(PasswordHasher, BcryptPasswordHasher);
         container.register!(RandomNumberGenerator, AutoSeededRNG);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);

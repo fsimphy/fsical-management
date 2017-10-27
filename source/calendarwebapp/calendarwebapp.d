@@ -1,9 +1,8 @@
 module calendarwebapp.calendarwebapp;
 
-import botan.rng.rng : RandomNumberGenerator;
-
 import calendarwebapp.authenticator;
 import calendarwebapp.event;
+import calendarwebapp.passhash : PasswordHasher;
 
 import core.time : days;
 
@@ -108,12 +107,10 @@ public:
     }
 
     @auth(Role.admin) @errorDisplay!getCreateuser void postCreateuser(string username,
-            string password, Privilege role)
+            string password, Privilege role) @safe
     {
-        import botan.passhash.bcrypt;
-
         authenticator.addUser(AuthInfo(BsonObjectID.generate, username,
-                generateBcrypt(password, rng, 10), role));
+                passwordHasher.generateHash(password), role));
         redirect("/users");
     }
 
@@ -129,5 +126,5 @@ private:
 
     @Autowire EventStore eventStore;
     @Autowire Authenticator authenticator;
-    @Autowire RandomNumberGenerator rng;
+    @Autowire PasswordHasher passwordHasher;
 }
