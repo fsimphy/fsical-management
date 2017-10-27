@@ -1,6 +1,8 @@
 module calendarwebapp.calendarwebapp;
 
-import calendarwebapp.authenticator : Authenticator, AuthInfo;
+import botan.rng.rng : RandomNumberGenerator;
+
+import calendarwebapp.authenticator : Authenticator, AuthInfo, Privilege = Role;
 import calendarwebapp.event;
 
 import core.time : days;
@@ -23,12 +25,12 @@ import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
 {
     @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse) @safe
     {
-        if (!req.session || !req.session.isKeySet("auth"))
+        if (!req.session || !req.session.isKeySet("authInfo"))
         {
             redirect("/login");
             return AuthInfo.init;
         }
-        return req.session.get!AuthInfo("auth");
+        return req.session.get!AuthInfo("authInfo");
     }
 
 public:
@@ -47,7 +49,7 @@ public:
     {
         auto authInfo = authenticator.checkUser(username, password);
         enforce(!authInfo.isNull, "Benutzername oder Passwort ungültig");
-        auth = authInfo.get;
+        this.authInfo = authInfo.get;
         redirect("/");
     }
 
@@ -57,12 +59,12 @@ public:
         redirect("/");
     }
 
-    @anyAuth void getCreate(ValidationErrorData _error = ValidationErrorData.init)
+    @anyAuth void getCreateevent(ValidationErrorData _error = ValidationErrorData.init)
     {
-        render!("create.dt", _error);
+        render!("createevent.dt", _error);
     }
 
-    @anyAuth @errorDisplay!getCreate void postCreate(Date begin,
+    @anyAuth @errorDisplay!getCreateevent void postCreateevent(Date begin,
             Nullable!Date end, string description, string name, EventType type, bool shout) @safe
     {
         import std.array : replace, split;
@@ -78,10 +80,37 @@ public:
         redirect("/");
     }
 
-    @anyAuth void postRemove(BsonObjectID id) @safe
+    @anyAuth void postRemoveevent(BsonObjectID id) @safe
     {
         eventStore.removeEvent(id);
         redirect("/");
+    }
+
+    @auth(Role.admin) void getUsers()
+    {
+        auto users = authenticator.getAllUsers;
+        render!("showusers.dt", users);
+    }
+
+    @auth(Role.admin) void postRemoveuser(BsonObjectID id) @safe
+    {
+        authenticator.removeUser(id);
+        redirect("/users");
+    }
+
+    @auth(Role.admin) void getCreateuser(ValidationErrorData _error = ValidationErrorData.init)
+    {
+        render!("createuser.dt", _error);
+    }
+
+    @auth(Role.admin) @errorDisplay!getCreateuser void postCreateuser(string username,
+            string password, Privilege role)
+    {
+        import botan.passhash.bcrypt;
+
+        authenticator.addUser(AuthInfo(BsonObjectID.generate, username,
+                generateBcrypt(password, rng, 10), role));
+        redirect("/users");
     }
 
 private:
@@ -91,8 +120,9 @@ private:
         string field;
     }
 
-    SessionVar!(AuthInfo, "auth") auth;
+    SessionVar!(AuthInfo, "authInfo") authInfo;
 
     @Autowire EventStore eventStore;
     @Autowire Authenticator authenticator;
+    @Autowire RandomNumberGenerator rng;
 }

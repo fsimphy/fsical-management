@@ -1,0 +1,18 @@
+extends layout.dt
+block content
+	h1 Users
+	- foreach (user; users)
+		table
+			tr
+				td id
+				td #{user.id}
+			tr
+				td username
+				td #{user.username}
+			tr
+				td role
+				td #{user.role}
+		form(action="/removeuser", method="post")
+			input#id(value="#{user.id}", name="id", type="hidden")
+			input#submitButton(type="submit", value="Entfernen")
+		hr

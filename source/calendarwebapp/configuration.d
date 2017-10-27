@@ -1,5 +1,8 @@
 module calendarwebapp.configuration;
 
+import botan.rng.auto_rng : AutoSeededRNG;
+import botan.rng.rng : RandomNumberGenerator;
+
 import calendarwebapp.authenticator : Authenticator, MongoDBAuthenticator;
 import calendarwebapp.calendarwebapp : CalendarWebapp;
 import calendarwebapp.event : EventStore, MongoDBEventStore;
@@ -19,6 +22,7 @@ public:
         container.register!MongoClient.existingInstance(mongoClient);
         container.register!(EventStore, MongoDBEventStore!());
         container.register!(Authenticator, MongoDBAuthenticator!());
+        container.register!(RandomNumberGenerator, AutoSeededRNG);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
         container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);

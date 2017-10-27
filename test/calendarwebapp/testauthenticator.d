@@ -11,7 +11,10 @@ import vibe.data.bson : Bson, BsonObjectID;
 
 interface Collection
 {
+    Bson[] find() @safe;
     Bson findOne(string[string] query) @safe;
+    void insert(Bson document) @safe;
+    void remove(BsonObjectID[string] selector) @safe;
 }
 
 class CollectionInjector : ValueInjector!Collection

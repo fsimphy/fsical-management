@@ -2,14 +2,18 @@ module calendarwebapp.authenticator;
 
 import poodinis;
 
+import std.range : InputRange;
 import std.typecons : nullable, Nullable;
 
-import vibe.data.bson : Bson, BsonObjectID, deserializeBson;
+import vibe.data.bson;
 import vibe.db.mongo.collection : MongoCollection;
 
 interface Authenticator
 {
     Nullable!AuthInfo checkUser(string username, string password) @safe;
+    void addUser(AuthInfo authInfo) @safe;
+    InputRange!AuthInfo getAllUsers() @safe;
+    void removeUser(BsonObjectID id) @safe;
 }
 
 class MongoDBAuthenticator(Collection = MongoCollection) : Authenticator
@@ -35,7 +39,28 @@ public:
                 return authInfo.nullable;
             }
         }
-        return Nullable!AuthInfo();
+        return Nullable!AuthInfo.init;
+    }
+
+    void addUser(AuthInfo authInfo) @safe
+    {
+        if (!authInfo.id.valid)
+            authInfo.id = BsonObjectID.generate;
+
+        users.insert(authInfo.serializeToBson);
+    }
+
+    InputRange!AuthInfo getAllUsers() @safe
+    {
+        import std.algorithm : map;
+        import std.range : inputRangeObject;
+
+        return users.find().map!(deserializeBson!AuthInfo).inputRangeObject;
+    }
+
+    void removeUser(BsonObjectID id) @safe
+    {
+        users.remove(["_id" : id]);
     }
 }
 
@@ -75,5 +100,4 @@ private:
         }
         return ret;
     }
-
 }
