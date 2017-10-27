@@ -5,7 +5,7 @@ import poodinis;
 interface PasswordHasher
 {
     string generateHash(in string password) @safe;
-    bool checkHash(in string password, in string hash) @safe;
+    bool checkHash(in string password, in string hash) const @safe;
 }
 
 class BcryptPasswordHasher : PasswordHasher
@@ -18,7 +18,7 @@ class BcryptPasswordHasher : PasswordHasher
         return (() @trusted => generateBcrypt(password, rng, cost))();
     }
 
-    bool checkHash(in string password, in string hash) @safe
+    bool checkHash(in string password, in string hash) const @safe
     {
         return (()@trusted => checkBcrypt(password, hash))();
     }
@@ -26,4 +26,17 @@ class BcryptPasswordHasher : PasswordHasher
 private:
     @Autowire RandomNumberGenerator rng;
     enum cost = 10;
+}
+
+class StubPasswordHasher : PasswordHasher
+{
+    string generateHash(in string password) const @safe pure nothrow
+    {
+        return password;
+    }
+
+    bool checkHash(in string password, in string hash) const @safe pure nothrow
+    {
+        return password == hash;
+    }
 }

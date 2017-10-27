@@ -1,6 +1,7 @@
 module test.calendarwebapp.testauthenticator;
 
 import calendarwebapp.authenticator;
+import calendarwebapp.passhash : PasswordHasher, StubPasswordHasher;
 
 import poodinis;
 
@@ -43,10 +44,12 @@ public:
     container.resolve!CollectionInjector.add("users", collection);
     container.register!(Authenticator, MongoDBAuthenticator!(Collection))(
             RegistrationOption.doNotAddConcreteTypeRegistration);
+    container.register!(PasswordHasher, StubPasswordHasher);
 
     auto userBson = Bson(["_id" : Bson(BsonObjectID.fromString("5988ef4ae6c19089a1a53b79")),
             "username" : Bson("foo"), "passwordHash"
-            : Bson("$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO"), "privilege" : Bson(1)]);
+            : Bson("bar"),
+            "privilege" : Bson(1)]);
 
     collection.returnValue!"findOne"(Bson(null), userBson, userBson);
 
