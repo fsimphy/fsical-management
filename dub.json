@@ -35,5 +35,8 @@
 	],
 	"versions": [
 		"VibeUseOpenSSL11"
+	],
+	"lflags": [
+		"-fuse-ld=gold"
 	]
 }
