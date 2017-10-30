@@ -4,6 +4,7 @@
 		"Johannes Loher"
 	],
 	"dependencies": {
+		"mysql-native": "~>1.1.2",
 		"botan": "~>1.12.9",
 		"vibe-d": "~>0.8.1",
 		"vibe-d:tls": "~>0.8.1",

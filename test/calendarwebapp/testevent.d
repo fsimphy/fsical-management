@@ -10,15 +10,15 @@ import std.algorithm : map;
 import unit_threaded.mock;
 import unit_threaded.should;
 
-import vibe.data.bson : Bson, BsonObjectID, serializeToBson;
+import vibe.data.bson : Bson, serializeToBson;
 
 interface Collection
 {
-    Bson findOne(BsonObjectID[string] query) @safe;
+    Bson findOne(string[string] query) @safe;
     Bson[] find() @safe;
     Bson[] find(Bson[string][string][][string] query) @safe;
     void insert(Bson document) @safe;
-    void remove(BsonObjectID[string] selector) @safe;
+    void remove(string[string] selector) @safe;
 }
 
 class CollectionInjector : ValueInjector!Collection
@@ -50,7 +50,7 @@ public:
 
     collection.returnValue!"findOne"(Bson(null));
 
-    auto id = BsonObjectID.fromString("599090de97355141140fc698");
+    auto id = "599090de97355141140fc698";
     collection.expect!"findOne"(["_id" : id]);
 
     auto eventStore = container.resolve!(EventStore);
@@ -68,7 +68,7 @@ public:
     container.register!(EventStore, MongoDBEventStore!(Collection))(
             RegistrationOption.doNotAddConcreteTypeRegistration);
 
-    auto id = BsonObjectID.fromString("599090de97355141140fc698");
+    auto id = "599090de97355141140fc698";
     Event event;
     event.id = id;
 
@@ -91,7 +91,7 @@ public:
     container.register!(EventStore, MongoDBEventStore!(Collection))(
             RegistrationOption.doNotAddConcreteTypeRegistration);
 
-    auto id = BsonObjectID.fromString("599090de97355141140fc698");
+    auto id = "599090de97355141140fc698";
     Event event;
     event.id = id;
     auto serializedEvent = event.serializeToBson;
@@ -121,7 +121,7 @@ public:
     container.register!(EventStore, MongoDBEventStore!(Collection))(
             RegistrationOption.doNotAddConcreteTypeRegistration);
 
-    auto id = BsonObjectID.fromString("599090de97355141140fc698");
+    auto id = "599090de97355141140fc698";
     Event event;
     event.id = id;
 
@@ -151,8 +151,7 @@ public:
             RegistrationOption.doNotAddConcreteTypeRegistration);
 
     immutable ids = [
-        BsonObjectID.fromString("599090de97355141140fc698"), BsonObjectID.fromString("599090de97355141140fc698"),
-        BsonObjectID.fromString("59cb9ad8fc0ba5751c0df02b")
+        "599090de97355141140fc698", "599090de97355141140fc698", "59cb9ad8fc0ba5751c0df02b"
     ];
     auto events = ids.map!(id => Event(id)).array;
 

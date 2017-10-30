@@ -63,22 +63,21 @@ public:
     }
 
     @anyAuth @errorDisplay!getCreate void postCreate(Date begin,
-            Nullable!Date end, string description, string name, EventType type, bool shout) @safe
+            Nullable!Date end, string description, string name, EventType type, bool shout)
     {
         import std.array : replace, split;
 
         if (!end.isNull)
             enforce(end - begin >= 1.days,
                     "Mehrtägige Ereignisse müssen mindestens einen Tag dauern");
-        auto event = Event(BsonObjectID.generate, begin, end, name,
-                description.replace("\r", ""), type, shout);
+        auto event = Event("", begin, end, name, description.replace("\r", ""), type, shout);
 
         eventStore.addEvent(event);
 
         redirect("/");
     }
 
-    @anyAuth void postRemove(BsonObjectID id) @safe
+    @anyAuth void postRemove(string id)
     {
         eventStore.removeEvent(id);
         redirect("/");
