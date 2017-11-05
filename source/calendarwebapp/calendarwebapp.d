@@ -1,7 +1,8 @@
 module calendarwebapp.calendarwebapp;
 
-import calendarwebapp.authenticator : Authenticator, AuthInfo;
+import calendarwebapp.authenticator;
 import calendarwebapp.event;
+import calendarwebapp.passhash : PasswordHasher;
 
 import core.time : days;
 
@@ -23,46 +24,48 @@ import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
 {
     @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse) @safe
     {
-        if (!req.session || !req.session.isKeySet("auth"))
-        {
+        if (authInfo.value.isNone)
             redirect("/login");
-            return AuthInfo.init;
-        }
-        return req.session.get!AuthInfo("auth");
+
+        return authInfo.value;
     }
 
 public:
-    @anyAuth void index()
+    @auth(Role.user | Role.admin) void index()
     {
         auto events = eventStore.getAllEvents();
-        render!("showevents.dt", events);
+        auto authInfo = this.authInfo.value;
+        render!("showevents.dt", events, authInfo);
     }
 
     @noAuth void getLogin(string _error = null)
     {
-        render!("login.dt", _error);
+        auto authInfo = this.authInfo.value;
+        render!("login.dt", _error, authInfo);
     }
 
     @noAuth @errorDisplay!getLogin void postLogin(string username, string password) @safe
     {
-        enforce(authenticator.checkUser(username, password), "Benutzername oder Passwort ungültig");
-        immutable AuthInfo authInfo = {username};
-        auth = authInfo;
+        auto authInfo = authenticator.checkUser(username, password);
+        enforce(!authInfo.isNull, "Benutzername oder Passwort ungültig");
+        this.authInfo = authInfo.get;
         redirect("/");
     }
 
-    @anyAuth void getLogout() @safe
+    @auth(Role.user | Role.admin) void getLogout() @safe
     {
         terminateSession();
         redirect("/");
     }
 
-    @anyAuth void getCreate(ValidationErrorData _error = ValidationErrorData.init)
+    @auth(Role.user | Role.admin) void getCreateevent(
+            ValidationErrorData _error = ValidationErrorData.init)
     {
-        render!("create.dt", _error);
+        auto authInfo = this.authInfo.value;
+        render!("createevent.dt", _error, authInfo);
     }
 
-    @anyAuth @errorDisplay!getCreate void postCreate(Date begin,
+    @auth(Role.user | Role.admin) @errorDisplay!getCreateevent void postCreateevent(Date begin,
             Nullable!Date end, string description, string name, EventType type, bool shout) @safe
     {
         import std.array : replace, split;
@@ -78,10 +81,37 @@ public:
         redirect("/");
     }
 
-    @anyAuth void postRemove(BsonObjectID id) @safe
+    @auth(Role.user | Role.admin) void postRemoveevent(BsonObjectID id) @safe
     {
         eventStore.removeEvent(id);
         redirect("/");
+    }
+
+    @auth(Role.admin) void getUsers()
+    {
+        auto users = authenticator.getAllUsers;
+        auto authInfo = this.authInfo.value;
+        render!("showusers.dt", users, authInfo);
+    }
+
+    @auth(Role.admin) void postRemoveuser(BsonObjectID id) @safe
+    {
+        authenticator.removeUser(id);
+        redirect("/users");
+    }
+
+    @auth(Role.admin) void getCreateuser(ValidationErrorData _error = ValidationErrorData.init)
+    {
+        auto authInfo = this.authInfo.value;
+        render!("createuser.dt", _error, authInfo);
+    }
+
+    @auth(Role.admin) @errorDisplay!getCreateuser void postCreateuser(string username,
+            string password, Privilege role) @safe
+    {
+        authenticator.addUser(AuthInfo(BsonObjectID.generate, username,
+                passwordHasher.generateHash(password), role));
+        redirect("/users");
     }
 
 private:
@@ -91,8 +121,10 @@ private:
         string field;
     }
 
-    SessionVar!(AuthInfo, "auth") auth;
+    SessionVar!(AuthInfo, "authInfo") authInfo = AuthInfo(BsonObjectID.init,
+            string.init, string.init, Privilege.None);
 
     @Autowire EventStore eventStore;
     @Autowire Authenticator authenticator;
+    @Autowire PasswordHasher passwordHasher;
 }
