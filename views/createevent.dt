@@ -3,7 +3,7 @@ block content
 	- void showerror(string field = null)
 		- if (_error.msg && _error.field == field)
 			td.error= _error.msg
-	form(action="/create", method="post")
+	form(action="/createevent", method="post")
 		fieldset(name="eventFields")
 			table
 				tbody#fieldTable

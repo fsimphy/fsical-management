@@ -129,8 +129,6 @@ private:
 
     Event toEvent(Row r)
     {
-        import std.conv : to;
-
         Event event;
         event.id = r[0].get!uint.to!string;
         event.begin = r[1].get!Date;

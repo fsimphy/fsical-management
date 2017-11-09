@@ -4,7 +4,8 @@ USE CalendarWebapp;
 CREATE TABLE users (
   id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,
   username CHAR(30) NOT NULL UNIQUE,
-  password CHAR(60) NOT NULL,
+  passwordHash CHAR(60) NOT NULL,
+  privilege TINYINT UNSIGNED NOT NULL,
   PRIMARY KEY (id)
 );
 
@@ -19,5 +20,5 @@ CREATE TABLE events (
   PRIMARY KEY (id)
 );
 
-INSERT INTO users (username, password) VALUES ('foo',
-'$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO');
+INSERT INTO users (username, passwordHash, privilege) VALUES ('foo',
+'$2a$10$9LBqOZV99ARiE4Nx.2b7GeYfqk2.0A32PWGu2cRGyW2hRJ0xeDfnO', 2);

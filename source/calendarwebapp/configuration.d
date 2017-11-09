@@ -1,8 +1,13 @@
 module calendarwebapp.configuration;
 
-import calendarwebapp.authenticator : Authenticator, MongoDBAuthenticator, MySQLAuthenticator;
+import botan.rng.auto_rng : AutoSeededRNG;
+import botan.rng.rng : RandomNumberGenerator;
+
+import calendarwebapp.authenticator : Authenticator, MongoDBAuthenticator,
+    MySQLAuthenticator;
 import calendarwebapp.calendarwebapp : CalendarWebapp;
 import calendarwebapp.event : EventStore, MongoDBEventStore, MySQLEventStore;
+import calendarwebapp.passhash : BcryptPasswordHasher, PasswordHasher;
 
 import mysql : MySQLPool;
 
@@ -18,11 +23,14 @@ public:
     override void registerDependencies(shared(DependencyContainer) container)
     {
         auto mongoClient = connectMongoDB("localhost");
-        auto pool = new MySQLPool("localhost", "username", "password", "CalendarWebapp");
+        auto pool = new MySQLPool("localhost", "root", "Ilemm3Kzj", "CalendarWebapp");
         container.register!MySQLPool.existingInstance(pool);
         container.register!MongoClient.existingInstance(mongoClient);
         container.register!(EventStore, MySQLEventStore);
         container.register!(Authenticator, MySQLAuthenticator);
+
+        container.register!(PasswordHasher, BcryptPasswordHasher);
+        container.register!(RandomNumberGenerator, AutoSeededRNG);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
         container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
