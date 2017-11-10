@@ -32,6 +32,7 @@ public:
             container.register!MongoClient.existingInstance(mongoClient);
             container.register!(EventStore, MongoDBEventStore!());
             container.register!(Authenticator, MongoDBAuthenticator!());
+            container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
             logInfo("Using MongoDB as database system");
             break;
         case mysql:
@@ -51,7 +52,6 @@ public:
         container.register!(RandomNumberGenerator, AutoSeededRNG);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
-        container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
     }
 }
 
