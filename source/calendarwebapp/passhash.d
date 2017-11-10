@@ -1,7 +1,5 @@
 module calendarwebapp.passhash;
 
-import poodinis;
-
 interface PasswordHasher
 {
     string generateHash(in string password) const @safe;
@@ -23,7 +21,7 @@ class StubPasswordHasher : PasswordHasher
 
 class SHA256PasswordHasher : PasswordHasher
 {
-    import dauth;
+    import dauth : dupPassword, isSameHash, makeHash, parseHash;
     import std.digest.sha : SHA256;
 
     string generateHash(in string password) const @safe

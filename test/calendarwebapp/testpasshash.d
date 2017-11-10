@@ -2,8 +2,6 @@ module test.calendarwebapp.testpasshash;
 
 import calendarwebapp.passhash;
 
-import poodinis;
-
 import unit_threaded;
 
 @("StubPasswordHasher")
