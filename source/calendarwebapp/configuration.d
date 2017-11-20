@@ -1,12 +1,9 @@
 module calendarwebapp.configuration;
 
-import botan.rng.auto_rng : AutoSeededRNG;
-import botan.rng.rng : RandomNumberGenerator;
-
 import calendarwebapp.authenticator : Authenticator;
 import calendarwebapp.calendarwebapp : CalendarWebapp;
 import calendarwebapp.event : EventStore;
-import calendarwebapp.passhash : BcryptPasswordHasher, PasswordHasher;
+import calendarwebapp.passhash : PasswordHasher, SHA256PasswordHasher;
 
 import poodinis;
 
@@ -48,8 +45,7 @@ public:
             logInfo("Using MySQL as database system");
             break;
         }
-        container.register!(PasswordHasher, BcryptPasswordHasher);
-        container.register!(RandomNumberGenerator, AutoSeededRNG);
+        container.register!(PasswordHasher, SHA256PasswordHasher);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
     }

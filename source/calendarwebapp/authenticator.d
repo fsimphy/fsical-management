@@ -30,8 +30,6 @@ private:
 public:
     Nullable!AuthInfo checkUser(string username, string password) @safe
     {
-        import botan.passhash.bcrypt : checkBcrypt;
-
         auto result = users.findOne(["username" : username]);
         /* checkHash should be called using vibe.core.concurrency.async to
            avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
