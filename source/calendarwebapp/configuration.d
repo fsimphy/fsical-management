@@ -1,13 +1,10 @@
 module calendarwebapp.configuration;
 
-import botan.rng.auto_rng : AutoSeededRNG;
-import botan.rng.rng : RandomNumberGenerator;
-
 import calendarwebapp.authenticator : Authenticator, MongoDBAuthenticator,
     MySQLAuthenticator;
 import calendarwebapp.calendarwebapp : CalendarWebapp;
 import calendarwebapp.event : EventStore, MongoDBEventStore, MySQLEventStore;
-import calendarwebapp.passhash : BcryptPasswordHasher, PasswordHasher;
+import calendarwebapp.passhash : PasswordHasher, SHA256PasswordHasher;
 
 import mysql : MySQLPool;
 
@@ -28,9 +25,7 @@ public:
         container.register!MongoClient.existingInstance(mongoClient);
         container.register!(EventStore, MySQLEventStore);
         container.register!(Authenticator, MySQLAuthenticator);
-
-        container.register!(PasswordHasher, BcryptPasswordHasher);
-        container.register!(RandomNumberGenerator, AutoSeededRNG);
+        container.register!(PasswordHasher, SHA256PasswordHasher);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
         container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
