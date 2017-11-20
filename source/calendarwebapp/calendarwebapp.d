@@ -65,23 +65,23 @@ public:
         render!("createevent.dt", _error, authInfo);
     }
 
+
     @auth(Role.user | Role.admin) @errorDisplay!getCreateevent void postCreateevent(Date begin,
-            Nullable!Date end, string description, string name, EventType type, bool shout) @safe
+            Nullable!Date end, string description, string name, EventType type, bool shout)
     {
         import std.array : replace, split;
 
         if (!end.isNull)
             enforce(end - begin >= 1.days,
                     "Mehrtägige Ereignisse müssen mindestens einen Tag dauern");
-        auto event = Event(BsonObjectID.generate, begin, end, name,
-                description.replace("\r", ""), type, shout);
+        auto event = Event("", begin, end, name, description.replace("\r", ""), type, shout);
 
         eventStore.addEvent(event);
 
         redirect("/");
     }
 
-    @auth(Role.user | Role.admin) void postRemoveevent(BsonObjectID id) @safe
+    @auth(Role.user | Role.admin) void postRemoveevent(string id)
     {
         eventStore.removeEvent(id);
         redirect("/");
@@ -94,7 +94,7 @@ public:
         render!("showusers.dt", users, authInfo);
     }
 
-    @auth(Role.admin) void postRemoveuser(BsonObjectID id) @safe
+    @auth(Role.admin) void postRemoveuser(string id)
     {
         authenticator.removeUser(id);
         redirect("/users");
@@ -107,9 +107,9 @@ public:
     }
 
     @auth(Role.admin) @errorDisplay!getCreateuser void postCreateuser(string username,
-            string password, Privilege role) @safe
+            string password, Privilege role)
     {
-        authenticator.addUser(AuthInfo(BsonObjectID.generate, username,
+        authenticator.addUser(AuthInfo("", username,
                 passwordHasher.generateHash(password), role));
         redirect("/users");
     }
@@ -121,7 +121,7 @@ private:
         string field;
     }
 
-    SessionVar!(AuthInfo, "authInfo") authInfo = AuthInfo(BsonObjectID.init,
+    SessionVar!(AuthInfo, "authInfo") authInfo = AuthInfo("",
             string.init, string.init, Privilege.None);
 
     @Autowire EventStore eventStore;

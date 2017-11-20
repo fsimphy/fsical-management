@@ -4,7 +4,6 @@ import calendarwebapp.passhash;
 
 import poodinis;
 
-//import unit_threaded.should;
 import unit_threaded;
 
 @("BcryptPasswordHasher")
