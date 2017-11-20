@@ -15,7 +15,7 @@ interface Collection
     Bson[] find() @safe;
     Bson findOne(string[string] query) @safe;
     void insert(Bson document) @safe;
-    void remove(BsonObjectID[string] selector) @safe;
+    void remove(string[string] selector) @safe;
 }
 
 class CollectionInjector : ValueInjector!Collection
@@ -46,10 +46,8 @@ public:
             RegistrationOption.doNotAddConcreteTypeRegistration);
     container.register!(PasswordHasher, StubPasswordHasher);
 
-    auto userBson = Bson(["_id" : Bson(BsonObjectID.fromString("5988ef4ae6c19089a1a53b79")),
-            "username" : Bson("foo"), "passwordHash"
-            : Bson("bar"),
-            "privilege" : Bson(1)]);
+    auto userBson = Bson(["_id" : Bson("5988ef4ae6c19089a1a53b79"), "username"
+            : Bson("foo"), "passwordHash" : Bson("bar"), "privilege" : Bson(1)]);
 
     collection.returnValue!"findOne"(Bson(null), userBson, userBson);
 
