@@ -20,7 +20,7 @@ public:
     override void registerDependencies(shared(DependencyContainer) container)
     {
         auto mongoClient = connectMongoDB("localhost");
-        auto pool = new MySQLPool("localhost", "root", "Ilemm3Kzj", "CalendarWebapp");
+        auto pool = new MySQLPool("localhost", "username", "password", "CalendarWebapp");
         container.register!MySQLPool.existingInstance(pool);
         container.register!MongoClient.existingInstance(mongoClient);
         container.register!(EventStore, MySQLEventStore);

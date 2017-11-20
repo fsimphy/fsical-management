@@ -37,8 +37,6 @@ public:
         if (result != Bson(null))
         {
             auto authInfo = result.deserializeBson!AuthInfo;
-            import vibe.core.log : logInfo;
-            logInfo(passwordHasher.generateHash(password));
             if (passwordHasher.checkHash(password, authInfo.passwordHash))
             {
                 return authInfo.nullable;
