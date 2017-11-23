@@ -30,14 +30,15 @@ private:
 public:
     Nullable!AuthInfo checkUser(string username, string password) @safe
     {
-        auto result = users.findOne(["username" : username]);
-        /* checkHash should be called using vibe.core.concurrency.async to
-           avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
-           blocking this */
+        import vibe.core.concurrency : async;
+
+        immutable result = users.findOne(["username" : username]);
+
         if (result != Bson(null))
         {
             auto authInfo = result.deserializeBson!AuthInfo;
-            if (passwordHasher.checkHash(password, authInfo.passwordHash))
+            if ((()@trusted => async(() => passwordHasher.checkHash(password,
+                    authInfo.passwordHash)).getResult)())
             {
                 return authInfo.nullable;
             }
@@ -94,6 +95,8 @@ private:
 public:
     Nullable!AuthInfo checkUser(string username, string password) @trusted
     {
+        import vibe.core.concurrency : async;
+
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close();
@@ -107,7 +110,7 @@ public:
         if (!result.empty)
         {
             auto authInfo = toAuthInfo(result.front);
-            if (passwordHasher.checkHash(password, authInfo.passwordHash))
+            if (async(() => passwordHasher.checkHash(password, authInfo.passwordHash)).getResult)
             {
                 return authInfo.nullable;
             }
@@ -150,7 +153,7 @@ public:
 
 private:
 
-    AuthInfo toAuthInfo(Row r)
+    AuthInfo toAuthInfo(in Row r)
     {
         import std.conv : to;
 

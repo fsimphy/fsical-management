@@ -65,7 +65,6 @@ public:
         render!("createevent.dt", _error, authInfo);
     }
 
-
     @auth(Role.user | Role.admin) @errorDisplay!getCreateevent void postCreateevent(Date begin,
             Nullable!Date end, string description, string name, EventType type, bool shout)
     {
@@ -109,8 +108,10 @@ public:
     @auth(Role.admin) @errorDisplay!getCreateuser void postCreateuser(string username,
             string password, Privilege role)
     {
+        import vibe.core.concurrency : async;
+
         authenticator.addUser(AuthInfo("", username,
-                passwordHasher.generateHash(password), role));
+                async(() => passwordHasher.generateHash(password)).getResult, role));
         redirect("/users");
     }
 
@@ -121,8 +122,8 @@ private:
         string field;
     }
 
-    SessionVar!(AuthInfo, "authInfo") authInfo = AuthInfo("",
-            string.init, string.init, Privilege.None);
+    SessionVar!(AuthInfo, "authInfo") authInfo = AuthInfo("", string.init,
+            string.init, Privilege.None);
 
     @Autowire EventStore eventStore;
     @Autowire Authenticator authenticator;
