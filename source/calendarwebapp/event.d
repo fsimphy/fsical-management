@@ -17,7 +17,7 @@ interface EventStore
     Event getEvent(string id);
     InputRange!Event getAllEvents();
     void addEvent(Event);
-    /* InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe; */
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe;
     void removeEvent(string id);
 }
 
@@ -54,7 +54,7 @@ public:
     InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe
     {
         return events.find(["$and" : [["date" : ["$gte" : begin.serializeToBson]],
-                ["date" : ["$lte" : end.serializeToBson]]]]).map!(deserializeBson!Event)
+                ["date" : ["$lt" : end.serializeToBson]]]]).map!(deserializeBson!Event)
             .inputRangeObject;
     }
 
@@ -107,12 +107,16 @@ public:
         prepared.exec();
     }
 
-    /*     InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe
     {
-        return events.find(["$and" : [["date" : ["$gte" : begin.serializeToBson]],
-                ["date" : ["$lte" : end.serializeToBson]]]]).map!(deserializeBson!Event)
-            .inputRangeObject;
-    } */
+        auto cn = pool.lockConnection();
+        scope (exit)
+            cn.close;
+        auto prepared = cn.prepare(
+                "SELECT id, begin, end, name, description, type, shout FROM events WHERE begin >= ? and end < ?");
+        prepared.setArgs(begin, end);
+        return prepared.querySet.map!(r => toEvent(r)).inputRangeObject;
+    }
 
     void removeEvent(string id)
     {
