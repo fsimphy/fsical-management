@@ -9,6 +9,8 @@ import std.datetime.systime;
 
 import poodinis : Autowire;
 
+import vibe.data.serialization : name;
+
 struct DayJSONManager
 {
 private:
@@ -24,7 +26,7 @@ public:
 
     void addEvent(Event event)
     {
-        if (Interval(begin, end).contains(event.begin))
+        if (Interval!Date(begin, end).contains(event.begin))
         {
             if (event.end.isNull)
             {
@@ -32,6 +34,15 @@ public:
             }
             events[event.begin] ~= event;
         }
+    }
+
+    auto getDayData(Date date)
+    {
+        import std.exception : enforce;
+
+        enforce(Interval!Date(begin, end).contains(date));
+        return DayData(date.year, date.month, date.month.toGerString, date.day,
+                date.dayOfWeek.dayType, events[date], date.dayOfWeek.toGerString, []);
     }
 }
 
@@ -43,15 +54,24 @@ private:
 public:
     auto write() @system
     {
+        import std.algorithm : each, map;
+        import std.range : array;
         import std.format : format;
 
         immutable today = cast(Date) Clock.currTime;
         immutable todayName = "%s, %s. %s. %s".format(today.dayOfWeek.toGerString,
                 today.day, today.month.toGerString, today.year);
+        immutable todays = Todays(today.year, today.month, today.day, today.dayOfWeek, todayName);
         auto startDate = Date(today.year, today.month, 1);
         auto endDate = startDate;
         endDate.add!"months"(3);
-        return endDate;
+        auto dayJSONManager = new DayJSONManager(startDate, endDate);
+        foreach (event; eventStore.getEventsBeginningBetween(startDate, endDate))
+        {
+            dayJSONManager.addEvent(event);
+        }
+        auto trackedDays = Interval!Date(startDate, endDate).fwdRange(date => date + 1.dur!"days")
+            .map!(day => dayJSONManager.getDayData(day)).array;
     }
 
 }
@@ -64,40 +84,28 @@ string toGerString(Month m)
     {
     case jan:
         return "Januar";
-        break;
     case feb:
         return "Februar";
-        break;
     case mar:
         return "März";
-        break;
     case apr:
         return "April";
-        break;
     case may:
         return "Mai";
-        break;
     case jun:
         return "Juni";
-        break;
     case jul:
         return "Juli";
-        break;
     case aug:
         return "August";
-        break;
     case sep:
         return "September";
-        break;
     case oct:
         return "Oktober";
-        break;
     case nov:
         return "November";
-        break;
     case dec:
         return "Dezember";
-        break;
     }
 }
 
@@ -107,24 +115,68 @@ string toGerString(DayOfWeek d)
     {
     case mon:
         return "Montag";
-        break;
     case tue:
         return "Dienstag";
-        break;
     case wed:
         return "Mittwoch";
-        break;
     case thu:
         return "Donnerstag";
-        break;
     case fri:
         return "Freitag";
-        break;
     case sat:
         return "Samstag";
-        break;
     case sun:
         return "Sonntag";
-        break;
     }
+}
+
+enum DayType
+{
+    Workday,
+    Holiday,
+    Weekend
+}
+
+DayType dayType(DayOfWeek dayOfWeek)
+{
+    switch (dayOfWeek) with (DayOfWeek)
+    {
+    case sat:
+        return DayType.Weekend;
+    case sun:
+        return DayType.Holiday;
+    default:
+        return DayType.Workday;
+    }
+}
+
+struct DayData
+{
+    short year;
+    Month month;
+    string monthName;
+    ubyte day;
+    @name("daytype") DayType dayType;
+    Event[] eventList;
+    @name("wday") string weekDayName;
+    Line[] lines;
+}
+
+struct Line
+{
+}
+
+struct Todays
+{
+    short year;
+    Month month;
+    ubyte day;
+    DayOfWeek weekDay;
+    string todayName;
+}
+
+struct OutputFormat
+{
+    Todays today;
+    @name("tracked_days") DayData trackedDays;
 }

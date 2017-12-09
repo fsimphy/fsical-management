@@ -17,7 +17,7 @@ interface EventStore
     Event getEvent(string id);
     InputRange!Event getAllEvents();
     void addEvent(Event);
-    InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe;
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end);
     void removeEvent(string id);
 }
 
@@ -109,7 +109,7 @@ public:
         prepared.exec();
     }
 
-    InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end)
     {
         auto cn = pool.lockConnection();
         scope (exit)
