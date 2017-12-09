@@ -90,6 +90,7 @@ private:
 
     @Autowire MySQLPool pool;
     @Autowire PasswordHasher passwordHasher;
+    @Value("mysql.table.users") string usersTableName;
 
 public:
     Nullable!AuthInfo checkUser(string username, string password) @trusted
@@ -98,7 +99,8 @@ public:
         scope (exit)
             cn.close();
         auto prepared = cn.prepare(
-                "SELECT id, username, passwordHash, privilege FROM users WHERE username = ?");
+                "SELECT id, username, passwordHash, privilege FROM "
+                ~ usersTableName ~ " WHERE username = ?");
         prepared.setArg(0, username);
         auto result = prepared.query();
         /* checkHash should be called using vibe.core.concurrency.async to
@@ -121,7 +123,7 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "INSERT INTO users (username, passwordHash, privilege) VALUES(?, ?, ?)");
+                "INSERT INTO " ~ usersTableName ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
         prepared.setArgs(authInfo.username, authInfo.passwordHash, authInfo.privilege.to!uint);
         prepared.exec();
     }
@@ -134,7 +136,7 @@ public:
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare("SELECT id, username, passwordHash, privilege FROM users");
+        auto prepared = cn.prepare("SELECT id, username, passwordHash, privilege FROM " ~ usersTableName ~ "");
         return prepared.querySet.map!(r => toAuthInfo(r)).inputRangeObject;
     }
 
@@ -143,7 +145,7 @@ public:
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare("DELETE FROM users WHERE id = ?");
+        auto prepared = cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
         prepared.exec();
     }
