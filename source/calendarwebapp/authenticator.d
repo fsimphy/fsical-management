@@ -30,14 +30,15 @@ private:
 public:
     Nullable!AuthInfo checkUser(string username, string password) @safe
     {
-        auto result = users.findOne(["username" : username]);
-        /* checkHash should be called using vibe.core.concurrency.async to
-           avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
-           blocking this */
+        import vibe.core.concurrency : async;
+
+        immutable result = users.findOne(["username" : username]);
+
         if (result != Bson(null))
         {
             auto authInfo = result.deserializeBson!AuthInfo;
-            if (passwordHasher.checkHash(password, authInfo.passwordHash))
+            if ((()@trusted => async(() => passwordHasher.checkHash(password,
+                    authInfo.passwordHash)).getResult)())
             {
                 return authInfo.nullable;
             }
@@ -90,15 +91,19 @@ private:
 
     @Autowire MySQLPool pool;
     @Autowire PasswordHasher passwordHasher;
+    @Value("mysql.table.users") string usersTableName;
 
 public:
     Nullable!AuthInfo checkUser(string username, string password) @trusted
     {
+        import vibe.core.concurrency : async;
+
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close();
         auto prepared = cn.prepare(
-                "SELECT id, username, passwordHash, privilege FROM users WHERE username = ?");
+                "SELECT id, username, passwordHash, privilege FROM "
+                ~ usersTableName ~ " WHERE username = ?");
         prepared.setArg(0, username);
         auto result = prepared.query();
         /* checkHash should be called using vibe.core.concurrency.async to
@@ -107,7 +112,7 @@ public:
         if (!result.empty)
         {
             auto authInfo = toAuthInfo(result.front);
-            if (passwordHasher.checkHash(password, authInfo.passwordHash))
+            if (async(() => passwordHasher.checkHash(password, authInfo.passwordHash)).getResult)
             {
                 return authInfo.nullable;
             }
@@ -121,7 +126,7 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "INSERT INTO users (username, passwordHash, privilege) VALUES(?, ?, ?)");
+                "INSERT INTO " ~ usersTableName ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
         prepared.setArgs(authInfo.username, authInfo.passwordHash, authInfo.privilege.to!uint);
         prepared.exec();
     }
@@ -134,7 +139,7 @@ public:
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare("SELECT id, username, passwordHash, privilege FROM users");
+        auto prepared = cn.prepare("SELECT id, username, passwordHash, privilege FROM " ~ usersTableName ~ "");
         return prepared.querySet.map!(r => toAuthInfo(r)).inputRangeObject;
     }
 
@@ -143,14 +148,14 @@ public:
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare("DELETE FROM users WHERE id = ?");
+        auto prepared = cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
         prepared.exec();
     }
 
 private:
 
-    AuthInfo toAuthInfo(Row r)
+    AuthInfo toAuthInfo(in Row r)
     {
         import std.conv : to;
 

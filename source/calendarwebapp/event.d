@@ -73,6 +73,8 @@ class MySQLEventStore : EventStore
 private:
     import mysql;
 
+    @Value("mysql.table.events") string eventsTableName;
+
 public:
     Event getEvent(string id)
     {
@@ -80,7 +82,7 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "SELECT id begin end name description type shout FROM events WHERE id = ?");
+                "SELECT id begin end name description type shout FROM " ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
         return toEvent(prepared.query.front);
     }
@@ -91,7 +93,7 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "SELECT id, begin, end, name, description, type, shout FROM events");
+                "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName ~ "");
         return prepared.querySet.map!(r => toEvent(r)).inputRangeObject;
     }
 
@@ -101,7 +103,7 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "INSERT INTO events (begin, end, name, description, type, shout) VALUES(?, ?, ?, ?, ?, ?)");
+                "INSERT INTO " ~ eventsTableName ~ " (begin, end, name, description, type, shout) VALUES(?, ?, ?, ?, ?, ?)");
         prepared.setArgs(event.begin, event.end, event.name, event.description,
                 event.type.to!uint, event.shout);
         prepared.exec();
@@ -123,7 +125,7 @@ public:
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare("DELETE FROM events WHERE id = ?");
+        auto prepared = cn.prepare("DELETE FROM " ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
         prepared.exec();
     }
