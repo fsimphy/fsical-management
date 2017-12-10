@@ -2,7 +2,7 @@ module calendarwebapp.event;
 
 import poodinis;
 
-import std.algorithm : map;
+import std.algorithm : filter, map;
 import std.conv : to;
 import std.datetime : Date;
 import std.range.interfaces : InputRange, inputRangeObject;
@@ -82,7 +82,8 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "SELECT id begin end name description type shout FROM " ~ eventsTableName ~ " WHERE id = ?");
+                "SELECT id begin end name description type shout FROM "
+                ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
         return toEvent(prepared.query.front);
     }
@@ -103,7 +104,8 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "INSERT INTO " ~ eventsTableName ~ " (begin, end, name, description, type, shout) VALUES(?, ?, ?, ?, ?, ?)");
+                "INSERT INTO " ~ eventsTableName
+                ~ " (begin, end, name, description, type, shout) VALUES(?, ?, ?, ?, ?, ?)");
         prepared.setArgs(event.begin, event.end, event.name, event.description,
                 event.type.to!uint, event.shout);
         prepared.exec();
@@ -145,6 +147,42 @@ private:
         event.type = r[5].get!uint.to!EventType;
         event.shout = r[6].get!byte.to!bool;
         return event;
+    }
+}
+
+class StubEventStore : EventStore
+{
+private:
+    Event[string] events;
+
+public:
+    Event getEvent(string id) @safe
+    {
+        import std.exception : enforce;
+
+        enforce((id in events) != null, "No event with id \"" ~ id ~ "\".");
+        return events[id];
+    }
+
+    InputRange!Event getAllEvents() nothrow
+    {
+        return events.byValue.inputRangeObject;
+    }
+
+    void addEvent(Event event) @safe nothrow
+    {
+        events[event.id] = event;
+    }
+
+    InputRange!Event getEventsBeginningBetween(Date begin, Date end) nothrow
+    {
+        return events.byValue.filter!(event => event.begin >= begin
+                && event.begin < end).inputRangeObject;
+    }
+
+    void removeEvent(string id) @safe nothrow
+    {
+        events.remove(id);
     }
 }
 

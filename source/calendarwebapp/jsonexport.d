@@ -70,10 +70,9 @@ public:
         {
             dayJSONManager.addEvent(event);
         }
-        auto trackedDays = Interval!Date(startDate, endDate).fwdRange(date => date + 1.dur!"days")
+        return Interval!Date(startDate, endDate).fwdRange(date => date + 1.dur!"days")
             .map!(day => dayJSONManager.getDayData(day)).array;
     }
-
 }
 
 private:
