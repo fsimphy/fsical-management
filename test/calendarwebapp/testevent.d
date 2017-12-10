@@ -489,7 +489,7 @@ public:
 }
 
 @("StubEventStore.removeEvent 1 event")
-@system unittest
+@safe unittest
 {
     auto store = new StubEventStore;
     immutable event = Event("599090de97355141140fc698");
@@ -502,7 +502,7 @@ public:
 }
 
 @("StubEventStore.removeEvent 2 events")
-@system unittest
+@safe unittest
 {
     auto store = new StubEventStore;
     immutable event1 = Event("599090de97355141140fc698");
