@@ -3,6 +3,7 @@ module calendarwebapp.configuration;
 import calendarwebapp.authenticator : Authenticator;
 import calendarwebapp.calendarwebapp : CalendarWebapp;
 import calendarwebapp.event : EventStore;
+import calendarwebapp.jsonexport : JSONExporter;
 import calendarwebapp.passhash : PasswordHasher, SHA256PasswordHasher;
 
 import poodinis;
@@ -20,10 +21,10 @@ public:
         final switch (arguments.database) with (DatabaseArgument)
         {
         case mongodb:
-            import vibe.db.mongo.client : MongoClient;
-            import vibe.db.mongo.mongo : connectMongoDB;
             import calendarwebapp.authenticator : MongoDBAuthenticator;
             import calendarwebapp.event : MongoDBEventStore;
+            import vibe.db.mongo.client : MongoClient;
+            import vibe.db.mongo.mongo : connectMongoDB;
 
             auto mongoClient = connectMongoDB(arguments.mongodb.host);
             container.register!MongoClient.existingInstance(mongoClient);
@@ -33,9 +34,9 @@ public:
             logInfo("Using MongoDB as database system");
             break;
         case mysql:
-            import mysql : MySQLPool;
             import calendarwebapp.authenticator : MySQLAuthenticator;
             import calendarwebapp.event : MySQLEventStore;
+            import mysql : MySQLPool;
 
             auto pool = new MySQLPool(arguments.mysql.host, arguments.mysql.username,
                     arguments.mysql.password, arguments.mysql.database);
@@ -45,6 +46,7 @@ public:
             logInfo("Using MySQL as database system");
             break;
         }
+        container.register!JSONExporter;
         container.register!(PasswordHasher, SHA256PasswordHasher);
         container.register!CalendarWebapp;
         container.register!(ValueInjector!string, StringInjector);
@@ -109,6 +111,8 @@ public:
                 "The password to use for logging into the MySQL instance.");
         readOption("mysql.database", &arguments.mysql.database,
                 "The name of the MySQL database to use.");
+        readOption("output", &arguments.output,
+                "The file to write JSON output to.");
     }
 
     override Arguments get(string key) @safe
@@ -145,4 +149,5 @@ struct Arguments
     DatabaseArgument database = DatabaseArgument.mongodb;
     MySQLArguments mysql;
     MongoDBArguments mongodb;
+    string output = "cal.json";
 }

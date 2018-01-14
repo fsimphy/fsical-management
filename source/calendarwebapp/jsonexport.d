@@ -1,6 +1,7 @@
 module calendarwebapp.jsonexport;
 
 import calendarwebapp.event : Event, EventStore;
+import calendarwebapp.configuration : Arguments;
 
 import core.time;
 
@@ -11,11 +12,11 @@ import std.datetime.interval;
 import std.datetime.systime;
 
 import std.format : format;
-import poodinis : Autowire;
+import poodinis : Autowire, Value;
 
-import vibe.data.serialization : name;
+import vibe.data.serialization : serializationName = name;
 
-struct DayJSONManager
+struct DayDataManager
 {
 private:
     Date begin, end;
@@ -26,7 +27,7 @@ public:
     in
     {
         assert(begin < end,
-                "DayJSONManager: begin (%s) needs to be earlier than end (%s)".format(begin, end));
+                "DayDataManager: begin (%s) needs to be earlier than end (%s)".format(begin, end));
     }
     do
     {
@@ -50,7 +51,7 @@ public:
 
         enforce(Interval!Date(begin, end).contains(date));
         return DayData(date.year, date.month, date.month.toGerString, date.day,
-                date.dayOfWeek.dayType, events[date], date.dayOfWeek.toGerString, []);
+                date.dayOfWeek.dayType, events[date], date.dayOfWeek.toShortGerString, []);
     }
 }
 
@@ -58,6 +59,7 @@ class JSONExporter
 {
 private:
     @Autowire EventStore eventStore;
+    @Value() Arguments arguments;
 
 public:
     auto write(in Date today = cast(Date) Clock.currTime) @system
@@ -66,19 +68,43 @@ public:
         import std.range : array;
         import std.format : format;
 
-        immutable todayName = "%s, %s. %s. %s".format(today.dayOfWeek.toGerString,
+        immutable todayName = dateFormatString.format(today.dayOfWeek.toGerString,
                 today.day, today.month.toGerString, today.year);
-        immutable todays = Todays(today.year, today.month, today.day, today.dayOfWeek, todayName);
+        immutable todays = Today(today.year, today.month, today.day, today.dayOfWeek, todayName);
         auto startDate = Date(today.year, today.month, 1);
         auto endDate = startDate;
         endDate.add!"months"(3);
-        auto dayJSONManager = new DayJSONManager(startDate, endDate);
+        auto dayDataManager = new DayDataManager(startDate, endDate);
         foreach (event; eventStore.getEventsBeginningBetween(startDate, endDate))
         {
-            dayJSONManager.addEvent(event);
+            dayDataManager.addEvent(event);
         }
         return Interval!Date(startDate, endDate).fwdRange(date => date + 1.dur!"days")
-            .map!(day => dayJSONManager.getDayData(day)).array;
+            .map!(day => dayDataManager.getDayData(day)).array;
+    }
+
+    void exportJSON() @system
+    {
+        import vibe.core.file : writeFile;
+        import vibe.core.path : Path;
+        import vibe.data.json : serializeToPrettyJson;
+        import std.datetime.systime : Clock;
+        import std.datetime.date : Date;
+
+        struct OutputFormat
+        {
+        private:
+            alias TrackedDays = typeof(write());
+        public:
+            Today today;
+            @serializationName("tracked_days") TrackedDays trackedDays;
+        }
+
+        immutable today = cast(Date) Clock.currTime;
+        auto output = OutputFormat(Today(today.year, today.month, today.day,
+                today.dayOfWeek, dateFormatString.format(today.dayOfWeek.toGerString,
+                today.day, today.month.toGerString, today.year)), this.write());
+        Path(arguments.output).writeFile(cast(ubyte[]) output.serializeToPrettyJson);
     }
 }
 
@@ -88,9 +114,9 @@ struct DayData
     Month month;
     string monthName;
     ubyte day;
-    @name("daytype") DayType dayType;
-    Event[] eventList;
-    @name("wday") string weekDayName;
+    @serializationName("daytype") DayType dayType;
+    Event[] events;
+    @serializationName("wday") string weekDayName;
     Line[] lines;
 }
 
@@ -102,6 +128,8 @@ enum DayType
 }
 
 private:
+
+enum dateFormatString = "%s, %s. %s, %s";
 
 string toGerString(Month m)
 {
@@ -155,6 +183,27 @@ string toGerString(DayOfWeek d)
     }
 }
 
+string toShortGerString(DayOfWeek d)
+{
+    final switch (d) with (DayOfWeek)
+    {
+    case mon:
+        return "Mo";
+    case tue:
+        return "Di";
+    case wed:
+        return "Mi";
+    case thu:
+        return "Do";
+    case fri:
+        return "Fr";
+    case sat:
+        return "Sa";
+    case sun:
+        return "So";
+    }
+}
+
 DayType dayType(DayOfWeek dayOfWeek)
 {
     switch (dayOfWeek) with (DayOfWeek)
@@ -172,17 +221,11 @@ struct Line
 {
 }
 
-struct Todays
+struct Today
 {
     short year;
     Month month;
     ubyte day;
-    DayOfWeek weekDay;
-    string todayName;
-}
-
-struct OutputFormat
-{
-    Todays today;
-    @name("tracked_days") DayData trackedDays;
+    @serializationName("weekday") DayOfWeek weekDay;
+    string name;
 }

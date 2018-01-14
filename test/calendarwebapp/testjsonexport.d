@@ -23,7 +23,7 @@ import unit_threaded;
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
     auto exporter = container.resolve!JSONExporter;
-    exporter.write.each!(dayData => dayData.eventList.empty.shouldBeTrue);
+    exporter.write.each!(dayData => dayData.events.empty.shouldBeTrue);
 }
 
 @("JSONExporter.write with 1 event")
@@ -37,8 +37,8 @@ import unit_threaded;
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
     eventStore.addEvent(event);
     exporter.write.each!(dayData => (dayData.year == 2018
-            && dayData.month == Month.jan && dayData.day == 14) ? dayData.eventList.shouldEqual([event])
-            : dayData.eventList.empty.shouldBeTrue);
+            && dayData.month == Month.jan && dayData.day == 14) ? dayData.events.shouldEqual([event])
+            : dayData.events.empty.shouldBeTrue);
 }
 
 @("JSONExporter.write with 2 events at the same date")
@@ -54,8 +54,8 @@ import unit_threaded;
     eventStore.addEvent(event1);
     eventStore.addEvent(event2);
     exporter.write(Date(2018, 1, 14)).each!(dayData => (dayData.year == 2018
-            && dayData.month == Month.jan && dayData.day == 14) ? dayData.eventList.shouldEqual([event1,
-            event2]) : dayData.eventList.empty.shouldBeTrue);
+            && dayData.month == Month.jan && dayData.day == 14) ? dayData.events.shouldEqual([event1,
+            event2]) : dayData.events.empty.shouldBeTrue);
 }
 
 @("JSONExporter.write with 2 events at different dates")
@@ -74,15 +74,15 @@ import unit_threaded;
         immutable date = Date(dayData.year, dayData.month.to!int, dayData.day);
         if (date == Date(2018, 1, 14))
         {
-            dayData.eventList.shouldEqual([event1]);
+            dayData.events.shouldEqual([event1]);
         }
         else if (date == Date(2018, 1, 15))
         {
-            dayData.eventList.shouldEqual([event2]);
+            dayData.events.shouldEqual([event2]);
         }
         else
         {
-            dayData.eventList.empty.shouldBeTrue;
+            dayData.events.empty.shouldBeTrue;
         }
     });
 }
@@ -164,98 +164,98 @@ import unit_threaded;
             exporter.write(Date(2018, 1, 14)));
 }
 
-@("DayJSONManager with begin > end")
+@("DayDataManager with begin > end")
 @system unittest
 {
-    DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 13)).shouldThrow!AssertError;
+    DayDataManager(Date(2018, 1, 14), Date(2018, 1, 13)).shouldThrow!AssertError;
 }
 
-@("DayJSONManager with begin = end")
+@("DayDataManager with begin = end")
 @system unittest
 {
-    DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 14)).shouldThrow!AssertError;
+    DayDataManager(Date(2018, 1, 14), Date(2018, 1, 14)).shouldThrow!AssertError;
 }
 
-@("DayJSONManager.getDayData with date < begin and 0 events")
+@("DayDataManager.getDayData with date < begin and 0 events")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
-    dayJSONManager.getDayData(Date(2018, 1, 13)).shouldThrow;
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    dayDataManager.getDayData(Date(2018, 1, 13)).shouldThrow;
 }
 
-@("DayJSONManager.getDayData with date > end and 0 events")
+@("DayDataManager.getDayData with date > end and 0 events")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
-    dayJSONManager.getDayData(Date(2018, 1, 17)).shouldThrow;
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    dayDataManager.getDayData(Date(2018, 1, 17)).shouldThrow;
 }
 
-@("DayJSONManager.getDayData with date = end and 0 events")
+@("DayDataManager.getDayData with date = end and 0 events")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
-    dayJSONManager.getDayData(Date(2018, 1, 16)).shouldThrow;
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    dayDataManager.getDayData(Date(2018, 1, 16)).shouldThrow;
 }
 
-@("DayJSONManager.getDayData with date = begin and 0 events")
+@("DayDataManager.getDayData with date = begin and 0 events")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
-    dayJSONManager.getDayData(Date(2018, 1, 14)).shouldEqual(DayData(2018,
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    dayDataManager.getDayData(Date(2018, 1, 14)).shouldEqual(DayData(2018,
             Month.jan, "Januar", 14, DayType.Holiday, [], "Sonntag", []));
 }
 
-@("DayJSONManager.getDayData with begin < date < end and 0 events")
+@("DayDataManager.getDayData with begin < date < end and 0 events")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
-    dayJSONManager.getDayData(Date(2018, 1, 15)).shouldEqual(DayData(2018,
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    dayDataManager.getDayData(Date(2018, 1, 15)).shouldEqual(DayData(2018,
             Month.jan, "Januar", 15, DayType.Workday, [], "Montag", []));
 }
 
-@("DayJSONManager.getDayData with date < begin and 1 event")
+@("DayDataManager.getDayData with date < begin and 1 event")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
-    dayJSONManager.addEvent(event);
-    dayJSONManager.getDayData(Date(2018, 1, 13)).shouldThrow;
+    dayDataManager.addEvent(event);
+    dayDataManager.getDayData(Date(2018, 1, 13)).shouldThrow;
 }
 
-@("DayJSONManager.getDayData with date > end and 1 event")
+@("DayDataManager.getDayData with date > end and 1 event")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
-    dayJSONManager.addEvent(event);
-    dayJSONManager.getDayData(Date(2018, 1, 17)).shouldThrow;
+    dayDataManager.addEvent(event);
+    dayDataManager.getDayData(Date(2018, 1, 17)).shouldThrow;
 }
 
-@("DayJSONManager.getDayData with date = end and 1 event")
+@("DayDataManager.getDayData with date = end and 1 event")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
-    dayJSONManager.addEvent(event);
-    dayJSONManager.getDayData(Date(2018, 1, 16)).shouldThrow;
+    dayDataManager.addEvent(event);
+    dayDataManager.getDayData(Date(2018, 1, 16)).shouldThrow;
 }
 
-@("DayJSONManager.getDayData with date = begin and 1 event")
+@("DayDataManager.getDayData with date = begin and 1 event")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 15));
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 15));
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
-    dayJSONManager.addEvent(event);
-    dayJSONManager.getDayData(Date(2018, 1, 14)).shouldEqual(DayData(2018,
+    dayDataManager.addEvent(event);
+    dayDataManager.getDayData(Date(2018, 1, 14)).shouldEqual(DayData(2018,
             Month.jan, "Januar", 14, DayType.Holiday, [event], "Sonntag", []));
 }
 
-@("DayJSONManager.getDayData with begin < date < end and 1 event")
+@("DayDataManager.getDayData with begin < date < end and 1 event")
 @system unittest
 {
-    auto dayJSONManager = DayJSONManager(Date(2018, 1, 14), Date(2018, 1, 16));
+    auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 15));
-    dayJSONManager.addEvent(event);
-    dayJSONManager.getDayData(Date(2018, 1, 15)).shouldEqual(DayData(2018,
+    dayDataManager.addEvent(event);
+    dayDataManager.getDayData(Date(2018, 1, 15)).shouldEqual(DayData(2018,
             Month.jan, "Januar", 15, DayType.Workday, [event], "Montag", []));
 }

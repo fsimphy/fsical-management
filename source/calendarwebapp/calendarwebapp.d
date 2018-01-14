@@ -2,6 +2,7 @@ module calendarwebapp.calendarwebapp;
 
 import calendarwebapp.authenticator;
 import calendarwebapp.event;
+import calendarwebapp.jsonexport;
 import calendarwebapp.passhash : PasswordHasher;
 
 import core.time : days;
@@ -22,7 +23,7 @@ import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
 
 @requiresAuth class CalendarWebapp
 {
-    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse) @safe
+    @noRoute AuthInfo authenticate(scope HTTPServerRequest, scope HTTPServerResponse) @safe
     {
         if (authInfo.value.isNone)
             redirect("/login");
@@ -76,13 +77,14 @@ public:
         auto event = Event("", begin, end, name, description.replace("\r", ""), type, shout);
 
         eventStore.addEvent(event);
-
+        exporter.exportJSON;
         redirect("/");
     }
 
     @auth(Role.user | Role.admin) void postRemoveevent(string id)
     {
         eventStore.removeEvent(id);
+        exporter.exportJSON;
         redirect("/");
     }
 
@@ -128,4 +130,5 @@ private:
     @Autowire EventStore eventStore;
     @Autowire Authenticator authenticator;
     @Autowire PasswordHasher passwordHasher;
+    @Autowire JSONExporter exporter;
 }
