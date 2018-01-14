@@ -60,13 +60,12 @@ private:
     @Autowire EventStore eventStore;
 
 public:
-    auto write() @system
+    auto write(in Date today = cast(Date) Clock.currTime) @system
     {
         import std.algorithm : each, map;
         import std.range : array;
         import std.format : format;
 
-        immutable today = cast(Date) Clock.currTime;
         immutable todayName = "%s, %s. %s. %s".format(today.dayOfWeek.toGerString,
                 today.day, today.month.toGerString, today.year);
         immutable todays = Todays(today.year, today.month, today.day, today.dayOfWeek, todayName);
