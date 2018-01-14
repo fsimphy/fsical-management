@@ -93,8 +93,8 @@ class AppArgumentsInjector : ValueInjector!Arguments
 {
 private:
     Arguments arguments;
-public:
 
+public:
     this()
     {
         import vibe.core.args : readOption;
@@ -111,8 +111,7 @@ public:
                 "The password to use for logging into the MySQL instance.");
         readOption("mysql.database", &arguments.mysql.database,
                 "The name of the MySQL database to use.");
-        readOption("output", &arguments.output,
-                "The file to write JSON output to.");
+        readOption("output", &arguments.output, "The file to write JSON output to.");
     }
 
     override Arguments get(string key) @safe
@@ -121,6 +120,18 @@ public:
 
         enforce(key == "", "There is only one instance of Arguments, to inject it use @Value().");
         return arguments;
+    }
+}
+
+class StubAppArgumentsInjector : ValueInjector!Arguments
+{
+public:
+    override Arguments get(string key) @safe
+    {
+        import std.exception : enforce;
+
+        enforce(key == "", "There is only one instance of Arguments, to inject it use @Value().");
+        return Arguments.init;
     }
 }
 

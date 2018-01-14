@@ -1,5 +1,6 @@
 module test.calendarwebapp.testjsonexport;
 
+import calendarwebapp.configuration: Arguments, StubAppArgumentsInjector;
 import calendarwebapp.event;
 import calendarwebapp.jsonexport;
 
@@ -22,6 +23,7 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
     exporter.write.each!(dayData => dayData.events.empty.shouldBeTrue);
 }
@@ -32,6 +34,7 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
     auto eventStore = container.resolve!EventStore;
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
@@ -47,6 +50,7 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
     auto eventStore = container.resolve!EventStore;
     immutable event1 = Event("599090de97355141140fc698", Date(2018, 1, 14));
@@ -64,6 +68,7 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
     auto eventStore = container.resolve!EventStore;
     immutable event1 = Event("599090de97355141140fc698", Date(2018, 1, 14));
@@ -93,8 +98,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2018, Month.jan, "Januar", 14, DayType.Holiday, [], "Sonntag", []).shouldBeIn(
+    DayData(2018, Month.jan, "Januar", 14, DayType.Holiday, [], "So", []).shouldBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -104,8 +110,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2018, Month.jan, "Januar", 1, DayType.Workday, [], "Montag", []).shouldBeIn(
+    DayData(2018, Month.jan, "Januar", 1, DayType.Workday, [], "Mo", []).shouldBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -115,8 +122,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2018, Month.jan, "Januar", 2, DayType.Workday, [], "Dienstag", []).shouldBeIn(
+    DayData(2018, Month.jan, "Januar", 2, DayType.Workday, [], "Di", []).shouldBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -126,8 +134,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2017, Month.dec, "Dezember", 1, DayType.Holiday, [], "Sonntag", []).shouldNotBeIn(
+    DayData(2017, Month.dec, "Dezember", 1, DayType.Holiday, [], "So", []).shouldNotBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -137,8 +146,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2018, Month.mar, "März", 31, DayType.Weekend, [], "Samstag", []).shouldBeIn(
+    DayData(2018, Month.mar, "März", 31, DayType.Weekend, [], "Sa", []).shouldBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -148,8 +158,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2018, Month.mar, "März", 30, DayType.Workday, [], "Freitag", []).shouldBeIn(
+    DayData(2018, Month.mar, "März", 30, DayType.Workday, [], "Fr", []).shouldBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -159,8 +170,9 @@ import unit_threaded;
     auto container = new shared DependencyContainer();
     container.register!(EventStore, StubEventStore);
     container.register!JSONExporter;
+    container.register!(ValueInjector!Arguments, StubAppArgumentsInjector);
     auto exporter = container.resolve!JSONExporter;
-    DayData(2018, Month.apr, "April", 1, DayType.Holiday, [], "Sonntag", []).shouldNotBeIn(
+    DayData(2018, Month.apr, "April", 1, DayType.Holiday, [], "So", []).shouldNotBeIn(
             exporter.write(Date(2018, 1, 14)));
 }
 
@@ -202,7 +214,7 @@ import unit_threaded;
 {
     auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
     dayDataManager.getDayData(Date(2018, 1, 14)).shouldEqual(DayData(2018,
-            Month.jan, "Januar", 14, DayType.Holiday, [], "Sonntag", []));
+            Month.jan, "Januar", 14, DayType.Holiday, [], "So", []));
 }
 
 @("DayDataManager.getDayData with begin < date < end and 0 events")
@@ -210,7 +222,7 @@ import unit_threaded;
 {
     auto dayDataManager = DayDataManager(Date(2018, 1, 14), Date(2018, 1, 16));
     dayDataManager.getDayData(Date(2018, 1, 15)).shouldEqual(DayData(2018,
-            Month.jan, "Januar", 15, DayType.Workday, [], "Montag", []));
+            Month.jan, "Januar", 15, DayType.Workday, [], "Mo", []));
 }
 
 @("DayDataManager.getDayData with date < begin and 1 event")
@@ -247,7 +259,7 @@ import unit_threaded;
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 14));
     dayDataManager.addEvent(event);
     dayDataManager.getDayData(Date(2018, 1, 14)).shouldEqual(DayData(2018,
-            Month.jan, "Januar", 14, DayType.Holiday, [event], "Sonntag", []));
+            Month.jan, "Januar", 14, DayType.Holiday, [event], "So", []));
 }
 
 @("DayDataManager.getDayData with begin < date < end and 1 event")
@@ -257,5 +269,5 @@ import unit_threaded;
     immutable event = Event("599090de97355141140fc698", Date(2018, 1, 15));
     dayDataManager.addEvent(event);
     dayDataManager.getDayData(Date(2018, 1, 15)).shouldEqual(DayData(2018,
-            Month.jan, "Januar", 15, DayType.Workday, [event], "Montag", []));
+            Month.jan, "Januar", 15, DayType.Workday, [event], "Mo", []));
 }
