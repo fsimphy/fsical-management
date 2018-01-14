@@ -3,10 +3,14 @@ module calendarwebapp.jsonexport;
 import calendarwebapp.event : Event, EventStore;
 
 import core.time;
+
+import std.algorithm.iteration : each;
+
 import std.datetime.date;
 import std.datetime.interval;
 import std.datetime.systime;
 
+import std.format : format;
 import poodinis : Autowire;
 
 import vibe.data.serialization : name;
@@ -19,19 +23,23 @@ private:
 
 public:
     this(in Date begin, in Date end)
+    in
+    {
+        assert(begin < end,
+                "DayJSONManager: begin (%s) needs to be earlier than end (%s)".format(begin, end));
+    }
+    do
     {
         this.begin = begin;
         this.end = end;
+        Interval!Date(this.begin, this.end).fwdRange(date => date + 1.dur!"days")
+            .each!(date => events[date] = []);
     }
 
     void addEvent(Event event)
     {
         if (Interval!Date(begin, end).contains(event.begin))
         {
-            if (event.end.isNull)
-            {
-                event.end = event.begin;
-            }
             events[event.begin] ~= event;
         }
     }
@@ -73,6 +81,25 @@ public:
         return Interval!Date(startDate, endDate).fwdRange(date => date + 1.dur!"days")
             .map!(day => dayJSONManager.getDayData(day)).array;
     }
+}
+
+struct DayData
+{
+    short year;
+    Month month;
+    string monthName;
+    ubyte day;
+    @name("daytype") DayType dayType;
+    Event[] eventList;
+    @name("wday") string weekDayName;
+    Line[] lines;
+}
+
+enum DayType
+{
+    Workday,
+    Holiday,
+    Weekend
 }
 
 private:
@@ -129,13 +156,6 @@ string toGerString(DayOfWeek d)
     }
 }
 
-enum DayType
-{
-    Workday,
-    Holiday,
-    Weekend
-}
-
 DayType dayType(DayOfWeek dayOfWeek)
 {
     switch (dayOfWeek) with (DayOfWeek)
@@ -147,18 +167,6 @@ DayType dayType(DayOfWeek dayOfWeek)
     default:
         return DayType.Workday;
     }
-}
-
-struct DayData
-{
-    short year;
-    Month month;
-    string monthName;
-    ubyte day;
-    @name("daytype") DayType dayType;
-    Event[] eventList;
-    @name("wday") string weekDayName;
-    Line[] lines;
 }
 
 struct Line
