@@ -7,8 +7,11 @@ d:
 os:
     - linux
 
-before_install:
-    - sudo apt-get install -y libevent-dev
+addons:
+  apt:
+    packages:
+      - libevent-dev
+      - libssl-dev
 
 script:
 - dub build
