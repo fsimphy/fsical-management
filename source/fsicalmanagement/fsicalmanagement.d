@@ -1,8 +1,8 @@
-module calendarwebapp.calendarwebapp;
+module fsicalmanagement.fsicalmanagement;
 
-import calendarwebapp.authenticator;
-import calendarwebapp.event;
-import calendarwebapp.passhash : PasswordHasher;
+import fsicalmanagement.authenticator;
+import fsicalmanagement.event;
+import fsicalmanagement.passhash : PasswordHasher;
 
 import core.time : days;
 
@@ -20,7 +20,7 @@ import vibe.web.auth;
 import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
     terminateSession;
 
-@requiresAuth class CalendarWebapp
+@requiresAuth class FsicalManagement
 {
     @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse) @safe
     {

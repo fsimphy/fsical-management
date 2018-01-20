@@ -1,4 +1,4 @@
-module calendarwebapp.passhash;
+module fsicalmanagement.passhash;
 
 interface PasswordHasher
 {

@@ -1,6 +1,6 @@
-module calendarwebapp.authenticator;
+module fsicalmanagement.authenticator;
 
-import calendarwebapp.passhash : PasswordHasher;
+import fsicalmanagement.passhash : PasswordHasher;
 
 import poodinis;
 
@@ -106,9 +106,6 @@ public:
                 ~ usersTableName ~ " WHERE username = ?");
         prepared.setArg(0, username);
         auto result = prepared.query();
-        /* checkHash should be called using vibe.core.concurrency.async to
-           avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
-           blocking this */
         if (!result.empty)
         {
             auto authInfo = toAuthInfo(result.front);
