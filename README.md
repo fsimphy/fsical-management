@@ -120,9 +120,10 @@ If you already built the project, you can also run it directly:
 ```
 ./generated/fsical-management [options]
 ```
-See usage for a list of available options.
+See configuration for a list of available options.
 
-## Usage
+## Configuration
+The project can be configured either by commandline switches or via an optional configuration file. These are the available options:
 ```
 Usage: fsical-management <options>
 
@@ -165,7 +166,23 @@ Usage: fsical-management <options>
                      The name of the MySQL database to
                      use.
 ```
-
+The optional configuration file (`vibe.conf`) is a JSON file, containing an object with the keys corresponding to option names, and values corresponding to their values. It is searched for in the local directory, the user’s home directory, or `/etc/vibe/`, whichever is found first. Here is an example of a `vibe.conf` file resulting in the default configuration:
+```js
+{
+    "database": 0,
+    "mongodb": {
+        "host": "localhost",
+        "database": "FsicalManagement",
+    },
+    "mysql": {
+        "host": "localhost",
+        "username": "username",
+        "password": "password",
+        "database": "FsicalManagement",
+    },
+}
+```
+Unfortunately, vibe.d does not yet support using the names of enums in configuration files, so until this is fixed, we need to write numbers. 0 corresponds to mongodb, 1 corresponds to mysql.
 ## Running the tests
 
 To run the tests, run the following command in the project’s root directory:
