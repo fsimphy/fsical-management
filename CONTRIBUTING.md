@@ -63,7 +63,7 @@ Enhancement Suggestion are tracked in our [issue tracker](https://github.com/fsi
 - **Explain why this enhancement would be useful.**
 - **List the acceptance criteria.**
 
-### Your frist contribution
+### Your first contribution
 
 If you are unsure where to start, you can look through issues tagged with `beginner` and `help wanted`:
 - [Beginner issues](https://github.com/fsimphy/fsical-management/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+label%3A%22beginner%22) - issues which should only require a few lines of code, and a test or two.
