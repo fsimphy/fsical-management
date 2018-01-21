@@ -180,9 +180,9 @@ See [unit-threaded](https://github.com/atilaneves/unit-threaded) for more inform
 
 Deploying the project on a Raspberry Pi requires some more work, because DMD is not able to build arm binaries and LDC is not available in the repositories of the major linux distributions for the Raspberry Pi.
 
-We suggest using [Arch Linux ARM](https://archlinuxarm.org/), but running on different distribution such as [Raspbian](https://www.raspbian.org) should also be possible.
+We suggest using [Arch Linux ARM](https://archlinuxarm.org/), but using a different distribution such as [Raspbian](https://www.raspbian.org) should also be possible.
 
-### Deploying to Arch Linux ARM
+### Deployment to Arch Linux ARM
 First install neccessary dependencies:
 ```
 sudo pacman -S llvm gcc ncurses zlib
@@ -218,19 +218,19 @@ Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c6
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/fsimphy/fsical-management/tags). 
 
 ## Authors
 
 * **Johannes Loher**
 
-See also the list of [contributors](https://github.com/fsimphy/fsical-managent/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/fsimphy/fsical-management/contributors) who participated in this project.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the MIT License, see the [LICENSE.md](LICENSE.md) file for details.
 
 ## Acknowledgments
 
-Thanks a lot to the folks at the [D Programming Language Forum](https://forum.dlang.org/) and especially to [Sönke Ludwig](https://github.com/s-ludwig), the maintainer of [vibe.d](https://vibed.org/) for always helping out with technical questions.
+Thanks a lot to the folks at the [D Programming Language Forum](https://forum.dlang.org/) and especially to [Sönke Ludwig](https://github.com/s-ludwig), the maintainer of [vibe.d](https://vibed.org/), for always helping out with technical questions.
 
