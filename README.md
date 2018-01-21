@@ -199,7 +199,7 @@ To install LDC-1.6.0 (and DUB), download and extract it in your home folder via 
 wget https://github.com/ldc-developers/ldc/releases/download/v1.6.0/ldc2-1.6.0-linux-armhf.tar.xz
 tar xf ldc2-1.6.0-linux-armhf.tar.xz
 ```
-Then add it to your `$PATH`:
+Then add it to your `PATH`:
 ```
 export PATH=~/ldc2-1.6.0-linux-armhf/bin
 ```
