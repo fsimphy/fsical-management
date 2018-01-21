@@ -85,7 +85,7 @@ Scope can be one of the following:
 The issue number must be given as 3 digits (e.g. 010 for issue #10).
 
 #### Submitting pull requests
-When creating a pull request, please provide the following information by filling in the [template](.github/enhancement_template.md).
+When creating a pull request, please provide the following information by filling in the [template](.github/pull_request_template.md).
 
 - What issue does this pull request correspond to?
 - What does this pull request implement?
