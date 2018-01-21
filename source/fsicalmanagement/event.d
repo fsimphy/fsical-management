@@ -1,4 +1,4 @@
-module calendarwebapp.event;
+module fsicalmanagement.event;
 
 import poodinis;
 

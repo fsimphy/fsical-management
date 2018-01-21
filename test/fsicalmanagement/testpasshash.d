@@ -1,6 +1,6 @@
-module test.calendarwebapp.testpasshash;
+module test.fsicalmanagement.testpasshash;
 
-import calendarwebapp.passhash;
+import fsicalmanagement.passhash;
 
 import unit_threaded;
 
