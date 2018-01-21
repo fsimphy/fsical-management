@@ -124,28 +124,28 @@ All D code must adhere to [The D Style](https://dlang.org/dstyle.html). We sugge
 
 We use issue labels to categorize issues into groups. This makes finding issues belonging to a particular group very easy. 
 Our tagging system is loosly based on Zach Dunn’s [Styleguide for issue tagging](https://robinpowered.com/blog/best-practice-system-for-organizing-and-tagging-github-issues/). Here is a list of all labels we currently use:
-Label name | Description
---- | ---
-`bug` | Bugs.
-`security` | Security related issues.
-`production` | Issues concerning the version currently in production.
-`chore` | Chores that do not require any changes to the code.
-`design` | Design related issues.
-`ux` | Issues related to the user experience.
-`test` | Test related issues.
-`discussion` | More a discussion than an actual issue.
-`question` | More a question than an actual issue.
-`enhancement` | Enhancements to existing features.
-`optimization` | Optimization (e.g. performance).
-`feature` | New features.
-`in progress` | Issues that are currently in progress.
-`watchlist` | Issues that we would like to proceed with, but need some action first (e.g. more clarification).
-`invalid` | Invalid issues.
-`wontfix` | Issues we have decided to not fix (for whatever reason).
-`duplicate` | Issues that are duplicates of other issues.
-`on hold` | Issues that we decided to not deal with right now, but might come back to later.
-`beginner` | Issues that are a great start for new beginning contributers.
-`help wanted` | Issues we would like new contributers to help us with.
+| Label name | Description |
+| --- | --- |
+| `bug` | Bugs. |
+| `security` | Security related issues. |
+| `production` | Issues concerning the version currently in production. |
+| `chore` | Chores that do not require any changes to the code. |
+| `design` | Design related issues. |
+| `ux` | Issues related to the user experience. |
+| `test` | Test related issues. |
+| `discussion` | More a discussion than an actual issue. |
+| `question` | More a question than an actual issue. |
+| `enhancement` | Enhancements to existing features. |
+| `optimization` | Optimization (e.g. performance). |
+| `feature` | New features. |
+| `in progress` | Issues that are currently in progress. |
+| `watchlist` | Issues that we would like to proceed with, but need some action first (e.g. more clarification). |
+| `invalid` | Invalid issues. |
+| `wontfix` | Issues we have decided to not fix (for whatever reason). |
+| `duplicate` | Issues that are duplicates of other issues. |
+| `on hold` | Issues that we decided to not deal with right now, but might come back to later. |
+| `beginner` | Issues that are a great start for new beginning contributers. |
+| `help wanted` | Issues we would like new contributers to help us with. |
 
 ### Project board
 
