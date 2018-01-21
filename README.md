@@ -1,4 +1,6 @@
 # fsical-management
+ [![Travis CI status](https://travis-ci.org/fsimphy/fsical-management.svg?branch=develop)](https://travis-ci.org/fsimphy/fsical-management)
+ [![Join the chat at https://gitter.im/fsimphy/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsimphy/Lobby)
 
  A tool to manage the calendar of the Fachschaft Mathe/Physik Uni Regensburg 
 
