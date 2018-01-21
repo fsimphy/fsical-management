@@ -1,5 +1,5 @@
-CREATE DATABASE CalendarWebapp;
-USE CalendarWebapp;
+CREATE DATABASE FsicalManagement;
+USE FsicalManagement;
 
 CREATE TABLE users (
   id MEDIUMINT UNSIGNED NOT NULL AUTO_INCREMENT,

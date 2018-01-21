@@ -1,6 +1,6 @@
-module test.calendarwebapp.testevent;
+module test.fsicalmanagement.testevent;
 
-import calendarwebapp.event;
+import fsicalmanagement.event;
 
 import poodinis;
 

@@ -1,9 +1,9 @@
-module calendarwebapp.configuration;
+module fsicalmanagement.configuration;
 
-import calendarwebapp.authenticator : Authenticator;
-import calendarwebapp.calendarwebapp : CalendarWebapp;
-import calendarwebapp.event : EventStore;
-import calendarwebapp.passhash : PasswordHasher, SHA256PasswordHasher;
+import fsicalmanagement.authenticator : Authenticator;
+import fsicalmanagement.fsicalmanagement : FsicalManagement;
+import fsicalmanagement.event : EventStore;
+import fsicalmanagement.passhash : PasswordHasher, SHA256PasswordHasher;
 
 import poodinis;
 
@@ -22,8 +22,8 @@ public:
         case mongodb:
             import vibe.db.mongo.client : MongoClient;
             import vibe.db.mongo.mongo : connectMongoDB;
-            import calendarwebapp.authenticator : MongoDBAuthenticator;
-            import calendarwebapp.event : MongoDBEventStore;
+            import fsicalmanagement.authenticator : MongoDBAuthenticator;
+            import fsicalmanagement.event : MongoDBEventStore;
 
             auto mongoClient = connectMongoDB(arguments.mongodb.host);
             container.register!MongoClient.existingInstance(mongoClient);
@@ -34,8 +34,8 @@ public:
             break;
         case mysql:
             import mysql : MySQLPool;
-            import calendarwebapp.authenticator : MySQLAuthenticator;
-            import calendarwebapp.event : MySQLEventStore;
+            import fsicalmanagement.authenticator : MySQLAuthenticator;
+            import fsicalmanagement.event : MySQLEventStore;
 
             auto pool = new MySQLPool(arguments.mysql.host, arguments.mysql.username,
                     arguments.mysql.password, arguments.mysql.database);
@@ -46,7 +46,7 @@ public:
             break;
         }
         container.register!(PasswordHasher, SHA256PasswordHasher);
-        container.register!CalendarWebapp;
+        container.register!FsicalManagement;
         container.register!(ValueInjector!string, StringInjector);
     }
 }
@@ -131,13 +131,13 @@ struct MySQLArguments
     string host = "localhost";
     string username = "username";
     string password = "password";
-    string database = "CalendarWebapp";
+    string database = "FsicalManagement";
 }
 
 struct MongoDBArguments
 {
     string host = "localhost";
-    string database = "CalendarWebapp";
+    string database = "FsicalManagement";
 }
 
 struct Arguments

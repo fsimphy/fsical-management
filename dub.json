@@ -1,5 +1,5 @@
 {
-	"name": "calendar-webapp",
+	"name": "fsical-management",
 	"authors": [
 		"Johannes Loher"
 	],
@@ -9,8 +9,8 @@
 		"vibe-d": "~>0.8.1",
 		"poodinis": "~>8.0.1"
 	},
-	"description": "A simple webapplication to edit and view calendar entries",
-	"copyright": "Copyright © 2017, Johannes Loher",
+	"description": "A tool to manage the calendar of the Fachschaft Mathe/Physik Uni Regensburg ",
+	"copyright": "Copyright © 2018, Johannes Loher",
 	"license": "MIT",
 	"targetType": "executable",
 	"targetPath": "generated",
@@ -23,7 +23,7 @@
 			"targetType": "executable",
 			"preBuildCommands": ["dub run unit-threaded -c gen_ut_main -- -f generated/ut.d test"],
 			"mainSourceFile": "generated/ut.d",
-			"excludedSourceFiles": ["source/calendarwebapp/app.d"],
+			"excludedSourceFiles": ["source/fsicalmanagement/app.d"],
 			"sourcePaths": ["test"],
 			"dependencies": {
 				"unit-threaded": "~>0.7.31"

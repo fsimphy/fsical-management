@@ -1,7 +1,7 @@
-module test.calendarwebapp.testauthenticator;
+module test.fsicalmanagement.testauthenticator;
 
-import calendarwebapp.authenticator;
-import calendarwebapp.passhash : PasswordHasher, StubPasswordHasher;
+import fsicalmanagement.authenticator;
+import fsicalmanagement.passhash : PasswordHasher, StubPasswordHasher;
 
 import poodinis;
 
