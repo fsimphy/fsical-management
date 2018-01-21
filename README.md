@@ -14,8 +14,9 @@ Either [DMD](https://dlang.org/download.html#dmd) or [LDC](https://github.com/ld
 ```
 sudo wget http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list -O /etc/apt/sources.list.d/d-apt.list
 sudo apt-get update && sudo apt-get -y --allow-unauthenticated install --reinstall d-apt-keyring
+sudo apt-get update
 # DMD:
-sudo apt-get update && sudo apt-get install dmd-compiler
+sudo apt-get install dmd-compiler
 # LDC:
 sudo apt-get install ldc
 # DUB:
@@ -70,7 +71,7 @@ The project depens on OpenSSL being available. Both OpenSSL-1.0 and OpenSSL-1.1 
 OpenSSL should be available by default on most systems. If it is not available, use your distribution’s packagemanager to install it if you are running linux, or [Homebrew](https://brew.sh/) if you are running OS X:
 - Debian based systems:
 ```
-sudo apt-get install opeenssl
+sudo apt-get install openssl
 ```
 - Arch Linux:
 ```
@@ -195,7 +196,7 @@ Be aware that this is quite hacky and might cause problems later on. It might be
 
 To install LDC-1.6.0 (and DUB), download and extract it in your home folder via the following commands:
 ```
-curl -O https://github.com/ldc-developers/ldc/releases/download/v1.6.0/ldc2-1.6.0-linux-armhf.tar.xz
+wget https://github.com/ldc-developers/ldc/releases/download/v1.6.0/ldc2-1.6.0-linux-armhf.tar.xz
 tar xf ldc2-1.6.0-linux-armhf.tar.xz
 ```
 Then add it to your `$PATH`:
