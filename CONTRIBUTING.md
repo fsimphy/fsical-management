@@ -124,6 +124,7 @@ All D code must adhere to [The D Style](https://dlang.org/dstyle.html). We sugge
 
 We use issue labels to categorize issues into groups. This makes finding issues belonging to a particular group very easy. 
 Our tagging system is loosly based on Zach Dunn’s [Styleguide for issue tagging](https://robinpowered.com/blog/best-practice-system-for-organizing-and-tagging-github-issues/). Here is a list of all labels we currently use:
+
 | Label name | Description |
 | --- | --- |
 | `bug` | Bugs. |
