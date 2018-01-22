@@ -69,7 +69,7 @@ brew install mongodb
 ```
 
 #### OpenSSL
-The project depens on OpenSSL being available. Both OpenSSL-1.0 and OpenSSL-1.1 are supported, but in order to successfully use OpenSSL-1.1, the switch `--override-config vibe-d:tls/openssl-1.1` needs to be added to all `dub` commands.
+The project depens on OpenSSL being available. Both OpenSSL-1.0 and OpenSSL-1.1 are supported, but in order to successfully use OpenSSL-1.0, the switch `--override-config vibe-d:tls/openssl` needs to be added to all `dub` commands.
 OpenSSL should be available by default on most systems. If it is not available, use your distribution’s packagemanager to install it if you are running linux, or [Homebrew](https://brew.sh/) if you are running OS X:
 - Debian based systems:
 ```
