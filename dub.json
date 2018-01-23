@@ -33,8 +33,5 @@
 				"unit-threaded": "~>0.7.31"
 			}
 		}
-	],
-	"lflags": [
-		"-fuse-ld=gold"
 	]
 }
