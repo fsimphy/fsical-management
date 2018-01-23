@@ -86,15 +86,16 @@ public:
         redirect("/");
     }
 
-    @auth(Role.admin) void getUsers()
+    @auth(Role.admin) void getUsers(string _error = null)
     {
         auto users = authenticator.getAllUsers;
         auto authInfo = this.authInfo.value;
-        render!("showusers.dt", users, authInfo);
+        render!("showusers.dt", _error, users, authInfo);
     }
 
-    @auth(Role.admin) void postRemoveuser(string id)
+    @auth(Role.admin) @errorDisplay!getUsers void postRemoveuser(string id)
     {
+        enforce(id != authInfo.value.id, "Du kannst deinen eigenen Account nicht löschen.");
         authenticator.removeUser(id);
         redirect("/users");
     }
