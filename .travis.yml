@@ -6,6 +6,14 @@ d:
     - ldc-1.7.0
 os:
     - linux
+env:
+    - BUILD_TYPE=debug
+    - BUILD_TYPE=unittest
+
+matrix:
+  include:
+  - d: dmd-2.078.1
+    env: BUILDTYPE=unittest-cov
 
 addons:
   apt:
@@ -14,5 +22,4 @@ addons:
       - libssl-dev
 
 script:
-- dub build --override-config vibe-d:tls/openssl
-- dub test --override-config vibe-d:tls/openssl
+- ./travis.sh
