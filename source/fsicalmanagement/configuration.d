@@ -1,17 +1,17 @@
 module fsicalmanagement.configuration;
 
-import fsicalmanagement.authenticator : Authenticator;
-import fsicalmanagement.fsicalmanagement : FsicalManagement;
-import fsicalmanagement.event : EventStore;
-import fsicalmanagement.passhash : PasswordHasher, SHA256PasswordHasher;
+public import poodinis;
 
-import poodinis;
-
-import vibe.core.log : logInfo;
 import vibe.db.mongo.collection : MongoCollection;
 
 class Context : ApplicationContext
 {
+private:
+    import fsicalmanagement.authenticator : Authenticator;
+    import fsicalmanagement.event : EventStore;
+    import fsicalmanagement.fsicalmanagement : FsicalManagement;
+    import fsicalmanagement.passhash : PasswordHasher, SHA256PasswordHasher;
+    import vibe.core.log : logInfo;
 public:
     override void registerDependencies(shared(DependencyContainer) container)
     {

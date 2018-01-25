@@ -1,28 +1,25 @@
 module fsicalmanagement.fsicalmanagement;
 
 import fsicalmanagement.authenticator;
-import fsicalmanagement.event;
+import fsicalmanagement.event : Event, EventStore, EventType;
 import fsicalmanagement.passhash : PasswordHasher;
 
 import core.time : days;
 
-import poodinis;
+import poodinis : Autowire;
 
 import std.datetime : Date;
 import std.exception : enforce;
 import std.typecons : Nullable;
 
-import vibe.data.bson : BsonObjectID;
-import vibe.http.common : HTTPStatusException;
 import vibe.http.server : HTTPServerRequest, HTTPServerResponse;
-import vibe.http.status : HTTPStatus;
 import vibe.web.auth;
-import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
-    terminateSession;
+import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar, terminateSession;
 
 @requiresAuth class FsicalManagement
 {
-    @noRoute AuthInfo authenticate(scope HTTPServerRequest req, scope HTTPServerResponse) @safe
+    import vibe.http.server : HTTPServerRequest;
+    @noRoute AuthInfo authenticate(scope HTTPServerRequest, scope HTTPServerResponse) @safe
     {
         if (authInfo.value.isNone)
             redirect("/login");
