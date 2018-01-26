@@ -1,2 +1,9 @@
 ignore:
     - "test"
+
+coverage:
+  notify:
+    gitter:
+      default:
+        url: "https://webhooks.gitter.im/e/bbebe195871b946b0fac"
+        threshold: 1%
