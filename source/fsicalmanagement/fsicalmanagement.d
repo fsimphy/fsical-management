@@ -14,7 +14,7 @@ import std.typecons : Nullable;
 
 import vibe.http.server : HTTPServerRequest, HTTPServerResponse;
 import vibe.web.auth;
-import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar, terminateSession;
+import vibe.web.web;
 
 @requiresAuth class FsicalManagement
 {
