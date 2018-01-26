@@ -17,7 +17,7 @@ matrix:
     env: BUILD_TYPE=unittest-cov
   exclude:
   - d: dmd-2.078.1
-    env: BUILDTYPE=unittest
+    env: BUILD_TYPE=unittest
 
 addons:
   apt:
