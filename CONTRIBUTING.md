@@ -108,7 +108,7 @@ Scope can be one of the following:
 - `technical` - everything else that is `technical` and does not belong to `test` or `refactor`
 - `chore` - everything not touching the actual code
 
-For the actual text in the commit message, here are some additional guideline:
+For the actual text in the commit message, here are some additional guidelines:
 
 - Use the present tense ("add feature" not "added feature").
 - Use the imperative mood ("move cursor to…" not "moves cursor to…").
@@ -117,6 +117,11 @@ For the actual text in the commit message, here are some additional guideline:
 
 ### D Styleguide
 All D code must adhere to [The D Style](https://dlang.org/dstyle.html). We suggest using [dfmt](https://github.com/dlang-community/dfmt) to format the code accordingly.
+
+### Imports
+
+All imports should be selective, except for module-level imports using more than three specific import. These should import the whole corresponding module.
+Each symbol should only be imported once, and with a scope as small as possible (i.e. function/scope level imports are preferred over module-level imports).
 
 ## Additional notes
 
