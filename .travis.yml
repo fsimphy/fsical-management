@@ -15,11 +15,9 @@ matrix:
   include:
   - d: dmd-2.078.1
     env: BUILD_TYPE=unittest-cov
-
-matrix:
-    exclude:
-    - d: dmd-2.078.1
-      env: BUILDTYPE=unittest
+  exclude:
+  - d: dmd-2.078.1
+    env: BUILDTYPE=unittest
 
 addons:
   apt:
