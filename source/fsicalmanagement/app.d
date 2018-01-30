@@ -3,10 +3,9 @@ module fsicalmanagement.app;
 import fsicalmanagement.fsicalmanagement : FsicalManagement;
 import fsicalmanagement.configuration : Context;
 
-import poodinis;
+import poodinis : DependencyContainer, registerContext;
 
 import vibe.core.core : runApplication;
-import vibe.core.log : logInfo;
 
 import vibe.http.fileserver : serveStaticFiles;
 import vibe.http.router : URLRouter;

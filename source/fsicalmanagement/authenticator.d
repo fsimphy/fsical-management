@@ -2,7 +2,7 @@ module fsicalmanagement.authenticator;
 
 import fsicalmanagement.passhash : PasswordHasher;
 
-import poodinis;
+import poodinis : Autowire, DependencyContainer, Value;
 
 import std.conv : to;
 import std.range : InputRange;
@@ -87,7 +87,7 @@ enum Privilege
 class MySQLAuthenticator : Authenticator
 {
 private:
-    import mysql;
+    import mysql : MySQLPool, Row, prepare;
 
     @Autowire MySQLPool pool;
     @Autowire PasswordHasher passwordHasher;
