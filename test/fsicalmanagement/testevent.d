@@ -1,14 +1,11 @@
 module test.fsicalmanagement.testevent;
 
-import fsicalmanagement.event;
+import fsicalmanagement.event : Event, EventStore, MongoDBEventStore;
 
-import poodinis;
+import poodinis : DependencyContainer, RegistrationOption, ValueInjector;
 
-import std.array;
-import std.algorithm : map;
-
-import unit_threaded.mock;
-import unit_threaded.should;
+import unit_threaded.mock : mock;
+import unit_threaded.should : shouldEqual, shouldThrowWithMessage;
 
 import vibe.data.bson : Bson, serializeToBson;
 
@@ -143,6 +140,9 @@ public:
 @("MongoDBEventStore.getAllEvents")
 @system unittest
 {
+    import std.algorithm : map;
+    import std.array : array;
+
     auto collection = mock!Collection;
     auto container = new shared DependencyContainer;
     container.register!(ValueInjector!Collection, CollectionInjector);

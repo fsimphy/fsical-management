@@ -1,14 +1,13 @@
 module test.fsicalmanagement.testauthenticator;
 
-import fsicalmanagement.authenticator;
-import fsicalmanagement.passhash : PasswordHasher, StubPasswordHasher;
+import fsicalmanagement.authenticator : AuthInfo, Privilege;
 
-import poodinis;
+import poodinis : ValueInjector;
 
-import unit_threaded.mock;
-import unit_threaded.should;
+import unit_threaded.mock : mock;
+import unit_threaded.should : shouldBeFalse, shouldBeTrue;
 
-import vibe.data.bson : Bson, BsonObjectID;
+import vibe.data.bson : Bson;
 
 interface Collection
 {
@@ -37,7 +36,11 @@ public:
 
 @("MongoDBAuthenticator.checkUser")
 @system unittest
-{
+{   
+    import fsicalmanagement.authenticator : Authenticator, MongoDBAuthenticator;
+    import fsicalmanagement.passhash : PasswordHasher, StubPasswordHasher;
+    import poodinis : DependencyContainer, RegistrationOption;
+
     auto collection = mock!Collection;
     auto container = new shared DependencyContainer;
     container.register!(ValueInjector!Collection, CollectionInjector);
