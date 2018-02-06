@@ -6,10 +6,10 @@ if [ "${BUILD_TYPE}" = "debug" ]; then
 fi
 
 if [ "${BUILD_TYPE}" = "unittest" ]; then
-  dub test --override-config vibe-d:tls/openssl --compiler=${DC}
+  dub test --override-config vibe-d:tls/openssl --compiler=${DC} -- -s
 fi
 
 if [ "${BUILD_TYPE}" = "unittest-cov" ]; then
-  dub test --coverage --override-config vibe-d:tls/openssl --compiler=${DC}
+  dub test --coverage --override-config vibe-d:tls/openssl --compiler=${DC} -- -s
   bash <(curl -s https://codecov.io/bash)
 fi
