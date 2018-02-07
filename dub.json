@@ -30,7 +30,7 @@
 			"excludedSourceFiles": ["source/fsicalmanagement/app.d"],
 			"sourcePaths": ["test"],
 			"dependencies": {
-				"unit-threaded": "~>0.7.31"
+				"unit-threaded": "==0.7.37"
 			}
 		}
 	]

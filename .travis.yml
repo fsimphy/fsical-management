@@ -2,10 +2,22 @@
 language: d
 
 d:
+    - dmd-2.078.1
     - dmd-2.077.1
     - ldc-1.7.0
 os:
     - linux
+env:
+    - BUILD_TYPE=debug
+    - BUILD_TYPE=unittest
+
+matrix:
+  include:
+  - d: dmd-2.078.1
+    env: BUILD_TYPE=unittest-cov
+  exclude:
+  - d: dmd-2.078.1
+    env: BUILD_TYPE=unittest
 
 addons:
   apt:
@@ -14,5 +26,4 @@ addons:
       - libssl-dev
 
 script:
-- dub build --override-config vibe-d:tls/openssl
-- dub test --override-config vibe-d:tls/openssl
+- ./travis.sh

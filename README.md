@@ -1,8 +1,9 @@
 # fsical-management
- [![Travis CI status](https://travis-ci.org/fsimphy/fsical-management.svg?branch=develop)](https://travis-ci.org/fsimphy/fsical-management)
- [![Join the chat at https://gitter.im/fsimphy/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsimphy/Lobby)
+[![Travis CI status](https://travis-ci.org/fsimphy/fsical-management.svg?branch=develop)](https://travis-ci.org/fsimphy/fsical-management)
+[![codecov](https://codecov.io/gh/fsimphy/fsical-management/branch/develop/graph/badge.svg)](https://codecov.io/gh/fsimphy/fsical-management)
+[![Join the chat at https://gitter.im/fsimphy/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/fsimphy/Lobby)
 
- A tool to manage the calendar of the Fachschaft Mathe/Physik Uni Regensburg 
+A tool to manage the calendar of the Fachschaft Mathe/Physik Uni Regensburg 
 
 ## Getting Started
 
