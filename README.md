@@ -243,7 +243,8 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Johannes Loher**
+* [**Johannes Loher**](https://github.com/ghost91-)
+* [**Oliver Rümpelein**](https://github.com/pheerai)
 
 See also the list of [contributors](https://github.com/fsimphy/fsical-management/contributors) who participated in this project.
 
