@@ -1,4 +1,4 @@
-As mentioned in <issue>, this implements <what?>.
+As mentioned in ${issue}, this implements ${enhancement/bugfix}.
 
 This includes the following changes:
  - …
