@@ -59,7 +59,7 @@ Enhancement Suggestion are tracked in our [issue tracker](https://github.com/fsi
 
 - **Use a clear and descriptive title** for the issue to identify the suggestion.
 - **Provide a short summary describing the suggested enhancement.**
-- **Provide a user story** in the format "As a &lt;role&gt; I want to &lt;what?&gt; so that &lt;what?&gt;".
+- **Provide a user story** in the format "As a ${role} I want to ${enhancement} so that ${purpose}".
 - **Explain why this enhancement would be useful.**
 - **List the acceptance criteria.**
 

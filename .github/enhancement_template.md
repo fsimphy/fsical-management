@@ -3,7 +3,7 @@
 (up to 60 words)
 
 ## User story
-As a <role>, I want <what?> so that <what?>.
+As a ${role}, I want ${enhancement} so that ${purpose}.
 
 ## Rationale
 
