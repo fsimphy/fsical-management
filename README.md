@@ -168,6 +168,7 @@ Usage: fsical-management <options>
     --mysql.database=<value>
                      The name of the MySQL database to
                      use.
+    --output=<value> The file to write JSON output to.
 ```
 The optional configuration file (`vibe.conf`) is a JSON file, containing an object with the keys corresponding to option names, and values corresponding to their values. It is searched for in the local directory, the user’s home directory, or `/etc/vibe/`, whichever is found first. Here is an example of a `vibe.conf` file resulting in the default configuration:
 ```js
@@ -183,6 +184,7 @@ The optional configuration file (`vibe.conf`) is a JSON file, containing an obje
         "password": "password",
         "database": "FsicalManagement",
     },
+    "output": "cal.json"
 }
 ```
 Unfortunately, vibe.d does not yet support using the names of enums in configuration files, so until this is fixed, we need to write numbers. 0 corresponds to mongodb, 1 corresponds to mysql.
