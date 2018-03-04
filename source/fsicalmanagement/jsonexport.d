@@ -1,9 +1,9 @@
 module fsicalmanagement.jsonexport;
 
+import core.time : dur;
+
 import fsicalmanagement.event : Event, EventStore;
 import fsicalmanagement.configuration : Arguments;
-
-import core.time;
 
 import std.algorithm.iteration : each;
 
