@@ -1,12 +1,11 @@
-module calendarwebapp.app;
+module fsicalmanagement.app;
 
-import calendarwebapp.calendarwebapp : CalendarWebapp;
-import calendarwebapp.configuration : Context;
+import fsicalmanagement.fsicalmanagement : FsicalManagement;
+import fsicalmanagement.configuration : Context;
 
-import poodinis;
+import poodinis : DependencyContainer, registerContext;
 
 import vibe.core.core : runApplication;
-import vibe.core.log : logInfo;
 
 import vibe.http.fileserver : serveStaticFiles;
 import vibe.http.router : URLRouter;
@@ -19,7 +18,7 @@ void main()
     container.registerContext!Context;
 
     auto router = new URLRouter;
-    router.registerWebInterface(container.resolve!CalendarWebapp);
+    router.registerWebInterface(container.resolve!FsicalManagement);
     router.get("*", serveStaticFiles("public"));
 
     auto settings = new HTTPServerSettings;

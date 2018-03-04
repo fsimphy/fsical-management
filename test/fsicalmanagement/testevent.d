@@ -1,13 +1,12 @@
-module test.calendarwebapp.testevent;
+module test.fsicalmanagement.testevent;
 
-import calendarwebapp.event;
+import fsicalmanagement.event;
 
-import poodinis;
+import poodinis : DependencyContainer, RegistrationOption, ValueInjector;
 
-import std.array;
-import std.algorithm : map;
+import std.array: array;
 
-import unit_threaded.mock;
+import unit_threaded.mock : mock;
 import unit_threaded.should;
 
 import vibe.data.bson : Bson, serializeToBson;
@@ -143,6 +142,9 @@ public:
 @("MongoDBEventStore.getAllEvents")
 @system unittest
 {
+    import std.algorithm : map;
+    import std.array : array;
+
     auto collection = mock!Collection;
     auto container = new shared DependencyContainer;
     container.register!(ValueInjector!Collection, CollectionInjector);

@@ -1,28 +1,25 @@
-module calendarwebapp.calendarwebapp;
+module fsicalmanagement.fsicalmanagement;
 
-import calendarwebapp.authenticator;
-import calendarwebapp.event;
-import calendarwebapp.jsonexport;
-import calendarwebapp.passhash : PasswordHasher;
+import fsicalmanagement.authenticator;
+import fsicalmanagement.jsonexport;
+import fsicalmanagement.event : Event, EventStore, EventType;
+import fsicalmanagement.passhash : PasswordHasher;
 
 import core.time : days;
 
-import poodinis;
+import poodinis : Autowire;
 
 import std.datetime : Date;
 import std.exception : enforce;
 import std.typecons : Nullable;
 
-import vibe.data.bson : BsonObjectID;
-import vibe.http.common : HTTPStatusException;
 import vibe.http.server : HTTPServerRequest, HTTPServerResponse;
-import vibe.http.status : HTTPStatus;
 import vibe.web.auth;
-import vibe.web.web : errorDisplay, noRoute, redirect, render, SessionVar,
-    terminateSession;
+import vibe.web.web;
 
-@requiresAuth class CalendarWebapp
+@requiresAuth class FsicalManagement
 {
+    import vibe.http.server : HTTPServerRequest;
     @noRoute AuthInfo authenticate(scope HTTPServerRequest, scope HTTPServerResponse) @safe
     {
         if (authInfo.value.isNone)
@@ -88,15 +85,16 @@ public:
         redirect("/");
     }
 
-    @auth(Role.admin) void getUsers()
+    @auth(Role.admin) void getUsers(string _error = null)
     {
         auto users = authenticator.getAllUsers;
         auto authInfo = this.authInfo.value;
-        render!("showusers.dt", users, authInfo);
+        render!("showusers.dt", _error, users, authInfo);
     }
 
-    @auth(Role.admin) void postRemoveuser(string id)
+    @auth(Role.admin) @errorDisplay!getUsers void postRemoveuser(string id)
     {
+        enforce(id != authInfo.value.id, "Du kannst deinen eigenen Account nicht löschen.");
         authenticator.removeUser(id);
         redirect("/users");
     }

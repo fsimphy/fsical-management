@@ -1,7 +1,7 @@
-module calendarwebapp.jsonexport;
+module fsicalmanagement.jsonexport;
 
-import calendarwebapp.event : Event, EventStore;
-import calendarwebapp.configuration : Arguments;
+import fsicalmanagement.event : Event, EventStore;
+import fsicalmanagement.configuration : Arguments;
 
 import core.time;
 

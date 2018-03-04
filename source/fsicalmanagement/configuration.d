@@ -1,14 +1,7 @@
-module calendarwebapp.configuration;
+module fsicalmanagement.configuration;
 
-import calendarwebapp.authenticator : Authenticator;
-import calendarwebapp.calendarwebapp : CalendarWebapp;
-import calendarwebapp.event : EventStore;
-import calendarwebapp.jsonexport : JSONExporter;
-import calendarwebapp.passhash : PasswordHasher, SHA256PasswordHasher;
+public import poodinis;
 
-import poodinis;
-
-import vibe.core.log : logInfo;
 import vibe.db.mongo.collection : MongoCollection;
 
 class Context : ApplicationContext
@@ -16,15 +9,22 @@ class Context : ApplicationContext
 public:
     override void registerDependencies(shared(DependencyContainer) container)
     {
+        import fsicalmanagement.authenticator : Authenticator;
+        import fsicalmanagement.event : EventStore;
+        import fsicalmanagement.jsonexport: JSONExporter;
+        import fsicalmanagement.fsicalmanagement : FsicalManagement;
+        import fsicalmanagement.passhash : PasswordHasher, SHA256PasswordHasher;
+        import vibe.core.log : logInfo;
+        
         container.register!(ValueInjector!Arguments, AppArgumentsInjector);
         auto arguments = container.resolve!(AppArgumentsInjector).get("");
         final switch (arguments.database) with (DatabaseArgument)
         {
         case mongodb:
-            import calendarwebapp.authenticator : MongoDBAuthenticator;
-            import calendarwebapp.event : MongoDBEventStore;
             import vibe.db.mongo.client : MongoClient;
             import vibe.db.mongo.mongo : connectMongoDB;
+            import fsicalmanagement.authenticator : MongoDBAuthenticator;
+            import fsicalmanagement.event : MongoDBEventStore;
 
             auto mongoClient = connectMongoDB(arguments.mongodb.host);
             container.register!MongoClient.existingInstance(mongoClient);
@@ -34,9 +34,9 @@ public:
             logInfo("Using MongoDB as database system");
             break;
         case mysql:
-            import calendarwebapp.authenticator : MySQLAuthenticator;
-            import calendarwebapp.event : MySQLEventStore;
             import mysql : MySQLPool;
+            import fsicalmanagement.authenticator : MySQLAuthenticator;
+            import fsicalmanagement.event : MySQLEventStore;
 
             auto pool = new MySQLPool(arguments.mysql.host, arguments.mysql.username,
                     arguments.mysql.password, arguments.mysql.database);
@@ -48,7 +48,7 @@ public:
         }
         container.register!JSONExporter;
         container.register!(PasswordHasher, SHA256PasswordHasher);
-        container.register!CalendarWebapp;
+        container.register!FsicalManagement;
         container.register!(ValueInjector!string, StringInjector);
     }
 }
@@ -146,13 +146,13 @@ struct MySQLArguments
     string host = "localhost";
     string username = "username";
     string password = "password";
-    string database = "CalendarWebapp";
+    string database = "FsicalManagement";
 }
 
 struct MongoDBArguments
 {
     string host = "localhost";
-    string database = "CalendarWebapp";
+    string database = "FsicalManagement";
 }
 
 struct Arguments

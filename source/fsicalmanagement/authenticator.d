@@ -1,8 +1,8 @@
-module calendarwebapp.authenticator;
+module fsicalmanagement.authenticator;
 
-import calendarwebapp.passhash : PasswordHasher;
+import fsicalmanagement.passhash : PasswordHasher;
 
-import poodinis;
+import poodinis : Autowire, DependencyContainer, Value;
 
 import std.conv : to;
 import std.range : InputRange;
@@ -87,7 +87,7 @@ enum Privilege
 class MySQLAuthenticator : Authenticator
 {
 private:
-    import mysql;
+    import mysql : MySQLPool, Row, prepare;
 
     @Autowire MySQLPool pool;
     @Autowire PasswordHasher passwordHasher;
@@ -106,9 +106,6 @@ public:
                 ~ usersTableName ~ " WHERE username = ?");
         prepared.setArg(0, username);
         auto result = prepared.query();
-        /* checkHash should be called using vibe.core.concurrency.async to
-           avoid blocking, but https://github.com/vibe-d/vibe.d/issues/1521 is
-           blocking this */
         if (!result.empty)
         {
             auto authInfo = toAuthInfo(result.front);

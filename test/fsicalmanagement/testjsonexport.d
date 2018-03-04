@@ -1,8 +1,8 @@
-module test.calendarwebapp.testjsonexport;
+module test.fsicalmanagement.testjsonexport;
 
-import calendarwebapp.configuration: Arguments, StubAppArgumentsInjector;
-import calendarwebapp.event;
-import calendarwebapp.jsonexport;
+import fsicalmanagement.configuration: Arguments, StubAppArgumentsInjector;
+import fsicalmanagement.event;
+import fsicalmanagement.jsonexport;
 
 import core.exception : AssertError;
 

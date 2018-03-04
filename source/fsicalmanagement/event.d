@@ -1,12 +1,11 @@
-module calendarwebapp.event;
+module fsicalmanagement.event;
 
-import poodinis;
+import poodinis : Autowire, Value;
 
 import std.algorithm : filter, map;
 import std.conv : to;
 import std.datetime : Date;
 import std.range.interfaces : InputRange, inputRangeObject;
-import std.typecons : Nullable;
 
 import vibe.data.bson : Bson, BsonObjectID, deserializeBson, serializeToBson;
 import vibe.data.serialization : serializationName = name;
@@ -71,7 +70,7 @@ private:
 class MySQLEventStore : EventStore
 {
 private:
-    import mysql;
+    import mysql : MySQLPool, prepare, Row;
 
     @Value("mysql.table.events") string eventsTableName;
 
@@ -104,8 +103,8 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "INSERT INTO " ~ eventsTableName
-                ~ " (begin, end, name, description, type, shout) VALUES(?, ?, ?, ?, ?, ?)");
+                "INSERT INTO " ~ eventsTableName ~ " (begin, end, name, description, type, shout)"
+                    ~ " VALUES(?, ?, ?, ?, ?, ?)");
         prepared.setArgs(event.begin, event.end, event.name, event.description,
                 event.type.to!uint, event.shout);
         prepared.exec();
@@ -197,6 +196,7 @@ enum EventType
 
 struct Event
 {
+    import std.typecons: Nullable;
     @serializationName("_id") string id;
     @serializationName("date") Date begin;
     @serializationName("end_date") Nullable!Date end;
