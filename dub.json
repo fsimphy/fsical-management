@@ -35,7 +35,7 @@
 			"excludedSourceFiles": ["source/fsicalmanagement/app.d"],
 			"sourcePaths": ["test"],
 			"dependencies": {
-				"unit-threaded": "~>0.7.38"
+				"unit-threaded": "~>0.7.45"
 			},
 			"versions": ["unitUnthreaded"]
 		}
