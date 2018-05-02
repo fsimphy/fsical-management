@@ -19,6 +19,7 @@ import vibe.web.web;
 @requiresAuth class FsicalManagement
 {
     import vibe.http.server : HTTPServerRequest;
+
     @noRoute AuthInfo authenticate(scope HTTPServerRequest, scope HTTPServerResponse) @safe
     {
         if (authInfo.value.isNone)

@@ -70,7 +70,7 @@ private:
 class MySQLEventStore : EventStore
 {
 private:
-    import mysql : MySQLPool, prepare, Row;
+    import mysql : MySQLPool, prepare, Row, query, exec;
 
     @Value("mysql.table.events") string eventsTableName;
 
@@ -81,19 +81,22 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "SELECT id begin end name description type shout FROM " ~ eventsTableName ~ " WHERE id = ?");
+                "SELECT id begin end name description type shout FROM "
+                ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
-        return toEvent(prepared.query.front);
+        return cn.query(prepared).front.toEvent;
     }
 
     InputRange!Event getAllEvents()
     {
+        import std.array : array;
+
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName ~ "");
-        return prepared.querySet.map!(r => toEvent(r)).inputRangeObject;
+                "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName);
+        return cn.query(prepared).array.map!(r => toEvent(r)).inputRangeObject;
     }
 
     void addEvent(Event event)
@@ -101,12 +104,11 @@ public:
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare(
-                "INSERT INTO " ~ eventsTableName ~ " (begin, end, name, description, type, shout)"
-                    ~ " VALUES(?, ?, ?, ?, ?, ?)");
+        auto prepared = cn.prepare("INSERT INTO " ~ eventsTableName
+                ~ " (begin, end, name, description, type, shout)" ~ " VALUES(?, ?, ?, ?, ?, ?)");
         prepared.setArgs(event.begin, event.end, event.name, event.description,
                 event.type.to!uint, event.shout);
-        prepared.exec();
+        cn.exec(prepared);
     }
 
     /*     InputRange!Event getEventsBeginningBetween(Date begin, Date end) @safe
@@ -123,25 +125,27 @@ public:
             cn.close;
         auto prepared = cn.prepare("DELETE FROM " ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
-        prepared.exec();
+        cn.exec(prepared);
     }
 
 private:
     @Autowire MySQLPool pool;
+}
 
-    Event toEvent(Row r)
-    {
-        Event event;
-        event.id = r[0].get!uint.to!string;
-        event.begin = r[1].get!Date;
-        if (r[2].hasValue)
-            event.end = r[2].get!Date;
-        event.name = r[3].get!string;
-        event.description = r[4].get!string;
-        event.type = r[5].get!uint.to!EventType;
-        event.shout = r[6].get!byte.to!bool;
-        return event;
-    }
+import mysql : Row;
+
+Event toEvent(Row r)
+{
+    Event event;
+    event.id = r[0].get!uint.to!string;
+    event.begin = r[1].get!Date;
+    if (r[2].type != typeid(typeof(null)))
+        event.end = r[2].get!Date;
+    event.name = r[3].get!string;
+    event.description = r[4].get!string;
+    event.type = r[5].get!uint.to!EventType;
+    event.shout = r[6].get!byte.to!bool;
+    return event;
 }
 
 enum EventType
@@ -155,7 +159,8 @@ enum EventType
 
 struct Event
 {
-    import std.typecons: Nullable;
+    import std.typecons : Nullable;
+
     @serializationName("_id") string id;
     @serializationName("date") Date begin;
     @serializationName("end_date") Nullable!Date end;
