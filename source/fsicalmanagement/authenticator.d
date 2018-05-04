@@ -66,7 +66,7 @@ public:
     InputRange!AuthInfo getAllUsers() @safe
     {
         import std.algorithm : map;
-        import std.range : inputRangeObject;
+        import std.range.interfaces : inputRangeObject;
 
         return users.find().map!(deserializeBson!AuthInfo).inputRangeObject;
     }
@@ -87,7 +87,7 @@ enum Privilege
 class MySQLAuthenticator : Authenticator
 {
 private:
-    import mysql : MySQLPool, Row, prepare;
+    import mysql : MySQLPool, Row, prepare, exec, query;
 
     @Autowire MySQLPool pool;
     @Autowire PasswordHasher passwordHasher;
@@ -105,7 +105,7 @@ public:
                 "SELECT id, username, passwordHash, privilege FROM "
                 ~ usersTableName ~ " WHERE username = ?");
         prepared.setArg(0, username);
-        auto result = prepared.query();
+        auto result = cn.query(prepared);
         if (!result.empty)
         {
             auto authInfo = toAuthInfo(result.front);
@@ -123,21 +123,24 @@ public:
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
-                "INSERT INTO " ~ usersTableName ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
+                "INSERT INTO " ~ usersTableName
+                ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
         prepared.setArgs(authInfo.username, authInfo.passwordHash, authInfo.privilege.to!uint);
-        prepared.exec();
+        cn.exec(prepared);
     }
 
     InputRange!AuthInfo getAllUsers()
     {
         import std.algorithm : map;
-        import std.range : inputRangeObject;
+        import std.array : array;
+        import std.range.interfaces : inputRangeObject;
 
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
-        auto prepared = cn.prepare("SELECT id, username, passwordHash, privilege FROM " ~ usersTableName ~ "");
-        return prepared.querySet.map!(r => toAuthInfo(r)).inputRangeObject;
+        auto prepared = cn.prepare(
+                "SELECT id, username, passwordHash, privilege FROM " ~ usersTableName);
+        return cn.query(prepared).array.map!(r => toAuthInfo(r)).inputRangeObject;
     }
 
     void removeUser(string id)
@@ -147,7 +150,7 @@ public:
             cn.close;
         auto prepared = cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
-        prepared.exec();
+        cn.exec(prepared);
     }
 
 private:

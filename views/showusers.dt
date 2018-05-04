@@ -1,20 +1,19 @@
 extends layout.dt
 block content
 	h1 Users
-	- foreach (user; users)
-		table
+	table
+		tr
+			th id
+			th username
+			th privilege
+		- foreach (user; users)
 			tr
-				td id
 				td #{user.id}
-			tr
-				td username
 				td #{user.username}
-			tr
-				td privilege
 				td #{user.privilege}
-		form(action="/removeuser", method="post")
-			input#id(value="#{user.id}", name="id", type="hidden")
-			input#submitButton(type="submit", value="Entfernen")
-		hr
+				td
+					form(action="/removeuser", method="post")
+						input#id(value="#{user.id}", name="id", type="hidden")
+						input#submitButton(type="submit", value="Entfernen")
 	- if (_error)
 		p.error= _error

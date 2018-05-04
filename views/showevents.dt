@@ -1,30 +1,25 @@
 extends layout.dt
 block content
 	h1 Events
-	- foreach (event; events)
-		table
+	table
+		tr
+			th begin
+			th end
+			th _id
+			th name
+			th desc
+			th etype
+			th shout
+		- foreach (event; events)
 			tr
-				td begin
 				td #{event.begin}
-			tr
-				td end
 				td #{event.end}
-			tr
-				td _id
 				td #{event.id}
-			tr
-				td name
 				td #{event.name}
-			tr
-				td desc
 				td.pre #{event.description}
-			tr
-				td etype
 				td #{event.type}
-			tr
-				td shout
 				td #{event.shout}
-		form(action="/removeevent", method="post")
-			input#id(value="#{event.id}", name="id", type="hidden")
-			input#submitButton(type="submit", value="Entfernen")
-		hr
+				td
+					form(action="/removeevent", method="post")
+						input#id(value="#{event.id}", name="id", type="hidden")
+						input#submitButton(type="submit", value="Entfernen")
