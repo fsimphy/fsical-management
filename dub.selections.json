@@ -9,7 +9,7 @@
 		"libasync": "0.8.3",
 		"libevent": "2.0.2+2.0.16",
 		"memutils": "0.4.10",
-		"mysql-native": "2.2.1",
+		"mysql-native": "2.2.2",
 		"openssl": "1.1.6+1.0.1g",
 		"poodinis": "8.0.2",
 		"stdx-allocator": "2.77.1",

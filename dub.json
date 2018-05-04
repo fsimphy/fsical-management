@@ -6,7 +6,7 @@
 	],
 	"dependencies": {
 		"dauth": "~>0.6.3",
-		"mysql-native": "~>2.2.1",
+		"mysql-native": "~>2.2.2",
 		"vibe-d": "~>0.8.3",
 		"vibe-d:tls": "~>0.8.3",
 		"diet-ng": "~>1.4.5",
@@ -36,8 +36,7 @@
 			"sourcePaths": ["test"],
 			"dependencies": {
 				"unit-threaded": "~>0.7.45"
-			},
-			"versions": ["unitUnthreaded"]
+			}
 		}
 	]
 }
