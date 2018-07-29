@@ -19,8 +19,8 @@ public:
         return eventRepository.findAll;
     }
 
-    Event createEvent(Date begin, Nullable!Date end, string description,
-            string name, EventType type, bool shout) @safe
+    Event createEvent(const Date begin, const Nullable!Date end,
+            const string description, const string name, const EventType type, const bool shout) @safe
     {
         import core.time : days;
         import std.array : replace, split;
@@ -36,7 +36,7 @@ public:
 
     }
 
-    void removeEventById(string id) @safe
+    void removeEventById(const string id) @safe
     {
         eventRepository.deleteById(id);
         logInfo("Deleted event with id %s from the database", id);

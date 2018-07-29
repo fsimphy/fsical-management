@@ -34,7 +34,7 @@ public:
         container.register!(ValueInjector!Arguments, AppArgumentsInjector);
         container.register!(ValueInjector!string, ConfigurationInector);
 
-        auto arguments = container.resolve!(AppArgumentsInjector).get("");
+        immutable arguments = container.resolve!(AppArgumentsInjector).get("");
         final switch (arguments.database) with (DatabaseArgument)
         {
         case mongodb:
@@ -75,7 +75,7 @@ private:
 
 public:
 
-    override string get(string key) @safe nothrow
+    override string get(const string key) @safe nothrow
     {
         if (!initialized)
         {
@@ -95,7 +95,7 @@ private:
     @Value("MongoDB database name") string databaseName;
 
 public:
-    override MongoCollection get(string key) @safe
+    override MongoCollection get(const string key) @safe
     {
         return mongoClient.getCollection(databaseName ~ "." ~ key);
     }
@@ -126,7 +126,7 @@ public:
                 "The name of the MySQL database to use.");
     }
 
-    override Arguments get(string key) @safe
+    override Arguments get(const string key) @safe
     {
         import std.exception : enforce;
 

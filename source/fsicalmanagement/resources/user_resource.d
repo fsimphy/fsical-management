@@ -21,7 +21,7 @@ public:
     void getUsers(string _error = null)
     {
         auto users = userFacade.getAllUsers;
-        auto authInfo = this.authInfo.value;
+        immutable authInfo = this.authInfo.value;
         render!("showusers.dt", _error, users, authInfo);
     }
 
@@ -38,7 +38,7 @@ public:
     @auth(Role.admin)
     void getCreateuser(ValidationErrorData _error = ValidationErrorData.init)
     {
-        auto authInfo = this.authInfo.value;
+        immutable authInfo = this.authInfo.value;
         render!("createuser.dt", _error, authInfo);
     }
 

@@ -19,13 +19,13 @@ public:
         return userRepository.findAll();
     }
 
-    void removeUserById(string id) @safe
+    void removeUserById(const string id) @safe
     {
         userRepository.deleteById(id);
         logInfo("Deleted user with id %s from the database", id);
     }
 
-    User createUser(string username, string password, Privilege privilege) @safe
+    User createUser(const string username, const string password, const Privilege privilege) @safe
     {
         import vibe.core.concurrency : async;
 

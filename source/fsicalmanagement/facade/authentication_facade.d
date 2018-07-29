@@ -10,11 +10,11 @@ private:
     @Autowire AuthenticationService authenticationService;
 
 public:
-    AuthenticationInfo authenticate(string username, string password) @safe
+    AuthenticationInfo authenticate(const string username, const string password) @safe
     {
         import std.exception : enforce;
 
-        auto authInfo = authenticationService.authenticate(username, password);
+        immutable authInfo = authenticationService.authenticate(username, password);
         enforce(!authInfo.isNull, "Invalid username or password.");
         return authInfo.get;
     }

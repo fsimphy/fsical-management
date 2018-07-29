@@ -11,8 +11,8 @@ interface UserRepository
 {
     User save(User user) @safe;
     InputRange!User findAll() @safe;
-    Nullable!User findByUsername(string username) @safe;
-    void deleteById(string id) @safe;
+    Nullable!User findByUsername(const string username) @safe;
+    void deleteById(const string id) @safe;
 }
 
 class MongoDBUserRepository : UserRepository
@@ -49,7 +49,7 @@ public:
         return users.find().map!(deserializeBson!User).inputRangeObject;
     }
 
-    Nullable!User findByUsername(string username) @safe
+    Nullable!User findByUsername(const string username) @safe
     {
         import std.typecons : nullable;
         import vibe.data.bson : Bson;
@@ -64,7 +64,7 @@ public:
         return Nullable!User.init;
     }
 
-    void deleteById(string id) @safe
+    void deleteById(const string id) @safe
     {
         users.remove(["_id" : id]);
     }
@@ -103,7 +103,7 @@ public:
         return prepared.querySet.map!(r => toUser(r)).inputRangeObject;
     }
 
-    Nullable!User findByUsername(string username) @trusted
+    Nullable!User findByUsername(const string username) @trusted
     {
         auto cn = pool.lockConnection();
         scope (exit)
@@ -121,7 +121,7 @@ public:
         return Nullable!User.init;
     }
 
-    void deleteById(string id) @trusted
+    void deleteById(const string id) @trusted
     {
         auto cn = pool.lockConnection();
         scope (exit)
@@ -132,7 +132,7 @@ public:
     }
 
 private:
-    User toUser(in Row r) @trusted
+    User toUser(const Row r) @trusted
     {
         import fsicalmanagement.model.user : Privilege;
         import std.conv : to;

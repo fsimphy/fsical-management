@@ -12,7 +12,8 @@ private:
             string.init, string.init, Privilege.None);
 
 public:
-    @noRoute AuthenticationInfo authenticate(scope HTTPServerRequest, scope HTTPServerResponse) @safe
+    @noRoute AuthenticationInfo authenticate(const scope HTTPServerRequest,
+            const scope HTTPServerResponse) @safe
     {
         if (authInfo.value.isNone)
             redirect("/login");

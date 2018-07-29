@@ -9,7 +9,7 @@ struct User
     string passwordHash;
     Privilege privilege;
 
-    this(string username, string passwordHash, Privilege privilege) @safe @nogc pure nothrow
+    this(const string username, const string passwordHash, const Privilege privilege) @safe @nogc pure nothrow
     {
         this.username = username;
         this.passwordHash = passwordHash;

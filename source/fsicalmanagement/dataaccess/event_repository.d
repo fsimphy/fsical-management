@@ -11,8 +11,8 @@ interface EventRepository
 {
     Event save(Event) @safe;
     InputRange!Event findAll() @safe;
-    Nullable!Event findById(string id) @safe;
-    void deleteById(string id) @safe;
+    Nullable!Event findById(const string id) @safe;
+    void deleteById(const string id) @safe;
 }
 
 class MongoDBEventRepository : EventRepository
@@ -50,7 +50,7 @@ public:
         return events.find().map!(deserializeBson!Event).inputRangeObject;
     }
 
-    Nullable!Event findById(string id) @safe
+    Nullable!Event findById(const string id) @safe
     {
         import vibe.data.bson : Bson;
 
@@ -64,7 +64,7 @@ public:
         return Nullable!Event.init;
     }
 
-    void deleteById(string id) @safe
+    void deleteById(const string id) @safe
     {
         events.remove(["_id" : id]);
     }
@@ -104,7 +104,7 @@ public:
         return prepared.querySet.map!(r => toEvent(r)).inputRangeObject;
     }
 
-    Nullable!Event findById(string id) @trusted
+    Nullable!Event findById(const string id) @trusted
     {
         auto cn = pool.lockConnection();
         scope (exit)
@@ -123,7 +123,7 @@ public:
         return Nullable!Event.init;
     }
 
-    void deleteById(string id) @trusted
+    void deleteById(const string id) @trusted
     {
         auto cn = pool.lockConnection();
         scope (exit)
@@ -134,7 +134,7 @@ public:
     }
 
 private:
-    Event toEvent(Row r) @trusted
+    Event toEvent(const Row r) @trusted
     {
         import fsicalmanagement.model.event : EventType;
         import std.datetime.date : Date;

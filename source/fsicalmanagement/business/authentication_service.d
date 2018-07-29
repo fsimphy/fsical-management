@@ -13,7 +13,7 @@ private:
     @Autowire PasswordHashingService passwordHashingService;
 
 public:
-    Nullable!AuthenticationInfo authenticate(string username, string password) @safe
+    Nullable!AuthenticationInfo authenticate(const string username, const string password) @safe
     {
         import std.typecons : nullable;
         import vibe.core.concurrency : async;
@@ -26,7 +26,7 @@ public:
             if ((()@trusted => async(() => passwordHashingService.checkHash(password,
                     user.passwordHash)).getResult)())
             {
-                logInfo("Authentication for username %s was sucessfull", username);
+                logInfo("Authentication for username %s was successfull", username);
                 return AuthenticationInfo(user.id, user.username, user.privilege).nullable;
             }
         }
