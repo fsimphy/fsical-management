@@ -1,6 +1,6 @@
 module test.fsicalmanagement.business.password_hashing_service_test;
 
-import unit_threaded : getValue, Values;
+import unit_threaded.attrs : getValue, Values;
 import unit_threaded.should : shouldBeTrue;
 
 @("StubPasswordHashingService")

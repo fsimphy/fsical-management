@@ -27,7 +27,7 @@ public:
             const string description, const string name, const EventType type, const bool shout) @safe
     {
         import core.time : days;
-        import std.array : replace, split;
+        import std.array : replace;
         import std.exception : enforce;
 
         if (!end.isNull)
@@ -37,7 +37,6 @@ public:
 
         logInfo("Stored event %s in the database", event);
         return event;
-
     }
 
     void removeEventById(const string id) @safe
