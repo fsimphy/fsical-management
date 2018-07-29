@@ -9,16 +9,20 @@ import vibe.web.web;
     import fsicalmanagement.facade.event_facade : EventFacade;
     import fsicalmanagement.model.event : Event, EventType;
     import fsicalmanagement.resources.mixins.authentication : Authentication;
-    import poodinis : Autowire;
     import std.datetime : Date;
     import std.typecons : Nullable;
 
 private:
-    @Autowire EventFacade eventFacade;
+    EventFacade eventFacade;
 
     mixin Authentication;
 
 public:
+    this(EventFacade eventFacade)
+    {
+        this.eventFacade = eventFacade;
+    }
+
     @auth(Role.user | Role.admin)
     void index()
     {

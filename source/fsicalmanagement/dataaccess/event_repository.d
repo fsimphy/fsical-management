@@ -74,12 +74,16 @@ class MySQLEventRepository : EventRepository
 {
 private:
     import mysql : MySQLPool, prepare, Row;
-    import poodinis : Autowire;
 
-    @Autowire MySQLPool pool;
+    MySQLPool pool;
     @Value("mysql.table.events") string eventsTableName;
 
 public:
+    this(MySQLPool pool)
+    {
+        this.pool = pool;
+    }
+
     Event save(Event event) @trusted
     {
         auto cn = pool.lockConnection();

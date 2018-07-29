@@ -7,14 +7,18 @@ import vibe.web.web;
 {
     import fsicalmanagement.facade.authentication_facade : AuthenticationFacade;
     import fsicalmanagement.resources.mixins.authentication : Authentication;
-    import poodinis : Autowire;
 
 private:
-    @Autowire AuthenticationFacade authenticationFacade;
+    AuthenticationFacade authenticationFacade;
 
     mixin Authentication;
 
 public:
+    this(AuthenticationFacade authenticationFacade)
+    {
+        this.authenticationFacade = authenticationFacade;
+    }
+
     @noAuth void getLogin(string _error = null)
     {
         immutable authInfo = this.authInfo.value;

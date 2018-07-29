@@ -5,13 +5,12 @@ class UserFacade
     import fsicalmanagement.business.password_hashing_service : PasswordHashingService;
     import fsicalmanagement.dataaccess.user_repository : UserRepository;
     import fsicalmanagement.model.user : Privilege, User;
-    import poodinis : Autowire;
     import std.range.interfaces : InputRange;
     import vibe.core.log : logInfo;
 
 private:
-    @Autowire UserRepository userRepository;
-    @Autowire PasswordHashingService passwordHashingService;
+    UserRepository userRepository;
+    PasswordHashingService passwordHashingService;
 
 public:
     this(UserRepository userRepository, PasswordHashingService passwordHashingService)
@@ -36,8 +35,8 @@ public:
         import vibe.core.concurrency : async;
 
         immutable user = userRepository.save(User(username,
-                (() @trusted => async(() => passwordHashingService.generateHash(password)).getResult)(),
-                privilege));
+                (() @trusted => async(() => passwordHashingService.generateHash(password))
+                .getResult)(), privilege));
 
         logInfo("Stored user %s in the database", user);
         return user;

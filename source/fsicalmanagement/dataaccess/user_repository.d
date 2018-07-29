@@ -74,12 +74,16 @@ class MySQLUserRepository : UserRepository
 {
 private:
     import mysql : MySQLPool, Row, prepare;
-    import poodinis : Autowire;
 
-    @Autowire MySQLPool pool;
+    MySQLPool pool;
     @Value("mysql.table.users") string usersTableName;
 
 public:
+    this(MySQLPool pool)
+    {
+        this.pool = pool;
+    }
+
     User save(User user) @trusted
     {
         auto cn = pool.lockConnection();

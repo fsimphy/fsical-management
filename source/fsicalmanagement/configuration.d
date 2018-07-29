@@ -91,10 +91,16 @@ class MongoCollectionInjector : ValueInjector!MongoCollection
 private:
     import vibe.db.mongo.client : MongoClient;
 
-    @Autowire MongoClient mongoClient;
+    MongoClient mongoClient;
     @Value("MongoDB database name") string databaseName;
 
 public:
+
+    this(MongoClient mongoClient)
+    {
+        this.mongoClient = mongoClient;
+    }
+
     override MongoCollection get(const string key) @safe
     {
         return mongoClient.getCollection(databaseName ~ "." ~ key);

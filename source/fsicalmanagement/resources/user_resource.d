@@ -9,14 +9,18 @@ import vibe.web.web;
     import fsicalmanagement.facade.user_facade : UserFacade;
     import fsicalmanagement.model.user : Privilege;
     import fsicalmanagement.resources.mixins.authentication : Authentication;
-    import poodinis : Autowire;
 
 private:
-    @Autowire UserFacade userFacade;
+    UserFacade userFacade;
 
     mixin Authentication;
 
 public:
+    this(UserFacade userFacade)
+    {
+        this.userFacade = userFacade;
+    }
+
     @auth(Role.admin)
     void getUsers(string _error = null)
     {
