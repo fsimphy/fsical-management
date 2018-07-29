@@ -9,9 +9,16 @@ import unit_threaded.should : shouldBeTrue;
 {
     import fsicalmanagement.business.password_hashing_service : StubPasswordHashingService;
 
+    // given
     immutable underTest = new StubPasswordHashingService;
     immutable testPassword = getValue!string;
-    underTest.checkHash(testPassword, underTest.generateHash(testPassword)).shouldBeTrue;
+
+    // when
+    immutable isPasswordCorrect = underTest.checkHash(testPassword,
+            underTest.generateHash(testPassword));
+
+    // then
+    isPasswordCorrect.shouldBeTrue;
 }
 
 @("SHA256PasswordHashingService")
@@ -20,7 +27,14 @@ import unit_threaded.should : shouldBeTrue;
 {
     import fsicalmanagement.business.password_hashing_service : SHA256PasswordHashingService;
 
+    // given
     immutable underTest = new SHA256PasswordHashingService;
     immutable testPassword = getValue!string;
-    underTest.checkHash(testPassword, underTest.generateHash(testPassword)).shouldBeTrue;
+
+    // when
+    immutable isPasswordCorrect = underTest.checkHash(testPassword,
+            underTest.generateHash(testPassword));
+
+    // then
+    isPasswordCorrect.shouldBeTrue;
 }
