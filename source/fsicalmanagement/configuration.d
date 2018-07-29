@@ -1,6 +1,6 @@
 module fsicalmanagement.configuration;
 
-public import poodinis;
+import poodinis;
 
 import vibe.db.mongo.collection : MongoCollection;
 
@@ -9,54 +9,69 @@ class Context : ApplicationContext
 public:
     override void registerDependencies(shared(DependencyContainer) container)
     {
-        import fsicalmanagement.authenticator : Authenticator;
-        import fsicalmanagement.event : EventStore;
-        import fsicalmanagement.fsicalmanagement : FsicalManagement;
-        import fsicalmanagement.passhash : PasswordHasher, SHA256PasswordHasher;
+
+        import fsicalmanagement.business.password_hashing_service : PasswordHashingService,
+            SHA256PasswordHashingService;
+        import fsicalmanagement.business.authentication_service : AuthenticationService;
+        import fsicalmanagement.dataaccess.event_repository : EventRepository;
+        import fsicalmanagement.dataaccess.user_repository : UserRepository;
+        import fsicalmanagement.facade.authentication_facade : AuthenticationFacade;
+        import fsicalmanagement.facade.event_facade : EventFacade;
+        import fsicalmanagement.facade.user_facade : UserFacade;
+        import fsicalmanagement.resources.login_resource : LoginResource;
+        import fsicalmanagement.resources.event_resource : EventResource;
+        import fsicalmanagement.resources.user_resource : UserResource;
         import vibe.core.log : logInfo;
-        
+
+        container.register!AuthenticationFacade;
+        container.register!AuthenticationService;
+        container.register!EventFacade;
+        container.register!EventResource;
+        container.register!(PasswordHashingService, SHA256PasswordHashingService);
+        container.register!UserFacade;
+        container.register!LoginResource;
+        container.register!UserResource;
         container.register!(ValueInjector!Arguments, AppArgumentsInjector);
+        container.register!(ValueInjector!string, ConfigurationInector);
+
         auto arguments = container.resolve!(AppArgumentsInjector).get("");
         final switch (arguments.database) with (DatabaseArgument)
         {
         case mongodb:
             import vibe.db.mongo.client : MongoClient;
             import vibe.db.mongo.mongo : connectMongoDB;
-            import fsicalmanagement.authenticator : MongoDBAuthenticator;
-            import fsicalmanagement.event : MongoDBEventStore;
+            import fsicalmanagement.dataaccess.user_repository : MongoDBUserRepository;
+            import fsicalmanagement.dataaccess.event_repository : MongoDBEventRepository;
 
             auto mongoClient = connectMongoDB(arguments.mongodb.host);
             container.register!MongoClient.existingInstance(mongoClient);
-            container.register!(EventStore, MongoDBEventStore!());
-            container.register!(Authenticator, MongoDBAuthenticator!());
+            container.register!(EventRepository, MongoDBEventRepository);
+            container.register!(UserRepository, MongoDBUserRepository);
             container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
             logInfo("Using MongoDB as database system");
             break;
         case mysql:
             import mysql : MySQLPool;
-            import fsicalmanagement.authenticator : MySQLAuthenticator;
-            import fsicalmanagement.event : MySQLEventStore;
+            import fsicalmanagement.dataaccess.user_repository : MySQLUserRepository;
+            import fsicalmanagement.dataaccess.event_repository : MySQLEventRepository;
 
             auto pool = new MySQLPool(arguments.mysql.host, arguments.mysql.username,
                     arguments.mysql.password, arguments.mysql.database);
             container.register!MySQLPool.existingInstance(pool);
-            container.register!(EventStore, MySQLEventStore);
-            container.register!(Authenticator, MySQLAuthenticator);
+            container.register!(EventRepository, MySQLEventRepository);
+            container.register!(UserRepository, MySQLUserRepository);
             logInfo("Using MySQL as database system");
             break;
         }
-        container.register!(PasswordHasher, SHA256PasswordHasher);
-        container.register!FsicalManagement;
-        container.register!(ValueInjector!string, StringInjector);
     }
 }
 
-class StringInjector : ValueInjector!string
+class ConfigurationInector : ValueInjector!string
 {
 private:
     string[string] config;
     @Value() Arguments arguments;
-    bool initialized = false;
+    bool initialized;
 
 public:
 
@@ -77,8 +92,7 @@ private:
     import vibe.db.mongo.client : MongoClient;
 
     @Autowire MongoClient mongoClient;
-    @Value("MongoDB database name")
-    string databaseName;
+    @Value("MongoDB database name") string databaseName;
 
 public:
     override MongoCollection get(string key) @safe
@@ -91,6 +105,7 @@ class AppArgumentsInjector : ValueInjector!Arguments
 {
 private:
     Arguments arguments;
+
 public:
 
     this()

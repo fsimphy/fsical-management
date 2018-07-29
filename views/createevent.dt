@@ -9,38 +9,38 @@ block content
 				tbody#fieldTable
 					tr
 						td
-							label(for="name") Ereignisname
+							label(for="name") Event name
 						td
 							input#name(value="", name="name", type="text")
 						- showerror("name");
 					tr
 						td
-							label(for="description") Beschreibung
+							label(for="description") Description
 						td
 							textarea#description(value="", name="description", cols="40", rows="5")
 						- showerror("description");
 					tr
 						td
-							label(for="multiday") Mehrtägig
+							label(for="multiday") Multiday
 						td
 							input#multiday(name="multiday", type="checkbox")
 					tr
 						td
-							label#beginLabel(for="begin") Datum
+							label#beginLabel(for="begin") Date
 						td
 							input#begin(value="", name="begin", type="date")
 						- showerror("begin");
 						- showerror("end");
 					tr
 						td
-							label(for="type") Typ
+							label(for="type") Type
 						td
 							select#type(name="type")
-								option(value="Holiday") Feiertag
-								option(value="Birthday") Geburtstag
-								option(value="FSI_Event") FSI Ereignis
-								option(value="General_University_Event") Allgemeines Universitäts Ereignis
-								option(value="Any") Sonstiges
+								option(value="Holiday") Holiday
+								option(value="Birthday") Birthday
+								option(value="FSI_Event") FSI Event
+								option(value="General_University_Event") General University Event
+								option(value="Any") Other
 						- showerror("type");
 					tr
 						td
@@ -52,7 +52,7 @@ block content
 				tfoot
 					tr
 						td(colspan="2")
-							input#submitButton(type="submit", value="Ereignis erstellen")
+							input#submitButton(type="submit", value="Create event")
 	- if (_error.msg && _error.field == "")
 		p.error= _error.msg
 	script(type="text/javascript").
@@ -63,11 +63,11 @@ block content
 			var row = table.insertRow(4);
 			var cell1 = row.insertCell(0);
 			var cell2 = row.insertCell(1);
-			cell1.innerHTML = "<label for='end'>Bis</label>";
+			cell1.innerHTML = "<label for='end'>Until</label>";
 			cell2.innerHTML = "<input id='end' value='' name='end' type='date'>";
-			beginLabel.innerHTML = "Von";
+			beginLabel.innerHTML = "From";
 			} else {
 				table.deleteRow(4);
-				beginLabel.innerHTML = "Datum";
+				beginLabel.innerHTML = "Date";
 			}
 		};

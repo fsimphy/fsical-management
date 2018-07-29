@@ -9,24 +9,24 @@ block content
 				tbody#fieldTable
 					tr
 						td
-							label(for="username") Benutzername
+							label(for="username") Username
 						td
 							input#username(value="", name="username", type="text")
 						- showerror("username");
 					tr
 						td
-							label(for="password") Passwort
+							label(for="password") Password
 						td
 							input#password(value="", name="password", type="password")
 					tr
 						td
-							label(for="role") Rolle
+							label(for="privilege") Privilege
 						td
-							select#type(name="role")
-								option(value="User") Benutzer
+							select#type(name="privilege")
+								option(value="User") User
 								option(value="Admin") Administrator
-						- showerror("role");
+						- showerror("privilege");
 				tfoot
 					tr
 						td(colspan="2")
-							input#submitButton(type="submit", value="Benutzer erstellen")
+							input#submitButton(type="submit", value="Create user")

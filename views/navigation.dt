@@ -4,11 +4,11 @@
 			li
 				a(href='/') Home
 			li
-				a(href='/createevent') Ereignis erstellen
+				a(href='/createevent') Create event
 			- if(authInfo.isAdmin())
 				li
-					a(href='/users') Benutzerliste
+					a(href='/users') Users
 				li
-					a(href='/createuser') Benutzer erstellen
+					a(href='/createuser') Create user
 			li
-				a(href='/logout') Ausloggen
+				a(href='/logout') Logout

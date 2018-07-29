@@ -1,12 +1,12 @@
-module fsicalmanagement.passhash;
+module fsicalmanagement.business.password_hashing_service;
 
-interface PasswordHasher
+interface PasswordHashingService
 {
     string generateHash(in string password) const @safe;
     bool checkHash(in string password, in string hash) const @safe;
 }
 
-class StubPasswordHasher : PasswordHasher
+class StubPasswordHashingService : PasswordHashingService
 {
     string generateHash(in string password) const @safe pure nothrow
     {
@@ -19,7 +19,7 @@ class StubPasswordHasher : PasswordHasher
     }
 }
 
-class SHA256PasswordHasher : PasswordHasher
+class SHA256PasswordHashingService : PasswordHashingService
 {
     import dauth : dupPassword, isSameHash, makeHash, parseHash;
     import std.digest.sha : SHA256;
