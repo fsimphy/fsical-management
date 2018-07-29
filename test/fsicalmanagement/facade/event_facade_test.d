@@ -10,7 +10,7 @@ import unit_threaded.attrs : getValue, Values;
 import unit_threaded.mock : mock;
 import unit_threaded.should : shouldBeSameSetAs, shouldEqual, shouldThrow;
 
-@("AuthenticationFacade.getAllEvents")
+@("EventFacade.getAllEvents")
 unittest
 {
         // given
@@ -31,7 +31,7 @@ unittest
         allEvents.shouldBeSameSetAs([event1, event2]);
 }
 
-@("AuthenticationFacade.createEvent single day")
+@("EventFacade.createEvent single day")
 unittest
 {
         import std.array : replace;
@@ -64,7 +64,7 @@ unittest
         eventRepositoryMock.expectCalled!"save"(callingEvent);
 }
 
-@("AuthenticationFacade.createEvent multi day success")
+@("EventFacade.createEvent multi day success")
 @Values(Date(2018, 7, 21), Date(2018, 7, 22), Date(2018, 9, 10), Date(2019, 2, 13))
 unittest
 {
@@ -98,7 +98,7 @@ unittest
         eventRepositoryMock.expectCalled!"save"(callingEvent);
 }
 
-@("AuthenticationFacade.createEvent multi day failure")
+@("EventFacade.createEvent multi day failure")
 @Values(Date(2018, 7, 20), Date(2018, 7, 19), Date(2018, 4, 10), Date(2017, 12, 24))
 unittest
 {
@@ -125,7 +125,7 @@ unittest
         createEventCall().shouldThrow!Exception;
 }
 
-@("AuthenticationFacade.removeEventById")
+@("EventFacade.removeEventById")
 @Values("5a9c2cbd52e14fca100e76cd", "5a9c39a11b7add86399c1d36", "5a9c3a1f1b7add86399c1d37")
 unittest
 {

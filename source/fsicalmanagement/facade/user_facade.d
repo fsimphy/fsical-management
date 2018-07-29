@@ -14,6 +14,12 @@ private:
     @Autowire PasswordHashingService passwordHashingService;
 
 public:
+    this(UserRepository userRepository, PasswordHashingService passwordHashingService)
+    {
+        this.userRepository = userRepository;
+        this.passwordHashingService = passwordHashingService;
+    }
+
     InputRange!User getAllUsers() @safe
     {
         return userRepository.findAll();
