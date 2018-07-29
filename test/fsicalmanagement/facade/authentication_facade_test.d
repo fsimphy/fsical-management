@@ -4,9 +4,7 @@ import fsicalmanagement.business.authentication_service;
 import fsicalmanagement.data.authentication_info : AuthenticationInfo;
 import fsicalmanagement.facade.authentication_facade : AuthenticationFacade;
 import fsicalmanagement.model.user : Privilege;
-
 import std.typecons : Nullable, nullable;
-
 import unit_threaded.mock : mock;
 import unit_threaded.should : shouldEqual, shouldThrow;
 

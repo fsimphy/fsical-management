@@ -4,16 +4,20 @@ class EventFacade
 {
     import fsicalmanagement.dataaccess.event_repository : EventRepository;
     import fsicalmanagement.model.event : Event, EventType;
-    import poodinis : Autowire;
     import std.datetime.date : Date;
     import std.range.interfaces : InputRange;
     import std.typecons : Nullable;
     import vibe.core.log : logInfo;
 
 private:
-    @Autowire EventRepository eventRepository;
+    EventRepository eventRepository;
 
 public:
+    this(EventRepository eventRepository)
+    {
+        this.eventRepository = eventRepository;
+    }
+
     InputRange!Event getAllEvents() @safe
     {
         return eventRepository.findAll;
