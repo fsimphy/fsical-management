@@ -8,25 +8,25 @@ struct AuthenticationInfo
     string username;
     Privilege privilege;
 
-    mixin AuthMehtods;
-}
+    mixin(generateAuthMethods);
 
 private:
-mixin template AuthMehtods()
-{
-private:
-    import std.conv : to;
-    import std.format : format;
-    import std.traits : EnumMembers;
-
-public:
-    static foreach (member; EnumMembers!Privilege)
+    static string generateAuthMethods() pure @safe
     {
-        mixin(q{
-            bool is%1$s() const pure @safe nothrow
-            {
-                return privilege == Privilege.%1$s;
-            }
-        }.format(member.to!string));
+        import std.conv : to;
+        import std.format : format;
+        import std.traits : EnumMembers;
+
+        string ret;
+        foreach (member; EnumMembers!Privilege)
+        {
+            ret ~= q{
+                bool is%s() const pure @safe nothrow
+                {
+                    return privilege == Privilege.%s;
+                }
+            }.format(member.to!string, member.to!string);
+        }
+        return ret;
     }
 }
