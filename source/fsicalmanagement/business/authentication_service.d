@@ -18,6 +18,10 @@ public:
         this.passwordHashingService = passwordHashingService;
     }
 
+    this()
+    {
+    }
+
     Nullable!AuthenticationInfo authenticate(const string username, const string password) @safe
     {
         import std.typecons : nullable;

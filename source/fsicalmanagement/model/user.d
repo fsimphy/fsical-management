@@ -15,6 +15,14 @@ struct User
         this.passwordHash = passwordHash;
         this.privilege = privilege;
     }
+
+    this(const string id, const string username, const string passwordHash, const Privilege privilege) @safe @nogc pure nothrow
+    {
+        this.id = id;
+        this.username = username;
+        this.passwordHash = passwordHash;
+        this.privilege = privilege;
+    }
 }
 
 enum Privilege

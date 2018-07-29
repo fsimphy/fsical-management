@@ -19,9 +19,8 @@ unittest
     immutable privilege = Privilege.User;
 
     auto userRepositoryMock = mock!UserRepository;
-    auto user = User(username, password, privilege);
-    user.id = userId;
-    userRepositoryMock.returnValue!"findByUsername"(user.nullable);
+    auto user = User(userId, username, password, privilege).nullable;
+    userRepositoryMock.returnValue!"findByUsername"(user);
 
     auto underTest = new AuthenticationService(userRepositoryMock, new StubPasswordHashingService());
 
@@ -62,8 +61,8 @@ unittest
     immutable privilege = Privilege.User;
 
     auto userRepositoryMock = mock!UserRepository;
-    auto user = User(username, correctPassword, privilege);
-    userRepositoryMock.returnValue!"findByUsername"(user.nullable);
+    auto user = User(username, correctPassword, privilege).nullable;
+    userRepositoryMock.returnValue!"findByUsername"(user);
 
     auto underTest = new AuthenticationService(userRepositoryMock, new StubPasswordHashingService());
 

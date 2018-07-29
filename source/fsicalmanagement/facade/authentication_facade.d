@@ -4,12 +4,16 @@ class AuthenticationFacade
 {
     import fsicalmanagement.business.authentication_service : AuthenticationService;
     import fsicalmanagement.data.authentication_info : AuthenticationInfo;
-    import poodinis : Autowire;
 
 private:
-    @Autowire AuthenticationService authenticationService;
+    AuthenticationService authenticationService;
 
 public:
+    this(AuthenticationService authenticationService)
+    {
+        this.authenticationService = authenticationService;
+    }
+
     AuthenticationInfo authenticate(const string username, const string password) @safe
     {
         import std.exception : enforce;
