@@ -1,6 +1,6 @@
 module fsicalmanagement.app;
 
-import fsicalmanagement.resources.login_resource : LoginResource;
+import fsicalmanagement.resources.authentication_resource : AuthenticationResource;
 import fsicalmanagement.resources.event_resource: EventResource;
 import fsicalmanagement.resources.user_resource : UserResource;
 import fsicalmanagement.configuration : Context;
@@ -17,7 +17,7 @@ void main()
     container.registerContext!Context;
 
     auto router = new URLRouter;
-    router.registerWebInterface(container.resolve!LoginResource);
+    router.registerWebInterface(container.resolve!AuthenticationResource);
     router.registerWebInterface(container.resolve!EventResource);
     router.registerWebInterface(container.resolve!UserResource);
     router.get("*", serveStaticFiles("public"));

@@ -1,9 +1,9 @@
-module fsicalmanagement.resources.login_resource;
+module fsicalmanagement.resources.authentication_resource;
 
 import vibe.web.auth;
 import vibe.web.web;
 
-@requiresAuth class LoginResource
+@requiresAuth class AuthenticationResource
 {
     import fsicalmanagement.facade.authentication_facade : AuthenticationFacade;
     import fsicalmanagement.resources.mixins.authentication : Authentication;

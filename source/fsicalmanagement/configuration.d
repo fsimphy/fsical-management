@@ -18,7 +18,7 @@ public:
         import fsicalmanagement.facade.authentication_facade : AuthenticationFacade;
         import fsicalmanagement.facade.event_facade : EventFacade;
         import fsicalmanagement.facade.user_facade : UserFacade;
-        import fsicalmanagement.resources.login_resource : LoginResource;
+        import fsicalmanagement.resources.authentication_resource : AuthenticationResource;
         import fsicalmanagement.resources.event_resource : EventResource;
         import fsicalmanagement.resources.user_resource : UserResource;
         import vibe.core.log : logInfo;
@@ -29,7 +29,7 @@ public:
         container.register!EventResource;
         container.register!(PasswordHashingService, SHA256PasswordHashingService);
         container.register!UserFacade;
-        container.register!LoginResource;
+        container.register!AuthenticationResource;
         container.register!UserResource;
         container.register!(ValueInjector!Arguments, AppArgumentsInjector);
         container.register!(ValueInjector!string, ConfigurationInector);
