@@ -7,7 +7,7 @@ import fsicalmanagement.model.user : User, Privilege;
 import std.range.interfaces : inputRangeObject;
 import unit_threaded.attrs : getValue, Values;
 import unit_threaded.mock : mock;
-import unit_threaded.should : shouldBeSameSetAs, shouldEqual, shouldThrow;
+import unit_threaded.should : shouldBeSameSetAs, shouldEqual;
 
 @("UserFacade.getAllUsers")
 unittest
