@@ -1,5 +1,8 @@
 module fsicalmanagement.resources.mixins.authentication;
 
+/**
+ * Adds authentication functionality to a resource.
+ */
 mixin template Authentication()
 {
     import fsicalmanagement.data.authentication_info : AuthenticationInfo;
@@ -12,6 +15,11 @@ private:
             string.init, string.init, Privilege.None);
 
 public:
+    /**
+     * Provides information about a users permission to access a certain
+     * endpoint. This is called, whenever a request to an endpoint which is
+     * annotated with `auth` or `anyAuth` is received.
+     */
     @noRoute AuthenticationInfo authenticate(const scope HTTPServerRequest,
             const scope HTTPServerResponse) @safe
     {
