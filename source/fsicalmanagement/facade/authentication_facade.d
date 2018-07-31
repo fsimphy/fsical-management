@@ -11,9 +11,6 @@ class AuthenticationFacade
 private:
     AuthenticationService authenticationService;
 
-    SessionVar!(AuthenticationInfo, "authInfo") authInfo = AuthenticationInfo(
-            string.init, string.init, Privilege.None);
-
 public:
     ///
     this(AuthenticationService authenticationService)
