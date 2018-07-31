@@ -1,5 +1,8 @@
 module fsicalmanagement.facade.authentication_facade;
 
+/**
+ * Provides functionality to authenticate a user.
+ */
 class AuthenticationFacade
 {
     import fsicalmanagement.business.authentication_service : AuthenticationService;
@@ -8,13 +11,27 @@ class AuthenticationFacade
 private:
     AuthenticationService authenticationService;
 
+    SessionVar!(AuthenticationInfo, "authInfo") authInfo = AuthenticationInfo(
+            string.init, string.init, Privilege.None);
+
 public:
+    ///
     this(AuthenticationService authenticationService)
     {
         this.authenticationService = authenticationService;
     }
 
-    AuthenticationInfo authenticate(const string username, const string password) @safe
+    /**
+     * Authenticates a user.
+     * Params:
+     * username = The username with which to try authentication.
+     * password = The password with which to try authentication.
+     *
+     * Returns: `AuthenticationInfo` for the authenticated user.
+     *
+     * Throws: `Exception` on invalid $(D_PARAM username) or $(D_PARAM password).
+     */
+    void authenticate(const string username, const string password) @safe
     {
         import std.exception : enforce;
 
