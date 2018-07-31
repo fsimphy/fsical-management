@@ -29,13 +29,15 @@ public:
 
     /**
      * Displays a list of all events.
+     * _error = An error message, set automatically by vibe.d when this
+     *          endpoint is used as an error page.
      */
     @auth(Role.user | Role.admin)
-    void index()
+    void index(string _error = null)
     {
         auto events = eventFacade.getAllEvents;
         immutable authInfo = this.authInfo.value;
-        render!("showevents.dt", events, authInfo);
+        render!("showevents.dt", _error, events, authInfo);
     }
 
     /**
@@ -53,7 +55,7 @@ public:
     }
 
     /**
-     * Creates an event.
+     * Creates an event. Redirects to `getCreateevent` on failure.
      * Params:
      * begin = The date when the event begins or when it takes place if it is
      *         a single day event.
@@ -73,12 +75,12 @@ public:
     }
 
     /**
-     * Removes an event.
+     * Removes an event. Redirects to `index` on failure.
      * Params:
      * id = The id of the event to remove.
      */
     @auth(Role.user | Role.admin)
-    void postRemoveevent(string id)
+    @errorDisplay!index void postRemoveevent(string id)
     {
         eventFacade.removeEventById(id);
         redirect("/");

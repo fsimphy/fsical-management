@@ -27,6 +27,8 @@ public:
 
     /**
      * Displays a list of all users.
+     * _error = An error message, set automatically by vibe.d when this
+     *          endpoint is used as an error page.
      */
     @auth(Role.admin)
     void getUsers(string _error = null)
@@ -37,7 +39,7 @@ public:
     }
 
     /**
-     * Removes a user.
+     * Removes a user. Redirects to `getUsers` on failure.
      * Params:
      * id = The id of the user to remove.
      */
@@ -50,7 +52,6 @@ public:
         userFacade.removeUserById(id);
         redirect("/users");
     }
-
 
     /**
      * Displays the user creation page.
@@ -67,7 +68,7 @@ public:
     }
 
     /**
-     * Creates a user.
+     * Creates a user. Redirects to `getCreateevent` on failure.
      * Params:
      * username = The name of the user.
      * password = The password of the user .

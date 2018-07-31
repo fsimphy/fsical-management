@@ -28,3 +28,5 @@ block content
 			input#id(value="#{event.id}", name="id", type="hidden")
 			input#submitButton(type="submit", value="Delete")
 		hr
+	- if (_error)
+		p.error= _error
