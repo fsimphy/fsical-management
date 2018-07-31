@@ -28,7 +28,7 @@ public:
      *
      * Throws: `Exception` on invalid $(D_PARAM username) or $(D_PARAM password).
      */
-    void authenticate(const string username, const string password) @safe
+    AuthenticationInfo authenticate(const string username, const string password) @safe
     {
         import std.exception : enforce;
 
