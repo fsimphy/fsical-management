@@ -1,5 +1,8 @@
 module fsicalmanagement.facade.event_facade;
 
+/**
+ * Provides functionality to get, create and remove events.
+ */
 class EventFacade
 {
     import fsicalmanagement.dataaccess.event_repository : EventRepository;
@@ -13,16 +16,38 @@ private:
     EventRepository eventRepository;
 
 public:
+    ///
     this(EventRepository eventRepository)
     {
         this.eventRepository = eventRepository;
     }
 
+    /**
+     * Gets all events.
+     *
+     * Returns: An `InputRange` containing all `Event`s.
+     */
     InputRange!Event getAllEvents() @safe
     {
         return eventRepository.findAll;
     }
 
+    /**
+     * Creates an event.
+     * Params:
+     * begin = The date when the event begins or when it takes place if it is
+     *         a single day event.
+     * end = The date when the event ends or `null`, which makes the event a
+     *       single day event.
+     * description = The description of the event.
+     * name = The name of the event.
+     * type = The type of the event.
+     * shout = A flag specifying if the event should be announced.
+     *
+     * Returns: The created `Event`.
+     *
+     * Throws: `Exception` if $(D_PARAM end) is not after $(D_PARAM begin).
+     */
     Event createEvent(const Date begin, const Nullable!Date end,
             const string description, const string name, const EventType type, const bool shout) @safe
     {
@@ -39,6 +64,11 @@ public:
         return event;
     }
 
+    /**
+     * Removes an event.
+     * Params:
+     * id = The id of the event to remove.
+     */
     void removeEventById(const string id) @safe
     {
         eventRepository.deleteById(id);
