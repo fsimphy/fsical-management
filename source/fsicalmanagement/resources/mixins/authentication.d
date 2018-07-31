@@ -11,14 +11,15 @@ mixin template Authentication()
     import vibe.web.web : noRoute, SessionVar;
 
 private:
-    SessionVar!(AuthenticationInfo, "authInfo") authInfo = AuthenticationInfo(
-            string.init, string.init, Privilege.None);
+    SessionVar!(AuthenticationInfo, "authInfo") authInfo = AuthenticationInfo.init;
 
 public:
     /**
      * Provides information about a users permission to access a certain
      * endpoint. This is called, whenever a request to an endpoint which is
      * annotated with `auth` or `anyAuth` is received.
+     *
+     * Returns: `AuthenticationInfo` corresponding to the current session.
      */
     @noRoute AuthenticationInfo authenticate(const scope HTTPServerRequest,
             const scope HTTPServerResponse) @safe
