@@ -3,6 +3,9 @@ module fsicalmanagement.resources.event_resource;
 import vibe.web.auth;
 import vibe.web.web;
 
+/**
+ * Resource containing endpoints for displaying, creating and deleting events.
+ */
 @requiresAuth class EventResource
 {
     import fsicalmanagement.data.validation_error_data : ValidationErrorData;
@@ -18,11 +21,15 @@ private:
     mixin Authentication;
 
 public:
+    ///
     this(EventFacade eventFacade)
     {
         this.eventFacade = eventFacade;
     }
 
+    /**
+     * Displays a list of all events.
+     */
     @auth(Role.user | Role.admin)
     void index()
     {
@@ -31,6 +38,13 @@ public:
         render!("showevents.dt", events, authInfo);
     }
 
+    /**
+     * Displays the event creation page.
+     * Params:
+     * _error = Information about which fields failed validation.
+     *          Automatically provided by vibe.d, when this endpoint is used
+     *          as an error page.
+     */
     @auth(Role.user | Role.admin)
     void getCreateevent(ValidationErrorData _error = ValidationErrorData.init)
     {
@@ -38,6 +52,18 @@ public:
         render!("createevent.dt", _error, authInfo);
     }
 
+    /**
+     * Creates an event.
+     * Params:
+     * begin = The date when the event begins or when it takes place if it is
+     *         a single day event.
+     * end = The date when the event ends or `null`, which makes the event a
+     *       single day event.
+     * description = The description of the event.
+     * name = The name of the event.
+     * type = The type of the event.
+     * shout = A flag specifying if the event should be announced.
+     */
     @auth(Role.user | Role.admin)
     @errorDisplay!getCreateevent void postCreateevent(Date begin,
             Nullable!Date end, string description, string name, EventType type, bool shout)
@@ -46,6 +72,11 @@ public:
         redirect("/");
     }
 
+    /**
+     * Removes an event.
+     * Params:
+     * id = The id of the event to remove.
+     */
     @auth(Role.user | Role.admin)
     void postRemoveevent(string id)
     {

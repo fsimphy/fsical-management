@@ -3,6 +3,9 @@ module fsicalmanagement.resources.user_resource;
 import vibe.web.auth;
 import vibe.web.web;
 
+/**
+ * Resource containing endpoints for displaying, creating and deleting users.
+ */
 @requiresAuth class UserResource
 {
     import fsicalmanagement.data.validation_error_data : ValidationErrorData;
@@ -16,11 +19,15 @@ private:
     mixin Authentication;
 
 public:
+    ///
     this(UserFacade userFacade)
     {
         this.userFacade = userFacade;
     }
 
+    /**
+     * Displays a list of all users.
+     */
     @auth(Role.admin)
     void getUsers(string _error = null)
     {
@@ -29,6 +36,11 @@ public:
         render!("showusers.dt", _error, users, authInfo);
     }
 
+    /**
+     * Removes a user.
+     * Params:
+     * id = The id of the user to remove.
+     */
     @auth(Role.admin)
     @errorDisplay!getUsers void postRemoveuser(string id)
     {
@@ -39,6 +51,14 @@ public:
         redirect("/users");
     }
 
+
+    /**
+     * Displays the user creation page.
+     * Params:
+     * _error = Information about which fields failed validation.
+     *          Automatically provided by vibe.d, when this endpoint is used
+     *          as an error page.
+     */
     @auth(Role.admin)
     void getCreateuser(ValidationErrorData _error = ValidationErrorData.init)
     {
@@ -46,6 +66,13 @@ public:
         render!("createuser.dt", _error, authInfo);
     }
 
+    /**
+     * Creates a user.
+     * Params:
+     * username = The name of the user.
+     * password = The password of the user .
+     * privilege = The privilege of the user.
+     */
     @auth(Role.admin)
     @errorDisplay!getCreateuser void postCreateuser(string username,
             string password, Privilege privilege)
