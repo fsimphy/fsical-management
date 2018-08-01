@@ -1,5 +1,8 @@
 module fsicalmanagement.business.authentication_service;
 
+/**
+ * Provides functionality to authenticate a user.
+ */
 class AuthenticationService
 {
     import fsicalmanagement.business.password_hashing_service : PasswordHashingService;
@@ -12,16 +15,31 @@ private:
     PasswordHashingService passwordHashingService;
 
 public:
+    ///
     this(UserRepository userRepository, PasswordHashingService passwordHashingService)
     {
         this.userRepository = userRepository;
         this.passwordHashingService = passwordHashingService;
     }
 
+    /**
+     * A default constructor which is needed for mocking to work. It should not
+     * be used otherwise, because setting dependencies manually afterwards is
+     * not possible.
+     */
     this()
     {
     }
 
+    /**
+     * Authenticates a user.
+     * Params:
+     * username = The username with which to try authentication.
+     * password = The password with which to try authentication.
+     *
+     * Returns: `Nullable!AuthenticationInfo` containing `AuthenticationInfo`
+     *          for the authenticated user or `null`, if authentiacation failed.
+     */
     Nullable!AuthenticationInfo authenticate(const string username, const string password) @safe
     {
         import std.typecons : nullable;
