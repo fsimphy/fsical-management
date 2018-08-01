@@ -2,10 +2,16 @@ module fsicalmanagement.data.authentication_info;
 
 import fsicalmanagement.model.user : Privilege;
 
+/**
+ * Represents the authentication information of an authenticated user.
+ */
 struct AuthenticationInfo
 {
+    ///
     string id;
+    ///
     string username;
+    ///
     Privilege privilege;
 
     mixin(generateAuthMethods);
