@@ -176,7 +176,7 @@ public:
      * Gets all events from the configured MySQL table.
      *
      * Returns: An `InputRange` containing all `Event`s from the configured
-     * MySQL table.
+     *          MySQL table.
      */
     InputRange!Event findAll() @trusted
     {
