@@ -6,7 +6,7 @@
 	],
 	"dependencies": {
 		"dauth": "~>0.6.3",
-		"mysql-native": "~>1.1.4",
+		"mysql-native": "~>2.2.2",
 		"vibe-d": "~>0.8.4",
 		"vibe-d:tls": "~>0.8.4",
 		"poodinis": "~>8.0.3"

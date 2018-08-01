@@ -139,7 +139,10 @@ public:
 class MySQLEventRepository : EventRepository
 {
 private:
-    import mysql : MySQLPool, prepare, Row;
+    import mysql.commands : exec, query;
+    import mysql.connection : prepare;
+    import mysql.pool : MySQLPool;
+    import mysql.result : Row;
 
     MySQLPool pool;
     @Value("mysql.table.events") string eventsTableName;
@@ -167,7 +170,7 @@ public:
                 ~ " (begin, end, name, description, type, shout)" ~ " VALUES(?, ?, ?, ?, ?, ?)");
         prepared.setArgs(event.begin, event.end, event.name, event.description,
                 event.type.to!uint, event.shout);
-        prepared.exec();
+        cn.exec(prepared);
 
         return event;
     }
@@ -180,12 +183,14 @@ public:
      */
     InputRange!Event findAll() @trusted
     {
+        import std.array : array;
+
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
                 "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName ~ "");
-        return prepared.querySet.map!(r => toEvent(r)).inputRangeObject;
+        return cn.query(prepared).array.map!(r => toEvent(r)).inputRangeObject;
     }
 
     /**
@@ -206,7 +211,7 @@ public:
                 "SELECT id begin end name description type shout FROM "
                 ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
-        auto result = prepared.query;
+        auto result = cn.query(prepared);
 
         if (!result.empty)
         {
@@ -228,7 +233,7 @@ public:
             cn.close;
         auto prepared = cn.prepare("DELETE FROM " ~ eventsTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
-        prepared.exec();
+        cn.exec(prepared);
     }
 
 private:

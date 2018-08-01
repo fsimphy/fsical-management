@@ -139,7 +139,10 @@ public:
 class MySQLUserRepository : UserRepository
 {
 private:
-    import mysql : MySQLPool, Row, prepare;
+    import mysql.commands : exec, query;
+    import mysql.connection : prepare;
+    import mysql.pool : MySQLPool;
+    import mysql.result : Row;
 
     MySQLPool pool;
     @Value("mysql.table.users") string usersTableName;
@@ -167,7 +170,7 @@ public:
                 "INSERT INTO " ~ usersTableName
                 ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
         prepared.setArgs(user.username, user.passwordHash, user.privilege.to!uint);
-        prepared.exec();
+        cn.exec(prepared);
         return user;
     }
 
@@ -179,12 +182,14 @@ public:
      */
     InputRange!User findAll() @trusted
     {
+        import std.array : array;
+
         auto cn = pool.lockConnection();
         scope (exit)
             cn.close;
         auto prepared = cn.prepare(
                 "SELECT id, username, passwordHash, privilege FROM " ~ usersTableName ~ "");
-        return prepared.querySet.map!(r => toUser(r)).inputRangeObject;
+        return cn.query(prepared).array.map!(r => toUser(r)).inputRangeObject;
     }
 
     /**
@@ -205,7 +210,7 @@ public:
                 "SELECT id, username, passwordHash, privilege FROM "
                 ~ usersTableName ~ " WHERE username = ?");
         prepared.setArg(0, username);
-        auto result = prepared.query();
+        auto result = cn.query(prepared);
         if (!result.empty)
         {
             auto user = toUser(result.front);
@@ -226,7 +231,7 @@ public:
             cn.close;
         auto prepared = cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
         prepared.setArg(0, id.to!uint);
-        prepared.exec();
+        cn.exec(prepared);
     }
 
 private:

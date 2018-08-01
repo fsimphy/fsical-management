@@ -10,7 +10,7 @@
 		"libevent": "2.0.2+2.0.16",
 		"memutils": "0.4.11",
 		"mir-linux-kernel": "1.0.0",
-		"mysql-native": "1.1.4",
+		"mysql-native": "2.2.2",
 		"openssl": "1.1.6+1.0.1g",
 		"poodinis": "8.0.3",
 		"stdx-allocator": "2.77.2",
