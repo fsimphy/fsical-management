@@ -7,14 +7,49 @@ import std.conv : to;
 import std.range.interfaces : InputRange, inputRangeObject;
 import std.typecons : Nullable, nullable;
 
+/**
+ * A repository which stores `Event`s.
+ */
 interface EventRepository
 {
-    Event save(Event) @safe;
+    /**
+     * Saves an event to the repository.
+     * Params:
+     * event = The `Event` to save.
+     * 
+     * Returns: The saved `Event`.
+     */
+    Event save(Event event) @safe;
+
+    /**
+     * Gets all events from the repository.
+     *
+     * Returns: An `InputRange` containing all `Event`s from the repository.
+     */
     InputRange!Event findAll() @safe;
+
+    /**
+     * Gets an event by its id from the repository.
+     * Params:
+     * id = The id of the event to get.
+     *
+     * Returns: `Nullable!Event` containing the `Event` corresponding to
+     *          $(D_PARAM id) in the repository or `null`, if no such event
+     *          exists.
+     */
     Nullable!Event findById(const string id) @safe;
+
+    /**
+     * Removes an event from the repository.
+     * Params:
+     * id = The id of the event to remove.
+     */
     void deleteById(const string id) @safe;
 }
 
+/**
+ * A MongoDB based implementation of `EventRepository`.
+ */
 class MongoDBEventRepository : EventRepository
 {
     import vibe.data.bson : deserializeBson;
@@ -25,6 +60,14 @@ private:
     MongoCollection events;
 
 public:
+
+    /**
+     * Saves an event to the configured MongoDB collection.
+     * Params:
+     * event = The `Event` to save.
+     * 
+     * Returns: The saved `Event`.
+     */
     Event save(Event event) @safe
     {
         import std.conv : ConvException;
@@ -45,11 +88,26 @@ public:
         return event;
     }
 
+    /**
+     * Gets all events from the configured MongoDB collection.
+     *
+     * Returns: An `InputRange` containing all `Event`s from the configured
+     *          MongoDB collection.
+     */
     InputRange!Event findAll() @safe
     {
         return events.find().map!(deserializeBson!Event).inputRangeObject;
     }
 
+    /**
+     * Gets an event by its id from the configured MongoDB collection.
+     * Params:
+     * id = The id of the event to get.
+     *
+     * Returns: `Nullable!Event` containing the `Event` corresponding to
+     *          $(D_PARAM id) in the configured MongoDB collection or `null`, if
+     *          no such event exists.
+     */
     Nullable!Event findById(const string id) @safe
     {
         import vibe.data.bson : Bson;
@@ -64,12 +122,20 @@ public:
         return Nullable!Event.init;
     }
 
+    /**
+     * Removes an event from the configured MongoDB collection.
+     * Params:
+     * id = The id of the event to remove.
+     */
     void deleteById(const string id) @safe
     {
         events.remove(["_id" : id]);
     }
 }
 
+/**
+ * A MySQL based implementation of `EventRepository`.
+ */
 class MySQLEventRepository : EventRepository
 {
 private:
@@ -79,11 +145,19 @@ private:
     @Value("mysql.table.events") string eventsTableName;
 
 public:
+    ///
     this(MySQLPool pool)
     {
         this.pool = pool;
     }
 
+    /**
+     * Saves an event to the configured MySQL table.
+     * Params:
+     * event = The `Event` to save.
+     * 
+     * Returns: The saved `Event`.
+     */
     Event save(Event event) @trusted
     {
         auto cn = pool.lockConnection();
@@ -98,6 +172,12 @@ public:
         return event;
     }
 
+    /**
+     * Gets all events from the configured MySQL table.
+     *
+     * Returns: An `InputRange` containing all `Event`s from the configured
+     * MySQL table.
+     */
     InputRange!Event findAll() @trusted
     {
         auto cn = pool.lockConnection();
@@ -108,6 +188,15 @@ public:
         return prepared.querySet.map!(r => toEvent(r)).inputRangeObject;
     }
 
+    /**
+     * Gets an event by its id from the configured MySQL table.
+     * Params:
+     * id = The id of the event to get.
+     *
+     * Returns: `Nullable!Event` containing the `Event` corresponding to
+     *          $(D_PARAM id) in the configured MySQL table. or `null`, if no
+     *          such event exists.
+     */
     Nullable!Event findById(const string id) @trusted
     {
         auto cn = pool.lockConnection();
@@ -127,6 +216,11 @@ public:
         return Nullable!Event.init;
     }
 
+    /**
+     * Removes an event from the configured MySQL table.
+     * Params:
+     * id = The id of the event to remove.
+     */
     void deleteById(const string id) @trusted
     {
         auto cn = pool.lockConnection();
