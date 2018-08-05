@@ -52,7 +52,7 @@ interface UserRepository
  */
 class MongoDBUserRepository : UserRepository
 {
-    import vibe.data.bson : deserializeBson;
+    import fsicalmanagement.utility.serialization : deserializeBsonNothrow;
     import vibe.db.mongo.collection : MongoCollection;
 
 private:
@@ -95,7 +95,12 @@ public:
      */
     InputRange!User findAll() @safe
     {
-        return users.find().map!(deserializeBson!User).inputRangeObject;
+        import std.algorithm.iteration : filter;
+
+        return users.find().map!(deserializeBsonNothrow!User)
+            .filter!(nullableUser => !nullableUser.isNull)
+            .map!(nullableUser => nullableUser.get)
+            .inputRangeObject;
     }
 
     /**
@@ -116,8 +121,7 @@ public:
 
         if (result != Bson(null))
         {
-            auto user = result.deserializeBson!User;
-            return user.nullable;
+            return result.deserializeBsonNothrow!User;
         }
         return Nullable!User.init;
     }
@@ -145,11 +149,13 @@ private:
     import mysql.result : Row;
 
     MySQLPool pool;
-    @Value("mysql.table.users") string usersTableName;
+    
+    @Value("mysql.table.users")
+    string usersTableName;
 
 public:
     ///
-    this(MySQLPool pool)
+    this(MySQLPool pool) @safe @nogc pure nothrow
     {
         this.pool = pool;
     }

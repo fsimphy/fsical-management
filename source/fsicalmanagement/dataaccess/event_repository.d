@@ -52,7 +52,7 @@ interface EventRepository
  */
 class MongoDBEventRepository : EventRepository
 {
-    import vibe.data.bson : deserializeBson;
+    import fsicalmanagement.utility.serialization : deserializeBsonNothrow;
     import vibe.db.mongo.collection : MongoCollection;
 
 private:
@@ -96,7 +96,12 @@ public:
      */
     InputRange!Event findAll() @safe
     {
-        return events.find().map!(deserializeBson!Event).inputRangeObject;
+        import std.algorithm.iteration : filter;
+
+        return events.find().map!(deserializeBsonNothrow!Event)
+            .filter!(nullableEvent => !nullableEvent.isNull)
+            .map!(nullableEvent => nullableEvent.get)
+            .inputRangeObject;
     }
 
     /**
@@ -116,8 +121,7 @@ public:
 
         if (result != Bson(null))
         {
-            auto event = result.deserializeBson!Event;
-            return event.nullable;
+            return result.deserializeBsonNothrow!Event;
         }
         return Nullable!Event.init;
     }
@@ -145,11 +149,13 @@ private:
     import mysql.result : Row;
 
     MySQLPool pool;
-    @Value("mysql.table.events") string eventsTableName;
+
+    @Value("mysql.table.events")
+    string eventsTableName;
 
 public:
     ///
-    this(MySQLPool pool)
+    this(MySQLPool pool) @safe @nogc pure nothrow
     {
         this.pool = pool;
     }
