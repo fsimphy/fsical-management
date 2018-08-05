@@ -79,7 +79,7 @@ unittest
     isAuthenticatedAsAdmin.shouldEqual(true);
 }
 
-@("AuthenticationInfo.isNone failure")
+@("AuthenticationInfo.isAdmin failure")
 @Values(Privilege.User, Privilege.None)
 unittest
 {

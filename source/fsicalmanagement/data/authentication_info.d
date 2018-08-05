@@ -14,25 +14,24 @@ struct AuthenticationInfo
     ///
     Privilege privilege;
 
-    mixin(generateAuthMethods);
+    mixin AuthMethods;
+}
 
 private:
-    static string generateAuthMethods() @safe pure
-    {
-        import std.conv : to;
-        import std.format : format;
-        import std.traits : EnumMembers;
 
-        string ret;
-        foreach (member; EnumMembers!Privilege)
-        {
-            ret ~= q{
-                bool is%s() const @safe pure nothrow
-                {
-                    return privilege == Privilege.%s;
-                }
-            }.format(member.to!string, member.to!string);
-        }
-        return ret;
+mixin template AuthMethods()
+{
+    import std.conv : convertTo = to; // This import is renamed in order to avoid a conflict with unit-threaded
+    import std.format : format;
+    import std.traits : EnumMembers;
+
+    static foreach (member; EnumMembers!Privilege)
+    {
+        mixin(q{
+            bool is%1$s() const @safe @nogc pure nothrow
+            {
+                return privilege == Privilege.%1$s;
+            }
+        }.format(member.convertTo!string));
     }
 }
