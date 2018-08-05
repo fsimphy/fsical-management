@@ -2,7 +2,7 @@ module fsicalmanagement.dataaccess.event_repository;
 
 import fsicalmanagement.model.event : Event;
 import poodinis : Value;
-import std.algorithm : map;
+import std.algorithm.iteration : filter, map;
 import std.conv : to;
 import std.range.interfaces : InputRange, inputRangeObject;
 import std.typecons : Nullable, nullable;
@@ -96,8 +96,6 @@ public:
      */
     InputRange!Event findAll() @safe
     {
-        import std.algorithm.iteration : filter;
-
         return events.find().map!(deserializeBsonNothrow!Event)
             .filter!(nullableEvent => !nullableEvent.isNull)
             .map!(nullableEvent => nullableEvent.get)
@@ -196,7 +194,11 @@ public:
             cn.close;
         auto prepared = cn.prepare(
                 "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName ~ "");
-        return cn.query(prepared).array.map!(r => toEvent(r)).inputRangeObject;
+        return cn.query(prepared).array
+            .map!(r => toEvent(r))
+            .filter!(nullableEvent => !nullableEvent.isNull)
+            .map!(nullableEvent => nullableEvent.get)
+            .inputRangeObject;
     }
 
     /**
@@ -221,8 +223,7 @@ public:
 
         if (!result.empty)
         {
-            auto event = toEvent(result.front);
-            return event.nullable;
+            return toEvent(result.front);
         }
         return Nullable!Event.init;
     }
@@ -243,23 +244,33 @@ public:
     }
 
 private:
-    Event toEvent(const Row r) @trusted
+    Nullable!Event toEvent(const Row r) @trusted nothrow
     {
         import fsicalmanagement.model.event : EventType;
         import std.datetime.date : Date;
+        import std.traits : fullyQualifiedName;
+        import vibe.core.log : logError;
 
-        Event event;
-        event.id = r[0].get!uint
-            .to!string;
-        event.begin = r[1].get!Date;
-        if (!(r[2].type == typeid(typeof(null))))
-            event.end = r[2].get!Date;
-        event.name = r[3].get!string;
-        event.description = r[4].get!string;
-        event.type = r[5].get!uint
-            .to!EventType;
-        event.shout = r[6].get!byte
-            .to!bool;
-        return event;
+        try
+        {
+            Event event;
+            event.id = r[0].get!uint
+                .to!string;
+            event.begin = r[1].get!Date;
+            if (!(r[2].type == typeid(typeof(null))))
+                event.end = r[2].get!Date;
+            event.name = r[3].get!string;
+            event.description = r[4].get!string;
+            event.type = r[5].get!uint
+                .to!EventType;
+            event.shout = r[6].get!byte
+                .to!bool;
+            return event.nullable;
+        }
+        catch (Exception e)
+        {
+            logError("Error while converting Row %s to %s:\n%s", r, fullyQualifiedName!Event, e);
+        }
+        return Nullable!Event.init;
     }
 }

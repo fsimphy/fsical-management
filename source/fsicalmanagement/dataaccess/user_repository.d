@@ -2,7 +2,7 @@ module fsicalmanagement.dataaccess.user_repository;
 
 import fsicalmanagement.model.user : User;
 import poodinis : Value;
-import std.algorithm : map;
+import std.algorithm : filter, map;
 import std.conv : to;
 import std.typecons : Nullable, nullable;
 import std.range.interfaces : InputRange, inputRangeObject;
@@ -95,8 +95,6 @@ public:
      */
     InputRange!User findAll() @safe
     {
-        import std.algorithm.iteration : filter;
-
         return users.find().map!(deserializeBsonNothrow!User)
             .filter!(nullableUser => !nullableUser.isNull)
             .map!(nullableUser => nullableUser.get)
@@ -149,7 +147,7 @@ private:
     import mysql.result : Row;
 
     MySQLPool pool;
-    
+
     @Value("mysql.table.users")
     string usersTableName;
 
@@ -195,7 +193,11 @@ public:
             cn.close;
         auto prepared = cn.prepare(
                 "SELECT id, username, passwordHash, privilege FROM " ~ usersTableName ~ "");
-        return cn.query(prepared).array.map!(r => toUser(r)).inputRangeObject;
+        return cn.query(prepared).array
+            .map!(r => toUser(r))
+            .filter!(nullableUser => !nullableUser.isNull)
+            .map!(nullableUser => nullableUser.get)
+            .inputRangeObject;
     }
 
     /**
@@ -219,8 +221,7 @@ public:
         auto result = cn.query(prepared);
         if (!result.empty)
         {
-            auto user = toUser(result.front);
-            return user.nullable;
+            return toUser(result.front);
         }
         return Nullable!User.init;
     }
@@ -241,18 +242,27 @@ public:
     }
 
 private:
-    User toUser(const Row r) @trusted
+    Nullable!User toUser(const Row r) @trusted nothrow
     {
         import fsicalmanagement.model.user : Privilege;
-        import std.conv : to;
+        import std.traits : fullyQualifiedName;
+        import vibe.core.log : logError;
 
-        User user;
-        user.id = r[0].get!uint
-            .to!string;
-        user.username = r[1].get!string;
-        user.passwordHash = r[2].get!string;
-        user.privilege = r[3].get!uint
-            .to!Privilege;
-        return user;
+        try
+        {
+            User user;
+            user.id = r[0].get!uint
+                .to!string;
+            user.username = r[1].get!string;
+            user.passwordHash = r[2].get!string;
+            user.privilege = r[3].get!uint
+                .to!Privilege;
+            return user.nullable;
+        }
+        catch (Exception e)
+        {
+            logError("Error while converting Row %s to %s:\n%s", r, fullyQualifiedName!User, e);
+        }
+        return Nullable!User.init;
     }
 }

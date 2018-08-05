@@ -19,10 +19,9 @@ Nullable!T deserializeBsonNothrow(T)(Bson src) @safe nothrow
     import vibe.core.log : logError;
     import vibe.data.bson : deserializeBson;
 
-    Nullable!T ret;
     try
     {
-        ret = src.deserializeBson!T.nullable;
+        return src.deserializeBson!T.nullable;
     }
     catch (Exception e)
     {
@@ -31,5 +30,5 @@ Nullable!T deserializeBsonNothrow(T)(Bson src) @safe nothrow
                 fullyQualifiedName!T, e);
         })();
     }
-    return ret;
+    return Nullable!T.init;
 }
