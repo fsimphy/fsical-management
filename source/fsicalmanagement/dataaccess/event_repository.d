@@ -246,7 +246,7 @@ private:
         event.id = r[0].get!uint
             .to!string;
         event.begin = r[1].get!Date;
-        if (r[2].hasValue)
+        if (!(r[2].type == typeid(typeof(null))))
             event.end = r[2].get!Date;
         event.name = r[3].get!string;
         event.description = r[4].get!string;
