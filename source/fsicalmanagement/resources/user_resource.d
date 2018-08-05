@@ -20,7 +20,7 @@ private:
 
 public:
     ///
-    this(UserFacade userFacade)
+    this(UserFacade userFacade) @safe @nogc pure nothrow
     {
         this.userFacade = userFacade;
     }

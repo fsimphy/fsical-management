@@ -1,7 +1,7 @@
 module fsicalmanagement.app;
 
 import fsicalmanagement.resources.authentication_resource : AuthenticationResource;
-import fsicalmanagement.resources.event_resource: EventResource;
+import fsicalmanagement.resources.event_resource : EventResource;
 import fsicalmanagement.resources.user_resource : UserResource;
 import fsicalmanagement.configuration : Context;
 import poodinis : DependencyContainer, registerContext;

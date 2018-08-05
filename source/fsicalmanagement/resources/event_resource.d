@@ -22,7 +22,7 @@ private:
 
 public:
     ///
-    this(EventFacade eventFacade)
+    this(EventFacade eventFacade) @safe @nogc pure nothrow
     {
         this.eventFacade = eventFacade;
     }

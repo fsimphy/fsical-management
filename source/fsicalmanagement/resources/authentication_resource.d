@@ -18,7 +18,7 @@ private:
 
 public:
     ///
-    this(AuthenticationFacade authenticationFacade)
+    this(AuthenticationFacade authenticationFacade) @safe @nogc pure nothrow
     {
         this.authenticationFacade = authenticationFacade;
     }

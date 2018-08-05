@@ -17,7 +17,7 @@ struct AuthenticationInfo
     mixin(generateAuthMethods);
 
 private:
-    static string generateAuthMethods() pure @safe
+    static string generateAuthMethods() @safe pure
     {
         import std.conv : to;
         import std.format : format;
@@ -27,7 +27,7 @@ private:
         foreach (member; EnumMembers!Privilege)
         {
             ret ~= q{
-                bool is%s() const pure @safe nothrow
+                bool is%s() const @safe pure nothrow
                 {
                     return privilege == Privilege.%s;
                 }

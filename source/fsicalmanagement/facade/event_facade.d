@@ -17,7 +17,7 @@ private:
 
 public:
     ///
-    this(EventRepository eventRepository)
+    this(EventRepository eventRepository) @safe @nogc pure nothrow
     {
         this.eventRepository = eventRepository;
     }
@@ -60,7 +60,7 @@ public:
         immutable event = eventRepository.save(Event("", begin, end, name,
                 description.replace("\r", ""), type, shout));
 
-        logInfo("Stored event %s in the database", event);
+        logInfo("Stored event %s", event);
         return event;
     }
 
@@ -72,6 +72,6 @@ public:
     void removeEventById(const string id) @safe
     {
         eventRepository.deleteById(id);
-        logInfo("Deleted event with id %s from the database", id);
+        logInfo("Deleted event with id %s", id);
     }
 }

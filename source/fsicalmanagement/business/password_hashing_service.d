@@ -40,7 +40,7 @@ class StubPasswordHashingService : PasswordHashingService
      *
      * Returns: $(D_PARAM password).
      */
-    string generateHash(const string password) const @safe pure nothrow
+    string generateHash(const string password) const @safe @nogc pure nothrow
     {
         return password;
     }
@@ -54,7 +54,7 @@ class StubPasswordHashingService : PasswordHashingService
      * Returns: Whether or not $(D_PARAM password) and $(D_PARAM hash) are
      *          equal.
      */
-    bool checkHash(const string password, const string hash) const @safe pure nothrow
+    bool checkHash(const string password, const string hash) const @safe @nogc pure nothrow
     {
         return password == hash;
     }
@@ -80,7 +80,9 @@ class SHA256PasswordHashingService : PasswordHashingService
      */
     string generateHash(const string password) const @safe
     {
-        return (() @trusted => password.dupPassword.makeHash!SHA256.toCryptString)();
+        return (() @trusted{
+            return password.dupPassword.makeHash!SHA256.toCryptString;
+        })();
     }
 
     /**
@@ -93,6 +95,8 @@ class SHA256PasswordHashingService : PasswordHashingService
      */
     bool checkHash(const string password, const string hash) const @safe
     {
-        return (() @trusted => isSameHash(password.dupPassword, parseHash(hash)))();
+        return (() @trusted{
+            return isSameHash(password.dupPassword, parseHash(hash));
+        })();
     }
 }

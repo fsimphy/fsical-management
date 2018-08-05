@@ -13,7 +13,7 @@ private:
 
 public:
     ///
-    this(AuthenticationService authenticationService)
+    this(AuthenticationService authenticationService) @safe @nogc pure nothrow
     {
         this.authenticationService = authenticationService;
     }

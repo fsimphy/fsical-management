@@ -16,7 +16,7 @@ private:
 
 public:
     ///
-    this(UserRepository userRepository, PasswordHashingService passwordHashingService)
+    this(UserRepository userRepository, PasswordHashingService passwordHashingService) @safe @nogc pure nothrow
     {
         this.userRepository = userRepository;
         this.passwordHashingService = passwordHashingService;
@@ -27,7 +27,7 @@ public:
      * be used otherwise, because setting dependencies manually afterwards is
      * not possible.
      */
-    this()
+    this() @safe @nogc pure nothrow
     {
     }
 
@@ -50,8 +50,10 @@ public:
 
         if (!user.isNull)
         {
-            if ((()@trusted => async(() => passwordHashingService.checkHash(password,
-                    user.passwordHash)).getResult)())
+            if ((()@trusted{
+                    return async(() => passwordHashingService.checkHash(password,
+                    user.passwordHash)).getResult;
+                })())
             {
                 logInfo("Authentication for username %s was successfull", username);
                 return AuthenticationInfo(user.id, user.username, user.privilege).nullable;

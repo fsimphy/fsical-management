@@ -17,7 +17,7 @@ private:
 
 public:
     ///
-    this(UserRepository userRepository, PasswordHashingService passwordHashingService)
+    this(UserRepository userRepository, PasswordHashingService passwordHashingService) @safe @nogc pure nothrow
     {
         this.userRepository = userRepository;
         this.passwordHashingService = passwordHashingService;
@@ -41,14 +41,14 @@ public:
     void removeUserById(const string id) @safe
     {
         userRepository.deleteById(id);
-        logInfo("Deleted user with id %s from the database", id);
+        logInfo("Deleted user with id %s", id);
     }
 
     /**
      * Creates a user.
      * Params:
      * username = The name of the user.
-     * password = The password of the user .
+     * password = The password of the user.
      * privilege = The privilege of the user.
      *
      * Returns: The created `User`.
@@ -57,11 +57,13 @@ public:
     {
         import vibe.core.concurrency : async;
 
-        immutable user = userRepository.save(User(username,
-                (() @trusted => async(() => passwordHashingService.generateHash(password))
-                .getResult)(), privilege));
+        immutable passwordHash = (() @trusted{
+            return async(() => passwordHashingService.generateHash(password)).getResult;
+        })();
 
-        logInfo("Stored user %s in the database", user);
+        immutable user = userRepository.save(User(username, passwordHash, privilege));
+
+        logInfo("Stored user %s", user);
         return user;
     }
 }

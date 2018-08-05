@@ -94,7 +94,7 @@ public:
      * Returns: The configuration `string` corresponding to the given
      *          $(D_PARAM key).
      */
-    override string get(const string key) @safe nothrow
+    override string get(const string key) @safe pure nothrow
     {
         if (!initialized)
         {
@@ -125,7 +125,7 @@ private:
 public:
 
     ///
-    this(MongoClient mongoClient)
+    this(MongoClient mongoClient) @safe @nogc pure nothrow
     {
         this.mongoClient = mongoClient;
     }
@@ -187,7 +187,7 @@ public:
      *
      * Throws: Exception if $(D_PARAM key) is not equal to "".
      */
-    override Arguments get(const string key) @safe
+    override Arguments get(const string key) const @safe pure
     {
         import std.exception : enforce;
 
