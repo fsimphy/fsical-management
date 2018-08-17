@@ -45,7 +45,7 @@ Include details about your configuration and environment:
 - **What is the name and version of the OS you are using?**
 - **What is the architecture of the system you are using?** (e.g. x86, x86_64 or armv7h)
 
-### Suggesting enhacements
+### Suggesting enhancements
 
 This section guides you through submitting an enhancement suggestion for fsical-management, including completely new features and minor improvements to existing functionality. Following these guidelines helps maintainers and the community understand your suggestions.
 
@@ -77,9 +77,9 @@ We are using [gitflow](http://nvie.com/posts/a-successful-git-branching-model/) 
 <scope>-<issue_number>_short-description
 ```
 Scope can be one of the following:
-- `feature` - new features and enhancements to extisting features
-- `bugfix` - bugfixes (obviously)
-- `technical` - changes of the code that do not modify featues (e.g. refactoring, adding tests, updating dependencies etc.)
+- `feature` - new features and enhancements to existing features
+- `bugfix` - bug fixes (obviously)
+- `technical` - changes of the code that do not modify features (e.g. refactoring, adding tests, updating dependencies etc.)
 - `chore` - everything that does not touch the actual code (modifying README files, renaming files etc.)
 
 The issue number must be given as 3 digits (e.g. 010 for issue #10).
@@ -100,7 +100,7 @@ Git commit messages must have the following format:
 optionally some more descriptions in the following lines
 ```
 Scope can be one of the following:
-- `fix` - bugfixes
+- `fix` - bug fixes
 - `feat` - completed features
 - `wip` - work in progress
 - `test` - everything related to tests
@@ -115,7 +115,7 @@ For the actual text in the commit message, here are some additional guidelines:
 - Limit the first line to 72 characters or less.
 - Reference issues and pull requests liberally after the first line.
 
-### D Styleguide
+### D styleguide
 All D code must adhere to [The D Style](https://dlang.org/dstyle.html). We suggest using [dfmt](https://github.com/dlang-community/dfmt) to format the code accordingly.
 
 ### Imports
@@ -128,7 +128,7 @@ Each symbol should only be imported once, and with a scope as small as possible 
 ### Issue labels
 
 We use issue labels to categorize issues into groups. This makes finding issues belonging to a particular group very easy. 
-Our tagging system is loosly based on Zach Dunn’s [Styleguide for issue tagging](https://robinpowered.com/blog/best-practice-system-for-organizing-and-tagging-github-issues/). Here is a list of all labels we currently use:
+Our tagging system is loosely based on Zach Dunn’s [Styleguide for issue tagging](https://robinpowered.com/blog/best-practice-system-for-organizing-and-tagging-github-issues/). Here is a list of all labels we currently use:
 
 | Label name | Description |
 | --- | --- |
@@ -150,8 +150,8 @@ Our tagging system is loosly based on Zach Dunn’s [Styleguide for issue taggin
 | `wontfix` | Issues we have decided to not fix (for whatever reason). |
 | `duplicate` | Issues that are duplicates of other issues. |
 | `on hold` | Issues that we decided to not deal with right now, but might come back to later. |
-| `beginner` | Issues that are a great start for new beginning contributers. |
-| `help wanted` | Issues we would like new contributers to help us with. |
+| `beginner` | Issues that are a great start for new beginning contributors. |
+| `help wanted` | Issues we would like new contributors to help us with. |
 
 ### Project board
 

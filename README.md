@@ -12,7 +12,7 @@ These instructions will get you a copy of the project up and running on your loc
 ### Prerequisites
 
 #### D compiler
-Either [DMD](https://dlang.org/download.html#dmd) or [LDC](https://github.com/ldc-developers/ldc#installation) is needed to compile the project. Additionally, the packagemanager [DUB](https://code.dlang.org/) is needed. Install via your distribution’s packagemanager if you are running linux or via [Homebrew](https://brew.sh/) if you are running OS X:
+Either [DMD](https://dlang.org/download.html#dmd) or [LDC](https://github.com/ldc-developers/ldc#installation) is needed to compile the project. Additionally, the package manager [DUB](https://code.dlang.org/) is needed. Install via your distribution’s package manager if you are running linux or via [Homebrew](https://brew.sh/) if you are running OS X:
 - Debian based systems:
 ```
 sudo wget http://master.dl.sourceforge.net/project/d-apt/files/d-apt.list -O /etc/apt/sources.list.d/d-apt.list
@@ -46,7 +46,7 @@ brew install dub
 
 
 #### MySQL or MongoDB
-Access to a [MySQL](https://www.mysql.com/) (or its open source fork [MariaDB](https://mariadb.org/)) or a [MongoDB](https://www.mongodb.com/) server is needed. To install it locally, use your distribution’s packagemanager if you are running linux or [Homebrew](https://brew.sh/) if you are running OS X:
+Access to a [MySQL](https://www.mysql.com/) (or its open source fork [MariaDB](https://mariadb.org/)) or a [MongoDB](https://www.mongodb.com/) server is needed. To install it locally, use your distribution’s package manager if you are running linux or [Homebrew](https://brew.sh/) if you are running OS X:
 - Debian based systems:
 ```
 # MariaDB:
@@ -71,7 +71,7 @@ brew install mongodb
 
 #### OpenSSL
 The project depens on OpenSSL being available. Both OpenSSL-1.0 and OpenSSL-1.1 are supported, but in order to successfully use OpenSSL-1.0, the switch `--override-config vibe-d:tls/openssl` needs to be added to all `dub` commands.
-OpenSSL should be available by default on most systems. If it is not available, use your distribution’s packagemanager to install it if you are running linux, or [Homebrew](https://brew.sh/) if you are running OS X:
+OpenSSL should be available by default on most systems. If it is not available, use your distribution’s package manager to install it if you are running linux, or [Homebrew](https://brew.sh/) if you are running OS X:
 - Debian based systems:
 ```
 sudo apt-get install openssl
@@ -111,7 +111,7 @@ mysql -h <host> -u root -p < schema.sql
 mongo <host>/FsicalManagement
 > db.users.insert({ "username": "foo", "passwordHash": "$5$ZcsLcID1hIeYDr7ItwSJPdOOUP0FpXYXiHXs4O5XJI0=$/XWInm91lu1dMAi3dMSZSIJ+2hwZgrBF79rMuNc35Rc=", "privilege": NumberInt(2), "_id": "5988ef4ae6c19089a1a53b79" })
 ```
-This will create a database called `FsicalManagement` and the neccessary tables. If you want to use a different database name, an already existing database or a different username, you need to adjust the above commands and / or the `schema.sql` file accordingly.
+This will create a database called `FsicalManagement` and the necessary tables. If you want to use a different database name, an already existing database or a different username, you need to adjust the above commands and / or the `schema.sql` file accordingly.
 
 This also adds a default user named `foo` with password `bar`.
 
@@ -126,7 +126,7 @@ If you already built the project, you can also run it directly:
 See configuration for a list of available options.
 
 ## Configuration
-The project can be configured either by commandline switches or via an optional configuration file. These are the available options:
+The project can be configured either by command-line switches or via an optional configuration file. These are the available options:
 ```
 Usage: fsical-management <options>
 
@@ -204,7 +204,7 @@ Deploying the project on a Raspberry Pi requires some more work, because DMD is 
 We suggest using [Arch Linux ARM](https://archlinuxarm.org/), but using a different distribution such as [Raspbian](https://www.raspbian.org) should also be possible.
 
 ### Deployment to Arch Linux ARM
-First install neccessary dependencies:
+First install necessary dependencies:
 ```
 sudo pacman -S llvm gcc ncurses zlib
 ```
