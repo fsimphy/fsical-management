@@ -172,7 +172,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare(
                     "INSERT INTO " ~ usersTableName
@@ -200,7 +200,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare(
                     "SELECT id, username, passwordHash, privilege FROM " ~ usersTableName);
@@ -230,7 +230,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare(
                     "SELECT id, username, passwordHash, privilege FROM "
@@ -259,7 +259,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
                 })());

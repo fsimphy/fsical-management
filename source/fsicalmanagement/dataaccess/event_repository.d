@@ -172,7 +172,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare("INSERT INTO " ~ eventsTableName
                     ~ " (begin, end, name, description, type, shout)" ~ " VALUES(?, ?, ?, ?, ?, ?)");
@@ -201,7 +201,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare(
                     "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName);
@@ -231,7 +231,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare(
                     "SELECT id begin end name description type shout FROM "
@@ -261,7 +261,7 @@ public:
         auto preparedStatement()
         {
             static Prepared prepared;
-            return initOnce!prepared((() {
+            return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare("DELETE FROM " ~ eventsTableName ~ " WHERE id = ?");
                 })());
