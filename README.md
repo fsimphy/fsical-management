@@ -208,7 +208,7 @@ First install neccessary dependencies:
 ```
 sudo pacman -S llvm gcc ncurses zlib
 ```
-We will install LDC-1.6.0, which depens on `libtinfo`, which is contained in the `ncurses` package, but the version (`libtinfo.so.6.0`) is wrong (LDC needs `libtinfo.so.5`). It seems as though simply creating a symbolic link does the trick:
+We will install LDC-1.6.0, which depends on `libtinfo`. It is contained in the `ncurses` package, but the version (`libtinfo.so.6.0`) is wrong (LDC needs `libtinfo.so.5`). It seems as though simply creating a symbolic link does the trick:
 ```
 sudo ln -s /usr/lib/libtinfo.so /usr/lib/libtinfo.so.5
 ```
