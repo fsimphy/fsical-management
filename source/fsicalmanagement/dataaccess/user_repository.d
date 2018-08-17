@@ -141,9 +141,11 @@ public:
 class MySQLUserRepository : UserRepository
 {
 private:
+    import fsicalmanagement.utility.initialization : initOnce;
     import mysql.commands : exec, query;
     import mysql.connection : prepare;
     import mysql.pool : MySQLPool;
+    import mysql.prepared : Prepared;
     import mysql.result : Row;
 
     MySQLPool pool;
@@ -167,13 +169,20 @@ public:
      */
     User save(User user) @trusted
     {
-        auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare(
-                "INSERT INTO " ~ usersTableName
-                ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare(
+                    "INSERT INTO " ~ usersTableName
+                    ~ " (username, passwordHash, privilege) VALUES(?, ?, ?)");
+                })());
+        }
+
+        auto prepared = preparedStatement;
         prepared.setArgs(user.username, user.passwordHash, user.privilege.to!uint);
+        auto cn = pool.lockConnection();
         cn.exec(prepared);
         return user;
     }
@@ -188,11 +197,18 @@ public:
     {
         import std.array : array;
 
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare(
+                    "SELECT id, username, passwordHash, privilege FROM " ~ usersTableName);
+                })());
+        }
+
+        auto prepared = preparedStatement;
         auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare(
-                "SELECT id, username, passwordHash, privilege FROM " ~ usersTableName ~ "");
         return cn.query(prepared).array
             .map!(r => toUser(r))
             .filter!(nullableUser => !nullableUser.isNull)
@@ -211,13 +227,20 @@ public:
      */
     Nullable!User findByUsername(const string username) @trusted
     {
-        auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close();
-        auto prepared = cn.prepare(
-                "SELECT id, username, passwordHash, privilege FROM "
-                ~ usersTableName ~ " WHERE username = ?");
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare(
+                    "SELECT id, username, passwordHash, privilege FROM "
+                    ~ usersTableName ~ " WHERE username = ?");
+                })());
+        }
+
+        auto prepared = preparedStatement;
         prepared.setArg(0, username);
+        auto cn = pool.lockConnection();
         auto result = cn.query(prepared);
         if (!result.empty)
         {
@@ -233,11 +256,18 @@ public:
      */
     void deleteById(const string id) @trusted
     {
-        auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare("DELETE FROM " ~ usersTableName ~ " WHERE id = ?");
+                })());
+        }
+
+        auto prepared = preparedStatement;
         prepared.setArg(0, id.to!uint);
+        auto cn = pool.lockConnection();
         cn.exec(prepared);
     }
 

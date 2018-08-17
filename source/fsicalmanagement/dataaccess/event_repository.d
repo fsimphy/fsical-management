@@ -141,9 +141,11 @@ public:
 class MySQLEventRepository : EventRepository
 {
 private:
+    import fsicalmanagement.utility.initialization : initOnce;
     import mysql.commands : exec, query;
     import mysql.connection : prepare;
     import mysql.pool : MySQLPool;
+    import mysql.prepared : Prepared;
     import mysql.result : Row;
 
     MySQLPool pool;
@@ -167,13 +169,20 @@ public:
      */
     Event save(Event event) @trusted
     {
-        auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare("INSERT INTO " ~ eventsTableName
-                ~ " (begin, end, name, description, type, shout)" ~ " VALUES(?, ?, ?, ?, ?, ?)");
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare("INSERT INTO " ~ eventsTableName
+                    ~ " (begin, end, name, description, type, shout)" ~ " VALUES(?, ?, ?, ?, ?, ?)");
+                })());
+        }
+
+        auto prepared = preparedStatement;
         prepared.setArgs(event.begin, event.end, event.name, event.description,
                 event.type.to!uint, event.shout);
+        auto cn = pool.lockConnection();
         cn.exec(prepared);
 
         return event;
@@ -189,11 +198,18 @@ public:
     {
         import std.array : array;
 
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare(
+                    "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName);
+                })());
+        }
+
+        auto prepared = preparedStatement;
         auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare(
-                "SELECT id, begin, end, name, description, type, shout FROM " ~ eventsTableName ~ "");
         return cn.query(prepared).array
             .map!(r => toEvent(r))
             .filter!(nullableEvent => !nullableEvent.isNull)
@@ -212,13 +228,20 @@ public:
      */
     Nullable!Event findById(const string id) @trusted
     {
-        auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare(
-                "SELECT id begin end name description type shout FROM "
-                ~ eventsTableName ~ " WHERE id = ?");
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare(
+                    "SELECT id begin end name description type shout FROM "
+                    ~ eventsTableName ~ " WHERE id = ?");
+                })());
+        }
+
+        auto prepared = preparedStatement;
         prepared.setArg(0, id.to!uint);
+        auto cn = pool.lockConnection();
         auto result = cn.query(prepared);
 
         if (!result.empty)
@@ -235,11 +258,18 @@ public:
      */
     void deleteById(const string id) @trusted
     {
-        auto cn = pool.lockConnection();
-        scope (exit)
-            cn.close;
-        auto prepared = cn.prepare("DELETE FROM " ~ eventsTableName ~ " WHERE id = ?");
+        auto preparedStatement()
+        {
+            static Prepared prepared;
+            return initOnce!prepared((() {
+                    auto cn = pool.lockConnection();
+                    return cn.prepare("DELETE FROM " ~ eventsTableName ~ " WHERE id = ?");
+                })());
+        }
+
+        auto prepared = preparedStatement;
         prepared.setArg(0, id.to!uint);
+        auto cn = pool.lockConnection();
         cn.exec(prepared);
     }
 
