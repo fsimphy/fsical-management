@@ -23,7 +23,7 @@ This section guides you through submitting a bug report for fsical-management. F
 - Check if the problem has already been reported in our [issue tracker](https://github.com/fsimphy/fsical-management/issues).
 
 #### How to submit a (good) bug report
-Bugs are tracked in our [issue tracker](https://github.com/fsimphy/fsical-management/issues). When creating a bug report, please provide the following information by filling in the [template](.github/issue_template.md).
+Bugs are tracked in our [issue tracker](https://github.com/fsimphy/fsical-management/issues). When creating a bug report, please provide the following information by filling in the [template](https://github.com/fsimphy/fsical-management/issues/new?template=bug_report.md).
 
 Explain the problem and include additional details to help maintainers reproduce the problem:
 
@@ -55,7 +55,7 @@ This section guides you through submitting an enhancement suggestion for fsical-
 
 #### How to submit a (good) enhancement suggestion
 
-Enhancement Suggestion are tracked in our [issue tracker](https://github.com/fsimphy/fsical-management/issues). When creating an enhancement suggestion, please provide the following information by filling in the [template](.github/enhancement_template.md).
+Enhancement Suggestion are tracked in our [issue tracker](https://github.com/fsimphy/fsical-management/issues). When creating an enhancement suggestion, please provide the following information by filling in the [template](https://github.com/fsimphy/fsical-management/issues/new?template=enhancement_suggestion.md).
 
 - **Use a clear and descriptive title** for the issue to identify the suggestion.
 - **Provide a short summary describing the suggested enhancement.**

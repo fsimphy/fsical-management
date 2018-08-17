@@ -1,3 +1,9 @@
+---
+name: Enhancement suggestion
+about: Suggest an idea for this project
+
+---
+
 ## Summary
 
 (up to 60 words)
