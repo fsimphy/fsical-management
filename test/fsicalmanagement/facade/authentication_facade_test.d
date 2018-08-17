@@ -13,7 +13,7 @@ unittest
 {
     // given
     immutable username = "someUsername";
-    immutable password = "somePassword";
+    auto password = "somePassword".dup;
     immutable authInfo = AuthenticationInfo("42", username, Privilege.User).nullable;
     auto authenticationServiceMock = mock!AuthenticationService;
     authenticationServiceMock.returnValue!"authenticate"(authInfo);
@@ -31,7 +31,7 @@ unittest
 {
     // given
     immutable username = "someUsername";
-    immutable password = "somePassword";
+    auto password = "somePassword".dup;
     auto authenticationServiceMock = mock!AuthenticationService;
     authenticationServiceMock.returnValue!"authenticate"(Nullable!AuthenticationInfo.init);
     auto underTest = new AuthenticationFacade(authenticationServiceMock);

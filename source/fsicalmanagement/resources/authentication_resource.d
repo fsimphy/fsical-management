@@ -41,7 +41,7 @@ public:
      * username = The username with which to attempt login.
      * password = The password with which to attempt login.
      */
-    @noAuth @errorDisplay!getLogin void postLogin(string username, string password) @safe
+    @noAuth @errorDisplay!getLogin void postLogin(string username, char[] password) @safe
     {
         this.authInfo = authenticationFacade.authenticate(username, password);
         redirect("/");

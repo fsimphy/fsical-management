@@ -14,12 +14,13 @@ unittest
 {
     // given
     immutable username = "someUser";
-    immutable password = "somePassword";
+    immutable passwordHash = "somePassword";
+    auto password = passwordHash.dup;
     immutable userId = "42";
     immutable privilege = Privilege.User;
 
     auto userRepositoryMock = mock!UserRepository;
-    auto user = User(userId, username, password, privilege).nullable;
+    auto user = User(userId, username, passwordHash, privilege).nullable;
     userRepositoryMock.returnValue!"findByUsername"(user);
 
     auto underTest = new AuthenticationService(userRepositoryMock, new StubPasswordHashingService());
@@ -37,7 +38,7 @@ unittest
 {
     // given
     immutable username = "someUser";
-    immutable password = "somePassword";
+    auto password = "somePassword".dup;
 
     auto userRepositoryMock = mock!UserRepository;
     userRepositoryMock.returnValue!"findByUsername"(Nullable!User.init);
@@ -56,12 +57,12 @@ unittest
 {
     // given
     immutable username = "someUser";
-    immutable correctPassword = "somePassword";
-    immutable wrongPassword = "wrongPassword";
+    immutable correctPasswordHash = "somePassword";
+    auto wrongPassword = "wrongPassword".dup;
     immutable privilege = Privilege.User;
 
     auto userRepositoryMock = mock!UserRepository;
-    auto user = User(username, correctPassword, privilege).nullable;
+    auto user = User(username, correctPasswordHash, privilege).nullable;
     userRepositoryMock.returnValue!"findByUsername"(user);
 
     auto underTest = new AuthenticationService(userRepositoryMock, new StubPasswordHashingService());

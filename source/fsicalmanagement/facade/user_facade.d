@@ -53,7 +53,7 @@ public:
      *
      * Returns: The created `User`.
      */
-    User createUser(const string username, const string password, const Privilege privilege) @safe
+    User createUser(const string username, char[] password, const Privilege privilege) @safe
     {
         import vibe.core.concurrency : async;
 

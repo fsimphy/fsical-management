@@ -36,11 +36,12 @@ unittest
         immutable generatedUserId = "5a9c2cbd52e14fca100e76cd";
         immutable userId = "";
         immutable username = "someName";
-        immutable password = "somePassword";
+        immutable passwordHash = "somePassword";
+        auto password = passwordHash.dup;
         immutable privilege = Privilege.User;
 
-        auto callingUser = User(userId, username, password, privilege);
-        auto resultingUser = User(generatedUserId, username, password, privilege);
+        auto callingUser = User(userId, username, passwordHash, privilege);
+        auto resultingUser = User(generatedUserId, username, passwordHash, privilege);
 
         userRepositoryMock.returnValue!"save"(resultingUser);
         auto underTest = new UserFacade(userRepositoryMock, new StubPasswordHashingService);

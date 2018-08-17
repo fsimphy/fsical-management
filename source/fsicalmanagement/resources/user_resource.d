@@ -76,7 +76,7 @@ public:
      */
     @auth(Role.admin)
     @errorDisplay!getCreateuser void postCreateuser(string username,
-            string password, Privilege privilege)
+            char[] password, Privilege privilege)
     {
         userFacade.createUser(username, password, privilege);
         redirect("/users");

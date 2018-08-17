@@ -11,7 +11,7 @@ import unit_threaded.should : shouldBeTrue;
 
     // given
     immutable underTest = new StubPasswordHashingService;
-    immutable testPassword = getValue!string;
+    auto testPassword = getValue!string.dup;
 
     // when
     immutable isPasswordCorrect = underTest.checkHash(testPassword,
@@ -29,11 +29,15 @@ import unit_threaded.should : shouldBeTrue;
 
     // given
     immutable underTest = new SHA256PasswordHashingService;
-    immutable testPassword = getValue!string;
+
+    /* we need two seperate variables, because dauth will zero them when the
+       corresponding `Password`s go out of scope */
+    auto hashGeneratorPassword = getValue!string.dup;
+    auto hashCheckerPassword = getValue!string.dup;
 
     // when
-    immutable isPasswordCorrect = underTest.checkHash(testPassword,
-            underTest.generateHash(testPassword));
+    immutable isPasswordCorrect = underTest.checkHash(hashCheckerPassword,
+            underTest.generateHash(hashGeneratorPassword));
 
     // then
     isPasswordCorrect.shouldBeTrue;

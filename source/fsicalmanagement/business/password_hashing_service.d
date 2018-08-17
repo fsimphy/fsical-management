@@ -13,7 +13,7 @@ interface PasswordHashingService
      *
      * Returns: The generated hash.
      */
-    string generateHash(const string password) const @safe;
+    string generateHash(char[] password) const @safe;
 
     /**
      * Validates $(D_PARAM password) against a given $(D_PARAM hash).
@@ -23,7 +23,7 @@ interface PasswordHashingService
      *
      * Returns: Whether or not the validation was successful.
      */
-    bool checkHash(const string password, const string hash) const @safe;
+    bool checkHash(char[] password, const string hash) const @safe;
 }
 
 /**
@@ -40,9 +40,9 @@ class StubPasswordHashingService : PasswordHashingService
      *
      * Returns: $(D_PARAM password).
      */
-    string generateHash(const string password) const @safe @nogc pure nothrow
+    string generateHash(char[] password) const @safe pure nothrow
     {
-        return password;
+        return password.idup;
     }
 
     /**
@@ -54,7 +54,7 @@ class StubPasswordHashingService : PasswordHashingService
      * Returns: Whether or not $(D_PARAM password) and $(D_PARAM hash) are
      *          equal.
      */
-    bool checkHash(const string password, const string hash) const @safe @nogc pure nothrow
+    bool checkHash(char[] password, const string hash) const @safe @nogc pure nothrow
     {
         return password == hash;
     }
@@ -68,7 +68,7 @@ class StubPasswordHashingService : PasswordHashingService
  */
 class SHA256PasswordHashingService : PasswordHashingService
 {
-    import dauth : dupPassword, isSameHash, makeHash, parseHash;
+    import dauth : isSameHash, makeHash, parseHash, toPassword;
     import std.digest.sha : SHA256;
 
     /**
@@ -78,10 +78,10 @@ class SHA256PasswordHashingService : PasswordHashingService
      *
      * Returns: A salted SHA256 hash of $(D_PARAM password).
      */
-    string generateHash(const string password) const @safe
+    string generateHash(char[] password) const @safe
     {
         return (() @trusted{
-            return password.dupPassword.makeHash!SHA256.toCryptString;
+            return password.toPassword.makeHash!SHA256.toCryptString;
         })();
     }
 
@@ -93,10 +93,10 @@ class SHA256PasswordHashingService : PasswordHashingService
      *
      * Returns: Whether or not the validation was successful.
      */
-    bool checkHash(const string password, const string hash) const @safe
+    bool checkHash(char[] password, const string hash) const @safe
     {
         return (() @trusted{
-            return isSameHash(password.dupPassword, parseHash(hash));
+            return isSameHash(password.toPassword, parseHash(hash));
         })();
     }
 }

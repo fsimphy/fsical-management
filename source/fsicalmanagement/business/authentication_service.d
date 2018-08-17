@@ -40,7 +40,7 @@ public:
      * Returns: `Nullable!AuthenticationInfo` containing `AuthenticationInfo`
      *          for the authenticated user or `null`, if authentiacation failed.
      */
-    Nullable!AuthenticationInfo authenticate(const string username, const string password) @safe
+    Nullable!AuthenticationInfo authenticate(const string username, char[] password) @safe
     {
         import std.typecons : nullable;
         import vibe.core.concurrency : async;
