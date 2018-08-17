@@ -194,7 +194,7 @@ dub test
 ```
 This runs all available tests. To run only a specific test, run the following command in the project’s root directory:
 ```
-dub test -- test.calendarwebapp.<module>.<testName>
+dub test -- <fully qualified name of the test module>.<test name>
 ```
 See [unit-threaded](https://github.com/atilaneves/unit-threaded) for more information on available testing options.
 ## Deployment
