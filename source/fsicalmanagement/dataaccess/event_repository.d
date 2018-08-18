@@ -175,7 +175,7 @@ public:
             return initOnce!prepared(({
                     auto cn = pool.lockConnection();
                     return cn.prepare("INSERT INTO " ~ eventsTableName
-                    ~ " (begin, end, name, description, type, shout)" ~ " VALUES(?, ?, ?, ?, ?, ?)");
+                    ~ " (begin, end, name, description, type, shout) VALUES(?, ?, ?, ?, ?, ?)");
                 })());
         }
 
