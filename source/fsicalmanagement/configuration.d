@@ -1,98 +1,165 @@
 module fsicalmanagement.configuration;
 
-public import poodinis;
+import poodinis;
 
 import vibe.db.mongo.collection : MongoCollection;
 
+/**
+ * Specifies which components are registered with the `DependencyContainer`.
+ */
 class Context : ApplicationContext
 {
 public:
+    /**
+     * Registers components with a dependency container.
+     * Params:
+     * container = The `DependencyContainer` to register components with.
+     */
     override void registerDependencies(shared(DependencyContainer) container)
     {
-        import fsicalmanagement.authenticator : Authenticator;
-        import fsicalmanagement.event : EventStore;
-        import fsicalmanagement.fsicalmanagement : FsicalManagement;
-        import fsicalmanagement.passhash : PasswordHasher, SHA256PasswordHasher;
+
+        import fsicalmanagement.business.password_hashing_service : PasswordHashingService,
+            SHA256PasswordHashingService;
+        import fsicalmanagement.business.authentication_service : AuthenticationService;
+        import fsicalmanagement.dataaccess.event_repository : EventRepository;
+        import fsicalmanagement.dataaccess.user_repository : UserRepository;
+        import fsicalmanagement.facade.authentication_facade : AuthenticationFacade;
+        import fsicalmanagement.facade.event_facade : EventFacade;
+        import fsicalmanagement.facade.user_facade : UserFacade;
+        import fsicalmanagement.resources.authentication_resource : AuthenticationResource;
+        import fsicalmanagement.resources.event_resource : EventResource;
+        import fsicalmanagement.resources.user_resource : UserResource;
         import vibe.core.log : logInfo;
-        
-        container.register!(ValueInjector!Arguments, AppArgumentsInjector);
-        auto arguments = container.resolve!(AppArgumentsInjector).get("");
+
+        container.register!AuthenticationFacade;
+        container.register!AuthenticationService;
+        container.register!EventFacade;
+        container.register!EventResource;
+        container.register!(PasswordHashingService, SHA256PasswordHashingService);
+        container.register!UserFacade;
+        container.register!AuthenticationResource;
+        container.register!UserResource;
+        container.register!(ValueInjector!Arguments, ArgumentsInjector);
+        container.register!(ValueInjector!string, ConfigurationInector);
+
+        immutable arguments = container.resolve!(ArgumentsInjector).get("");
         final switch (arguments.database) with (DatabaseArgument)
         {
         case mongodb:
             import vibe.db.mongo.client : MongoClient;
             import vibe.db.mongo.mongo : connectMongoDB;
-            import fsicalmanagement.authenticator : MongoDBAuthenticator;
-            import fsicalmanagement.event : MongoDBEventStore;
+            import fsicalmanagement.dataaccess.user_repository : MongoDBUserRepository;
+            import fsicalmanagement.dataaccess.event_repository : MongoDBEventRepository;
 
             auto mongoClient = connectMongoDB(arguments.mongodb.host);
             container.register!MongoClient.existingInstance(mongoClient);
-            container.register!(EventStore, MongoDBEventStore!());
-            container.register!(Authenticator, MongoDBAuthenticator!());
+            container.register!(EventRepository, MongoDBEventRepository);
+            container.register!(UserRepository, MongoDBUserRepository);
             container.register!(ValueInjector!MongoCollection, MongoCollectionInjector);
             logInfo("Using MongoDB as database system");
             break;
         case mysql:
             import mysql : MySQLPool;
-            import fsicalmanagement.authenticator : MySQLAuthenticator;
-            import fsicalmanagement.event : MySQLEventStore;
+            import fsicalmanagement.dataaccess.user_repository : MySQLUserRepository;
+            import fsicalmanagement.dataaccess.event_repository : MySQLEventRepository;
 
             auto pool = new MySQLPool(arguments.mysql.host, arguments.mysql.username,
                     arguments.mysql.password, arguments.mysql.database);
             container.register!MySQLPool.existingInstance(pool);
-            container.register!(EventStore, MySQLEventStore);
-            container.register!(Authenticator, MySQLAuthenticator);
+            container.register!(EventRepository, MySQLEventRepository);
+            container.register!(UserRepository, MySQLUserRepository);
             logInfo("Using MySQL as database system");
             break;
         }
-        container.register!(PasswordHasher, SHA256PasswordHasher);
-        container.register!FsicalManagement;
-        container.register!(ValueInjector!string, StringInjector);
     }
 }
 
-class StringInjector : ValueInjector!string
+/**
+ * Specifies configuration strings to be injected into components.
+ */
+class ConfigurationInector : ValueInjector!string
 {
 private:
     string[string] config;
     @Value() Arguments arguments;
-    bool initialized = false;
+    bool initialized;
 
 public:
 
-    override string get(string key) @safe nothrow
+    /**
+     * Gets a configuration string for a particular key.
+     * Params:
+     * key = The key of the configuration `string` to get.
+     *
+     * Returns: The configuration `string` corresponding to the given
+     *          $(D_PARAM key).
+     */
+    override string get(const string key) @safe pure nothrow
     {
         if (!initialized)
         {
-            config = ["MongoDB database name" : arguments.mongodb.database,
-                "mysql.table.users" : "users", "mysql.table.events" : "events"];
+            // dfmt off
+            config = ["mongodb.database.name" : arguments.mongodb.database,
+                      "mysql.table.users"     : "users",
+                      "mysql.table.events"    : "events"];
+            // dfmt on
         }
         return config[key];
     }
 }
 
+/**
+ * Implementation of `ValueInjector` which injects `MongoCollection`s.
+ *
+ * Which database to use is specified via the configuration string
+ * "mongodb.database.name".
+ */
 class MongoCollectionInjector : ValueInjector!MongoCollection
 {
 private:
     import vibe.db.mongo.client : MongoClient;
 
-    @Autowire MongoClient mongoClient;
-    @Value("MongoDB database name")
-    string databaseName;
+    MongoClient mongoClient;
+    @Value("mongodb.database.name") string databaseName;
 
 public:
-    override MongoCollection get(string key) @safe
+
+    ///
+    this(MongoClient mongoClient) @safe @nogc pure nothrow
+    {
+        this.mongoClient = mongoClient;
+    }
+
+    /**
+     * Gets a MongoDB collection for a particular key.
+     * Params:
+     * key = The key of the `MongoCollection` to get.
+     *
+     * Returns: The `MongoCollection` corresponding to the given
+     *          $(D_PARAM key).
+     */
+    override MongoCollection get(const string key) @safe
     {
         return mongoClient.getCollection(databaseName ~ "." ~ key);
     }
 }
 
-class AppArgumentsInjector : ValueInjector!Arguments
+/**
+ * Implementation of `ValueInjector` which injects `Arguments`s.
+ * 
+ * It reads the `Argument`s from the commandline and the vibe.d specific
+ * configuration files.
+ *
+ * `Argument`s should always be injected with `@Value()` because there is only
+ * a single instance of `Argument`s.
+ */
+class ArgumentsInjector : ValueInjector!Arguments
 {
 private:
     Arguments arguments;
-public:
 
+public:
+    ///
     this()
     {
         import vibe.core.args : readOption;
@@ -111,38 +178,68 @@ public:
                 "The name of the MySQL database to use.");
     }
 
-    override Arguments get(string key) @safe
+    /**
+     * Gets the arguments.
+     * Params:
+     * key = Only needed for technical reasons. It should always be "".
+     *
+     * Returns: The `Arguments`.
+     *
+     * Throws: Exception if $(D_PARAM key) is not equal to "".
+     */
+    override Arguments get(const string key) const @safe pure
     {
         import std.exception : enforce;
 
-        enforce(key == "", "There is only one instance of Arguments, to inject it use @Value().");
+        enforce(key == "", "There is only a single instance of Arguments, to inject it use @Value().");
         return arguments;
     }
 }
 
+/**
+ * The differenty types of database passable as argument.
+ */
 enum DatabaseArgument
 {
     mongodb,
     mysql
 }
 
+/**
+ * The MySQL configuration options.
+ */
 struct MySQLArguments
 {
+    ///
     string host = "localhost";
+    ///
     string username = "username";
+    ///
     string password = "password";
+    ///
     string database = "FsicalManagement";
 }
 
+/**
+ * The MongoDB configuration options.
+ */
 struct MongoDBArguments
 {
+    ///
     string host = "localhost";
+    ///
     string database = "FsicalManagement";
 }
 
+/**
+ * Represents the passable arguments.
+ */
 struct Arguments
 {
+    ///
     DatabaseArgument database = DatabaseArgument.mongodb;
+    ///
     MySQLArguments mysql;
+    ///
     MongoDBArguments mongodb;
 }

@@ -6,10 +6,10 @@
 	],
 	"dependencies": {
 		"dauth": "~>0.6.3",
-		"mysql-native": "~>1.1.4",
-		"vibe-d": "~>0.8.2",
-		"vibe-d:tls": "~>0.8.2",
-		"poodinis": "~>8.0.1"
+		"mysql-native": "~>2.2.2",
+		"vibe-d": "~>0.8.4",
+		"vibe-d:tls": "~>0.8.4",
+		"poodinis": "~>8.0.3"
 	},
     "subConfigurations": {
         "vibe-d:tls": "openssl-1.1"
@@ -31,7 +31,7 @@
 			"excludedSourceFiles": ["source/fsicalmanagement/app.d"],
 			"sourcePaths": ["test"],
 			"dependencies": {
-				"unit-threaded": "~>0.7.38"
+				"unit-threaded": "~>0.7.46"
 			},
 			"versions": ["unitUnthreaded"]
 		}
